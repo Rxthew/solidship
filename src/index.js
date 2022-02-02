@@ -2,10 +2,8 @@ export const ship = class {
 
     damage = 0
     
-    
-    constructor(type, health, action, breakPoint){
+    constructor(type, action, breakPoint){
         this.type = type
-        this.health = health
         this.action = action
         this.breakPoint = breakPoint
     }

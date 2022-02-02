@@ -16,7 +16,7 @@
   \**********************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"ship\": () => (/* binding */ ship)\n/* harmony export */ });\nconst ship = class {\n\n    damage = 0\n    \n    \n    constructor(type, health, action, breakPoint){\n        this.type = type\n        this.health = health\n        this.action = action\n        this.breakPoint = breakPoint\n    }\n    \n    isSunk(damage, breakPoint){\n        if(damage <= breakPoint){\n            return true\n        }\n        return false\n    }\n\n}\n\n//# sourceURL=webpack://solidship/./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"ship\": () => (/* binding */ ship)\n/* harmony export */ });\nconst ship = class {\n\n    damage = 0\n    \n    constructor(type, action, breakPoint){\n        this.type = type\n        this.action = action\n        this.breakPoint = breakPoint\n    }\n    \n    isSunk(damage, breakPoint){\n        if(damage <= breakPoint){\n            return true\n        }\n        return false\n    }\n\n}\n\n//# sourceURL=webpack://solidship/./src/index.js?");
 
 /***/ })
 
