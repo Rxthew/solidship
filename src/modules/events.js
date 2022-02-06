@@ -18,46 +18,50 @@ export const events = function(){
             return Object.prototype.hasOwnProperty.call(_myEvents._events, name)
         }
         if (!_isEventHere()){
-            Object.assign(_myEvents._events, _myEvents._events[name] = []);
+           return Object.assign(_myEvents._events, _myEvents._events[name] = []);
        }
     }
 
 
     const removeHandler = function(name, toRemove){
 
-        _checkEvent()
+        _checkEvent(name)
             
         _myEvents._events[name] = _myEvents._events[name].filter(elem => elem.handler !== toRemove)
+        return
 
     };
 
     const publish = function(name){ 
        
-        _checkEvent()
+        _checkEvent(name)
 
         _myEvents._events[name].forEach(function(h){
-               return h.handler(...h.arguments)
+                h.handler(...h.arguments)
         })
+        return
         
     };
 
     const subscribe = function(name, newHandler, ...optionalArgs){
 
-        _checkEvent()
+        _checkEvent(name)
 
-        _myEvents._events[name] = [..._myEvents._events, new _handlersObject(newHandler, ...optionalArgs)]  
+        _myEvents._events[name] = [..._myEvents._events[name], new _handlersObject(newHandler, ...optionalArgs)] 
+        return 
         
     };
 
     const suppress = function(eventName, suppressedHandler){
          
-        _checkEvent()
+        _checkEvent(eventName)
         
         let temporaryArray = [..._myEvents._events[eventName]]
         temporaryArray = temporaryArray.filter(elem => elem.handler !== suppressedHandler)
-        return temporaryArray.forEach(function(h){
+        temporaryArray.forEach(function(h){
             h.handler(...h.arguments)
         })
+        return
     }
 
 
