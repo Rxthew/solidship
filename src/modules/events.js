@@ -4,14 +4,13 @@ export const events = function(){
         constructor(handler, ...args){
             this.handler = handler
             this.params = [...args]
-
         }
-
     }
 
     const _myEvents = {
          _events : {}
     }
+    
 
     const _checkEvent = function(name){
 
@@ -22,26 +21,18 @@ export const events = function(){
            return Object.assign(_myEvents._events, _myEvents._events[name] = []);
        }
     }
-    
-    const _occurrenceToIndex = function(someArray, elem, sequenceOccurrence){
+
+    const _handlerIndexByOccurrenceOrder = function(someArray, elem, sequenceOccurrence){
+
         let index = 0
-         for(let occurrence = 0; occurrence < sequenceOccurrence; occurrence++){
-             let lastInd = index;
-             index = someArray.indexOf(elem,lastInd);   
-         }
-         return index
-    }
-
-    const _determineIndex = function(index, someArray, elem, sequenceOccurrence){
-        if(index || index===0){
-            return index
-        }
-        if(sequenceOccurrence === false){
-            return false
-        }
-        return _occurrenceToIndex(someArray, elem, sequenceOccurrence)
+            for(let occurrence = 0; occurrence < sequenceOccurrence; occurrence++){
+                 let lastInd = index;
+                 index = someArray.indexOf(elem,lastInd);   
+             }
+         return index        
 
     }
+
 
     const _reduceHandlersObj = function(someArr){
         const copyArr = [...someArr];
@@ -50,24 +41,60 @@ export const events = function(){
 
         }
 
+    const _removeSpecificHandler = function(name, handlerToRemove, sequenceOccurrence, someArray){
+    
+    const handlersArray = _reduceHandlersObj(someArray)
+    const _specificIndex = _handlerIndexByOccurrenceOrder(handlersArray,handlerToRemove,sequenceOccurrence)
+    someArray = someArray.filter((elem,index) => index !== _specificIndex )
+    
+    return someArray
 
-    const removeHandler = function(name, handlerToRemove, index=false, sequenceOccurrence=false){
+}
 
-        _checkEvent(name) //separate selection routine from removal. Should be just name, handlertorm and index.
+    const removeHandler = function(name, handlerToRemove, sequenceOccurrence=false){
+
+        _checkEvent(name)
         
-        const handlersArray = _reduceHandlersObj(_myEvents._events[name])
-        let finalIndex = _determineIndex(index,handlersArray,handlerToRemove,sequenceOccurrence)
-
-        if(finalIndex !== false){
-            _myEvents._events[name] = _myEvents._events[name].filter(elem => elem !== _myEvents._events[name][finalIndex])
-
+        if(typeof sequenceOccurrence === 'number'){
+            let evtsArray = _myEvents._events[name];
+            _removeSpecificHandler(name, handlerToRemove, sequenceOccurrence,evtsArray)
             return 
-        }
+        } 
 
         _myEvents._events[name] = _myEvents._events[name].filter(elem => elem.handler !== handlerToRemove)
 
         return
 
+    };
+
+    const selectivePublish = function(eventName, suppressedHandler,sequenceOccurrence=false){
+
+        _checkEvent(eventName)
+        
+        let _temporaryArray = [..._myEvents._events[eventName]]
+        let _temporaryPublisher = function(){
+            _temporaryArray.forEach(function(h){
+                h.handler(...h.params)
+        })}
+
+        if(typeof sequenceOccurrence === 'number'){
+           _temporaryArray =  _removeSpecificHandler(eventName,suppressedHandler,sequenceOccurrence,_temporaryArray)
+            return _temporaryPublisher()
+        }
+
+        _temporaryArray = _temporaryArray.filter(elem => elem !== suppressedHandler);
+        _temporaryPublisher()
+        return
+    }
+
+    
+    const subscribe = function(name, newHandler, ...optionalArgs){
+
+        _checkEvent(name) 
+
+        _myEvents._events[name] = [..._myEvents._events[name], new _handlersObject(newHandler, ...optionalArgs)] 
+        return 
+        
     };
 
     const publish = function(name){ 
@@ -80,36 +107,6 @@ export const events = function(){
         return
         
     };
-
-    const subscribe = function(name, newHandler, ...optionalArgs){
-
-        _checkEvent(name) 
-
-        _myEvents._events[name] = [..._myEvents._events[name], new _handlersObject(newHandler, ...optionalArgs)] 
-        return 
-        
-    };
-
-    const selectivePublish = function(eventName, ...suppressedHandlers){ 
-         
-        _checkEvent(eventName) //use selection routine for this and update.
-        
-        let temporaryArray = [..._myEvents._events[eventName]]
-
-        for (let evHandler of suppressedHandlers){
-            temporaryArray = temporaryArray.filter(elem =>
-                elem.handler !== evHandler)
-        }
-            
-            
-        temporaryArray.forEach(function(h){
-            h.handler(...h.params)
-        })
-        return
-    }
-
-    //add a subscribe 
-
 
             
     return {
