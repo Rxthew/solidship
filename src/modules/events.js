@@ -25,12 +25,13 @@ export const events = function(){
     const _handlerIndexByOccurrenceOrder = function(someArray, elem, sequenceOccurrence){
 
         let index = 0
-            for(let occurrence = 0; occurrence < sequenceOccurrence; occurrence++){
-                 let lastInd = index;
-                 index = someArray.indexOf(elem,lastInd);   
+        let lastInd = index
+            for(let occurrence = 0; occurrence < sequenceOccurrence; occurrence++){                                           
+                 index = someArray.indexOf(elem,lastInd);
+                 lastInd = index + 1
              }
-         return index        
-
+         return index
+                 
     }
 
 
@@ -47,6 +48,7 @@ export const events = function(){
     const _specificIndex = _handlerIndexByOccurrenceOrder(handlersArray,handlerToRemove,sequenceOccurrence)
     someArray = someArray.filter((elem,index) => index !== _specificIndex )
     
+    
     return someArray
 
 }
@@ -56,8 +58,8 @@ export const events = function(){
         _checkEvent(name)
         
         if(typeof sequenceOccurrence === 'number'){
-            let evtsArray = _myEvents._events[name];
-            _removeSpecificHandler(name, handlerToRemove, sequenceOccurrence,evtsArray)
+            _myEvents._events[name] =  _removeSpecificHandler(name, handlerToRemove, sequenceOccurrence,_myEvents._events[name])
+           
             return 
         } 
 
@@ -72,18 +74,19 @@ export const events = function(){
         _checkEvent(eventName)
         
         let _temporaryArray = [..._myEvents._events[eventName]]
-        let _temporaryPublisher = function(){
-            _temporaryArray.forEach(function(h){
+        let _temporaryPublisher = function(_someArray){
+            _someArray.forEach(function(h){
                 h.handler(...h.params)
         })}
 
+
         if(typeof sequenceOccurrence === 'number'){
            _temporaryArray =  _removeSpecificHandler(eventName,suppressedHandler,sequenceOccurrence,_temporaryArray)
-            return _temporaryPublisher()
+            return _temporaryPublisher(_temporaryArray)
         }
 
-        _temporaryArray = _temporaryArray.filter(elem => elem !== suppressedHandler);
-        _temporaryPublisher()
+        _temporaryArray = _temporaryArray.filter(elem => elem.handler !== suppressedHandler);
+        _temporaryPublisher(_temporaryArray)
         return
     }
 
