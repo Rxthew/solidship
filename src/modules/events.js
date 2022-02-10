@@ -1,3 +1,5 @@
+import { gameBoard } from "./gameboard"
+
 export const events = function(){
     
     const _handlersObject = class{
@@ -69,14 +71,14 @@ export const events = function(){
 
     };
 
-    const selectivePublish = function(eventName, suppressedHandler,sequenceOccurrence=false){
+    const selectivePublish = function(eventName, suppressedHandler,sequenceOccurrence=false, ...params){
 
         _checkEvent(eventName)
         
         let _temporaryArray = [..._myEvents._events[eventName]]
         let _temporaryPublisher = function(_someArray){
             _someArray.forEach(function(h){
-                h.handler(...h.params)
+                h.handler(...params,...h.params)
         })}
 
 
@@ -100,12 +102,12 @@ export const events = function(){
         
     };
 
-    const publish = function(name){ 
+    const publish = function(name, ...params){ 
        
         _checkEvent(name)
 
         _myEvents._events[name].forEach(function(h){
-                h.handler(...h.params)
+                h.handler(...params,...h.params)
         })
         return
         

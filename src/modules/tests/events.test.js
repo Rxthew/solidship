@@ -3,10 +3,18 @@ import {events} from '../events'
 
 const eventsInstance = events();
 
+
+
 let addToArray = function(someArr){
     someArr.push(2)
     return someArr
 
+}
+
+let addToArrays = function(...someArrs){
+    for (let arr of someArrs){
+        addToArray(arr)
+    }
 }
 
 let addMoreToArray = function(someArr){
@@ -86,4 +94,16 @@ test('selectivly publishes the right handlers with/without occurrence', () => {
     eventsInstance.selectivePublish('thisEvent7',addMoreToArray,2)
     expect(aSampleArray6).toEqual([3,3,3,2])
     
+})
+
+test('publishes with own params passed into it then with any params stored for that particular object',() => {
+    let aSampleArray7 = [];
+    let aSampleArray8 = [];
+
+    eventsInstance.subscribe('thisEvent8',addToArrays, aSampleArray8);
+    eventsInstance.publish('thisEvent8',aSampleArray7)
+    expect(aSampleArray7).toEqual([2])
+    expect(aSampleArray8).toEqual([2])
+    
+
 })
