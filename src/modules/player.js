@@ -34,13 +34,35 @@ const _checkTargetLoc = function(targetLoc,ship){
     }
     return targetLoc.contains
 }
-   
 
-export const placeShip = function(targetLoc,gameBoard,ship){
+
+const _removeShip = function(gameBoard,sourceLoc){
+    
+    if(Object.is(null,_checkShipObject(sourceLoc.contains))){
+        return gameBoard
+    }
+    sourceLoc = Object.assign(sourceLoc, {contains: null})
+    gameBoard = Object.assign({},gameBoard)
+    return gameBoard
+
+}
+
+const _checkMoveLegality = function(gameBoard, targetKey, sourceKey){
+
+    //crap I Need the name of targetLoc but I'm INSIDE The object//if(Object.entries(sourceLoc.legalMoves).includes() )
+}
+
+export const placeShip = function(targetKey,gameBoard,ship){
     
     ship = _checkShipObject(ship)
-    targetLoc = _checkTargetLoc(targetLoc,ship)    
+    let targetLoc = gameBoard.board[targetKey]
+    _checkTargetLoc(targetLoc,ship)
+         
     gameBoard = Object.assign({}, gameBoard)
     return gameBoard 
 
 }
+
+
+
+
