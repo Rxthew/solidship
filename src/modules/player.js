@@ -36,8 +36,8 @@ const _checkTargetLoc = function(targetLoc,ship){
 }
 
 
-const _removeShip = function(gameBoard,sourceLoc){
-    
+const _removeShip = function(gameBoard,sourceKey){
+    let sourceLoc = gameBoard.board[sourceKey]
     if(Object.is(null,_checkShipObject(sourceLoc.contains))){
         return gameBoard
     }
@@ -47,18 +47,42 @@ const _removeShip = function(gameBoard,sourceLoc){
 
 }
 
-const _checkMoveLegality = function(gameBoard, targetKey, sourceKey){
+const _checkMoveLegality = function(targetKey, gameBoard, sourceKey){
+     let sourceLoc = gameBoard.board[sourceKey];
+     
+     const legalMoves = [...sourceLoc.legalMoves]
 
-    //crap I Need the name of targetLoc but I'm INSIDE The object//if(Object.entries(sourceLoc.legalMoves).includes() )
+     if(legalMoves.includes(targetKey) === false){
+         return false
+     }
+
+     return true
+}
+
+export const moveShip = function(targetKey,gameBoard,sourceKey){
+    if(_checkMoveLegality(targetKey,gameBoard,sourceKey) === false){
+        return gameBoard
+    }
+    let ship = gameBoard.board[sourceKey].contains
+    
+    let newBoard = placeShip(targetKey,gameBoard,ship)
+    if(newBoard.board[targetKey].contains === ship){
+           newBoard = _removeShip(newBoard,sourceKey)
+           return newBoard        
+    }
+    return gameBoard
+
 }
 
 export const placeShip = function(targetKey,gameBoard,ship){
+    
     
     ship = _checkShipObject(ship)
     let targetLoc = gameBoard.board[targetKey]
     _checkTargetLoc(targetLoc,ship)
          
-    gameBoard = Object.assign({}, gameBoard)
+    gameBoard = Object.assign({}, gameBoard) //this here deleting prototype isSunk
+
     return gameBoard 
 
 }
