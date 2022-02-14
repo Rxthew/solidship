@@ -1,6 +1,6 @@
 import {test,expect,describe} from "@jest/globals";
 import { gameBoard } from "../gameboard";
-import {playerObj, placeShip} from '../player';
+import {playerObj, placeShip,moveShip} from '../player';
 import {legacyShip,plantingShip} from '../ships'
 
 
@@ -46,7 +46,6 @@ describe('testing placeShip function', () => {
         expect(first.board[target].contains).toEqual(legacy)
     })
 
-
     let target1 = 'A4'
     placeShip(target1,first,null)
 
@@ -65,6 +64,30 @@ describe('testing placeShip function', () => {
 
 })
 
+describe('testing moveShip function', () => {
+    let first = new gameBoard('place a ship')
+    let legacy = legacyShip()
+    let source = 'A5'
 
+    let second = placeShip(source,first,legacy)
+    test('Move illegal should return same gameBoard', () => {
+        expect(moveShip('F6',second,source)).toEqual(second)
+        expect(second.board['F6'].contains).toEqual(null)
+        expect(second.board[source].contains).toEqual(legacy)
+
+    })
+    let third = moveShip('A6',second,source)
+    test('Legal move should return a new gameBoard', () => {
+        expect(third.board['A6'].contains).toEqual(legacy)
+        expect(third.board[source].contains).toEqual(null)
+    })
+
+    
+    
+    
+})
+
+//I need to test moveShip. Test if the gameBoard changes when the move is illegal and when the target position is occupied.
+// test both the state of the soure position and the target for each test.
 
 
