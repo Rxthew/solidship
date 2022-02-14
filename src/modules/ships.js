@@ -50,10 +50,10 @@ export const legacyShip = function(){
     return Object.assign(_shipMethods.legacy(), new basicShip('legacy',4))
 }
 
-
 export const plantingShip = function (){
     return Object.assign(_shipMethods.planting(), new basicShip('planting',3))
 }
+
 
 export const defenseShip = function (){
     return Object.assign(_shipMethods.defense(), new basicShip('defense',3))
