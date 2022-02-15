@@ -81,6 +81,7 @@ describe('testing moveShip function', () => {
         expect(third.board['A6'].contains).toEqual(legacy)
         expect(third.board[source].contains).toEqual(null)
     })
+    
 
     
     

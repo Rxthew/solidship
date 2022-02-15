@@ -29,7 +29,7 @@ const _checkShipObject = function(ship){
 const _checkTargetLoc = function(targetLoc,ship){
     
     if(targetLoc.contains === null && Object.is(ship,null)===false){
-        targetLoc.contains = Object.assign({},ship)
+        targetLoc.contains = Object.assign(Object.create(Object.getPrototypeOf(ship)),ship)
         return targetLoc.contains
     }
     return targetLoc.contains
