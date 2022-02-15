@@ -70,18 +70,22 @@ describe('testing moveShip function', () => {
     let source = 'A5'
 
     let second = placeShip(source,first,legacy)
+
+    console.log(second.board[source])
     test('Move illegal should return same gameBoard', () => {
+        console.log(second.board[source])
         expect(moveShip('F6',second,source)).toEqual(second)
         expect(second.board['F6'].contains).toEqual(null)
         expect(second.board[source].contains).toEqual(legacy)
 
     })
-    let third = moveShip('A6',second,source)
+    let freshBoard = new gameBoard('place a ship')
+    let third = moveShip('A6',placeShip(source,freshBoard,legacy),source)
     test('Legal move should return a new gameBoard', () => {
         expect(third.board['A6'].contains).toEqual(legacy)
         expect(third.board[source].contains).toEqual(null)
     })
-    
+
 
     
     

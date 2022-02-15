@@ -66,11 +66,16 @@ export const moveShip = function(targetKey,gameBoard,sourceKey){
     let ship = gameBoard.board[sourceKey].contains
     
     let newBoard = placeShip(targetKey,gameBoard,ship)
-    if(newBoard.board[targetKey].contains === ship){
-           newBoard = _removeShip(newBoard,sourceKey)
-           return newBoard        
+    let shipEntries = Object.values(ship)
+    for(let prop of Object.values(newBoard.board[targetKey].contains)){
+        if(shipEntries.includes(prop) === false){
+            console.log(shipEntries)
+            console.log(prop)
+            return gameBoard
+        }       
     }
-    return gameBoard
+    newBoard = _removeShip(newBoard,sourceKey)
+    return newBoard 
 
 }
 
@@ -81,7 +86,7 @@ export const placeShip = function(targetKey,gameBoard,ship){
     let targetLoc = gameBoard.board[targetKey]
     _checkTargetLoc(targetLoc,ship)
          
-    gameBoard = Object.assign({}, gameBoard) //this here deleting prototype isSunk
+    gameBoard = Object.assign({}, gameBoard) 
 
     return gameBoard 
 
