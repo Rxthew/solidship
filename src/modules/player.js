@@ -72,8 +72,6 @@ export const moveShip = function(targetKey,currentBoard,sourceKey){
     
     let finalBoard = _removeShip(newBoard,sourceKey)
     return finalBoard
-    
-    
      
 
 }

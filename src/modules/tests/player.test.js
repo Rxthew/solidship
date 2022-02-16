@@ -82,6 +82,11 @@ describe('testing moveShip function', () => {
         expect(third.board['A6'].contains).toEqual(legacy)
         expect(third.board[source].contains).toEqual(null)
     })
+    let fourth = moveShip('A5',third,'A6')
+    test('move back returns previous results',() => {
+        expect(fourth.board['A6'].contains).toEqual(null)
+        expect(fourth.board['A5'].contains).toEqual(legacy)
+    })
     
     
 })
