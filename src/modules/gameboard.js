@@ -175,7 +175,7 @@ export const updateBoardContents = function(gameBoard, containsObject){
             currentBoard[key].contains = null
         }
         else{
-            currentBoard[key].contains = Object.assign({}, containsObject[key]) 
+            currentBoard[key].contains = Object.assign(Object.create(Object.getPrototypeOf(containsObject[key])), containsObject[key]) 
         }
         
     }

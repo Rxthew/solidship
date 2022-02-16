@@ -33,34 +33,33 @@ describe('testing placeShip function', () => {
     let first = new gameBoard('ship placed')
     let legacy = legacyShip()
     let target = 'A3'
-    placeShip(target,first,legacy)
+    let newFirst = placeShip(target,first,legacy)
 
     test('return a new gameBoard with a correctly placed ship',() => {
-        expect(first.board[target].contains).toEqual(legacy)
+        expect(newFirst.board[target].contains).toEqual(legacy)
     })
     
     let planting = plantingShip()
-    placeShip(target,first,planting)
+    let anotherBoard = placeShip(target,newFirst,planting)
 
     test('return a new gameBoard with the ship that was previously in place', () => {
-        expect(first.board[target].contains).toEqual(legacy)
+        expect(anotherBoard.board[target].contains).toEqual(legacy)
     })
 
     let target1 = 'A4'
-    placeShip(target1,first,null)
+    let newFirst2 = placeShip(target1,first,null)
 
     test('expect null when passing a \'null\' ship to an empty object', () => {
-        expect(first.board[target1].contains).toEqual(null)
+        expect(newFirst2.board[target1].contains).toEqual(null)
     })
 
-    placeShip(target1,first,{isSunk: 'not sunk', damage: 44, type:'non-existing' })
+    let newFirst3 = placeShip(target1,newFirst2,{isSunk: 'not sunk', damage: 44, type:'non-existing' })
 
-    test('expect null when passing an ship object with missing properties', () => {
-        expect(first.board[target1].contains).toEqual(null)
-        placeShip(target1,first,{damage: 44, type: 'non-existing', breakPoint: 'someBreakPoint'})
-        expect(first.board[target1].contains).toEqual(null)
+    test('expect null when passing a ship object with missing properties', () => {
+        expect(newFirst3.board[target1].contains).toEqual(null)
+        let newFirst4 = placeShip(target1,newFirst3,{damage: 44, type: 'non-existing', breakPoint: 'someBreakPoint'})
+        expect(newFirst4.board[target1].contains).toEqual(null)
     })
-
 
 })
 
@@ -71,28 +70,21 @@ describe('testing moveShip function', () => {
 
     let second = placeShip(source,first,legacy)
 
-    console.log(second.board[source])
+
     test('Move illegal should return same gameBoard', () => {
-        console.log(second.board[source])
         expect(moveShip('F6',second,source)).toEqual(second)
         expect(second.board['F6'].contains).toEqual(null)
         expect(second.board[source].contains).toEqual(legacy)
 
     })
-    let freshBoard = new gameBoard('place a ship')
-    let third = moveShip('A6',placeShip(source,freshBoard,legacy),source)
+    let third = moveShip('A6',placeShip(source,second,legacy),source)
     test('Legal move should return a new gameBoard', () => {
         expect(third.board['A6'].contains).toEqual(legacy)
         expect(third.board[source].contains).toEqual(null)
     })
-
-
-    
     
     
 })
 
-//I need to test moveShip. Test if the gameBoard changes when the move is illegal and when the target position is occupied.
-// test both the state of the soure position and the target for each test.
 
 
