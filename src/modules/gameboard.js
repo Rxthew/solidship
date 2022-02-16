@@ -152,3 +152,32 @@ export const gameBoard = class {
         this.state = state
     }
 }
+
+ 
+export const createContainsObject = function(gameBoard, updatedKey, updatedValue){
+    let containsObject = gameBoard.board
+    let newContainsObject = {};
+    for (let key of Object.keys(containsObject)){
+        if(key === updatedKey){
+            Object.assign(newContainsObject, {[key]: updatedValue})
+        }
+        else{
+        Object.assign(newContainsObject, {[key]:containsObject[key].contains})
+        }
+    }
+    return newContainsObject
+}
+
+export const updateBoardContents = function(gameBoard, containsObject){
+    const currentBoard = gameBoard.board
+    for (let key of Object.keys(containsObject)){
+        if(Object.is(containsObject[key], null)){
+            currentBoard[key].contains = null
+        }
+        else{
+            currentBoard[key].contains = Object.assign({}, containsObject[key]) 
+        }
+        
+    }
+    return gameBoard
+}

@@ -1,5 +1,5 @@
-import { test,expect } from '@jest/globals';
-import {gameBoard} from '../gameboard';
+import { test,expect,describe } from '@jest/globals';
+import {gameBoard, createContainsObject, updateBoardContents} from '../gameboard';
 
 test('expect an empty board',() => {
 expect(new gameBoard('new')).toEqual(
@@ -154,3 +154,48 @@ expect(new gameBoard('new')).toEqual(
         
     }
 )})
+
+
+describe('test the mechanisms used to update the board', () => {
+
+    test('create corresponding contains Object with correct details', () => {
+        let someNewGame = new gameBoard('some new game');
+        let contains = createContainsObject(someNewGame)
+        expect(contains.A6).toBe(null)
+        expect(contains.A5).toBe(null)
+        expect(contains.B6).toBe(null)
+        expect(contains.F6).toBe(null)
+    
+    })
+
+    let anotherNewGame = new gameBoard('another new game')
+    let containsGame = createContainsObject(anotherNewGame)
+    containsGame.A1 = { ts : 'this string'}
+
+    test('ensure contains Object does not mutate the original gameBoard', () => {
+        expect(containsGame.A1).toEqual({ ts : 'this string'})
+        expect(anotherNewGame.board.A1.contains).toEqual(null)    
+        
+    })
+
+    test('createContainsObject also works when update parameters are passed', () => {
+        let newContainsGame = createContainsObject(anotherNewGame, 'A1', 'this is another string')
+        expect(newContainsGame.A1).toEqual('this is another string')
+        expect(containsGame.A1).toEqual({ ts : 'this string'})
+        expect(anotherNewGame.board.A1.contains).toEqual(null)
+    })
+
+    let someFreshBoard = new gameBoard('fresh board')
+
+    test('create a new gameBoard and then update the contents to match the new contains object', () => {
+        expect(updateBoardContents(someFreshBoard,containsGame).board.A1.contains).toEqual({ ts : 'this string'})
+    })
+    test('no mutation when I change contains Object', () => {
+        containsGame.A1 = null
+        expect(someFreshBoard.board.A1.contains).toEqual({ts : 'this string'})
+   })
+   
+})
+
+
+
