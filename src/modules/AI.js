@@ -21,3 +21,7 @@ export const fireMissile = function(key, currentBoard){
     vesselDamaged = updateBoardContents(vesselDamaged,containsObj)
     return vesselDamaged
 }
+
+export const AIReact = function(){
+    return
+}

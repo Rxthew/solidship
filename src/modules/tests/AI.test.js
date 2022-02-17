@@ -1,7 +1,24 @@
 import { describe, expect, test } from '@jest/globals' 
 import { createContainsObject, gameBoard, updateBoardContents } from '../gameboard'
 import * as ships from '../ships'
-import { fireMissile, AIObj } from '../AI'
+import { fireMissile, AIObj, AIReact } from '../AI'
+
+const fullBoardGenerator = function(){
+    let defense = ships.defenseShip
+    let board = new gameBoard('full');
+    let contains = createContainsObject(board)
+    let allKeys = []
+    for(let key of Object.keys(contains)){
+        contains[key] = defense()
+        allKeys.push(key)
+    }
+    board = updateBoardContents(board,contains)
+    return{
+        board,
+        allKeys
+    }
+}
+
 
 const _testBoardGenerator = function(someKey, someBorderRadius){
     let planting = ships.plantingShip
@@ -21,7 +38,19 @@ const _testBoardGenerator = function(someKey, someBorderRadius){
         containsObj[key] = planting()
     }
     testBoard = updateBoardContents(testBoard,containsObj)
-    return testBoard
+    return {
+        testBoard,
+        targetKeys
+    }    
+}
+
+const _checkDamage = function(someBoard , targetKeys){ 
+    for (let key of targetKeys){
+        if(someBoard.board[key].contains.damage === 1){
+            return true
+        }
+    }
+    return false
 }
 
 
@@ -57,7 +86,7 @@ describe('AI testing', () => {
         })
     })
 
-
+//Note: when you finish this, check fire missile tests because they are likely redundant and will need to be removed.
     const planting = ships.plantingShip
     let someGameBoard = new gameBoard('some')
     someGameBoard.board.B4.contains = planting()
@@ -71,19 +100,48 @@ describe('AI testing', () => {
         let secondMissileFired = fireMissile('A5',missileFired)
         expect(secondMissileFired).toEqual(missileFired)
         expect(secondMissileFired.board.A5.contains).toEqual(null)
-
-
-
     })
-    test('AI React returns an AI Object with a different but valid gameboard key every time',() => {
+
+    test('AI React returns an AI Object with a valid gameState',() => {
+        let fullBoard = fullBoardGenerator().board
+        let allKeys = fullBoardGenerator().allKeys
+        let aiObject1 = new AIObj()
+        let aiObject2 = new AIObj(fullBoard)
+        expect(AIReact(aiObject1)).toEqual(aiObject1)
+        let newState = AIReact(aiObject2).gameState
+        expect(_checkDamage(newState, allKeys)).toBe(true)
 
     })
 
     test('AI React returns an AI Object with mode set to triangulation, sets phase to 1 and stores hit location when missile hits a target', () => {
+        let aiObject3 = new AIObj(fullBoardGenerator().board)
+        let newObj = AIReact(aiObject3)
+        expect(newObj.triangulation).toBe(true)
+        expect(fullBoardGenerator().allKeys).toContain(newObj.hit)
+        expect(newObj.phase).toBe(1)
 
     })
 
     test('AI React when receiving an AI Object set to triangulation, returns an AI Object reverted to default settings if a ship has just been sunk', () => {
+        
+        let aiObject4 = (function(){
+            let firstFull = fullBoardGenerator().board
+            let allKeys = fullBoardGenerator().allKeys
+            let contObj = createContainsObject(firstFull)
+            for(let key of allKeys){contObj[key].breakPoint = 1}
+            let actualFull = updateBoardContents(firstFull, contObj)
+            let someAIobj = new AIObj(actualFull)
+            someAIobj.triangulation = true;
+            someAIobj.hit = 'A1';
+            someAIobj.phase = 1;
+            return someAIobj
+        })()
+
+
+        let anotherObj = AIReact(aiObject4)
+        expect(anotherObj.triangulation).toBe(false)
+        expect(anotherObj.hit).toBe(null)
+        expect(anotherObj.phase).toBe(0)
 
     })
 
