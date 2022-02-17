@@ -1,5 +1,13 @@
 import { gameBoard, createContainsObject,updateBoardContents } from "./gameboard"
 
+export const AIObj = class {
+    constructor(gameState=new gameBoard('new game'),mode='general',phase=null){
+        this.gameState = gameState,
+        this.mode = mode,
+        this.phase = phase
+    }
+}
+
 export const fireMissile = function(key, currentBoard){
     let loc = currentBoard.board[key].contains
     if(loc === null){
