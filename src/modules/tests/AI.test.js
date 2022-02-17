@@ -1,7 +1,30 @@
 import { describe, expect, test } from '@jest/globals' 
-import { gameBoard } from '../gameboard'
+import { createContainsObject, gameBoard, updateBoardContents } from '../gameboard'
 import * as ships from '../ships'
 import { fireMissile, AIObj } from '../AI'
+
+const _testBoardGenerator = function(someKey, someBorderRadius){
+    let planting = ships.plantingShip
+    let testBoard = new gameBoard('test')
+    let targetKeys = [someKey]
+    if(someBorderRadius === 1){
+      targetKeys = [...targetKeys, ...testBoard.board[someKey].legalMoves]
+    }
+    else if(someBorderRadius === 2){
+       for (let key of testBoard.board[someKey].legalMoves){
+           targetKeys = [...targetKeys, key, ...testBoard.board[key].legalMoves]
+       }
+       targetKeys = [...new Set(targetKeys)]
+    }
+    let containsObj = createContainsObject(testBoard)
+    for(let key of targetKeys){
+        containsObj[key] = planting()
+    }
+    testBoard = updateBoardContents(testBoard,containsObj)
+    return testBoard
+}
+
+
 
 describe('AI testing', () => {
 
@@ -9,8 +32,8 @@ describe('AI testing', () => {
         expect(new AIObj()).toEqual(
             {   
                 gameState: new gameBoard('new game'),
-                mode: 'general',
-                phase: null,
+                triangulation: false,
+                phase: 0,
                 hit: null
                 
             }
@@ -23,8 +46,8 @@ describe('AI testing', () => {
         const player2 =  new AIObj(monkeyOnBoard)
         expect(player2).toEqual(
             {
-                mode: 'general',
-                phase: null,
+                triangulation: false,
+                phase: 0,
                 gameState: monkeyOnBoard,
                 hit: null
             }
@@ -56,7 +79,38 @@ describe('AI testing', () => {
 
     })
 
-    test('AI React return an AI Object with mode set to trinagulation with missile hits a target', () => {
+    test('AI React returns an AI Object with mode set to triangulation, sets phase to 1 and stores hit location when missile hits a target', () => {
+
+    })
+
+    test('AI React when receiving an AI Object set to triangulation, returns an AI Object reverted to default settings if a ship has just been sunk', () => {
+
+    })
+
+    test('AI React when receiving an AI Object set to triangulation, returns an AI Object reverted to default settings if phase is currently 2', () => {
+
+    })
+
+    test('AI React when receiving an AI Object set to triangulation, and has a hit, stores new hit location and returns phases to 1', () => {
+
+    })
+
+    test('AI React when receiving an AI Object set to triangulation, with phase at 1, fires at either hit location or legal moves of hit location', () => {
+
+    })
+
+    test(
+    'AI React when receiving an AI Object set to triangulation, with phase at 2, fires at either hit location or legal moves of hit location or legal moves of legal moves of hit location'
+    , () => {
+
+    })
+
+    test('AI React when receiving an AI Object set to triangulation, with phase at 1, has missile blocked then fires at hit location', () => {
+        
+
+    })
+
+    test('AI React when receiving an AI Object set to triangulation, with phase at 2, has missile blocked, then fires at one of hit location or hit legal Moves', () => {
 
     })
 })
