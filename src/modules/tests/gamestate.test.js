@@ -7,13 +7,13 @@ import { gameBoard} from '../gameboard'
 test('state of gameBoard updates', () => {
 const somePlayer = {
     randomMethod : 'randomMethod',
-    gameState : {}
+    state : {}
 }
 const newGame = new gameBoard('new game')
-updateState(somePlayer.gameState, newGame)
-expect(somePlayer.gameState).toEqual(newGame)
+let updatedPlayer = updateState(somePlayer, newGame)
+expect(updatedPlayer.state).toEqual(newGame.state)
 
 const firstMove = new gameBoard('first move')
-updateState(somePlayer.gameState,firstMove)
-expect(somePlayer.gameState).toEqual(firstMove)
+let firstMovePlayer = updateState(somePlayer,firstMove)
+expect(firstMovePlayer.state).toEqual(firstMove.state)
 })
