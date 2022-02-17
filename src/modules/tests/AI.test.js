@@ -146,24 +146,59 @@ describe('AI testing', () => {
     })
 
     test('AI React when receiving an AI Object set to triangulation, returns an AI Object reverted to default settings if phase is currently 2', () => {
+        let thisNewObj = new AIObj()
+        thisNewObj.triangulation = true; 
+        thisNewObj.hit = 'A1'
+        thisNewObj.phase = 2;
+        let updatedNewObj = AIReact(thisNewObj)
+
+        expect(updatedNewObj.triangulation).toBe(false)
+        expect(updatedNewObj.hit).toBe(null)
+        expect(updatedNewObj.phase).toBe(0)
 
     })
 
-    test('AI React when receiving an AI Object set to triangulation, and has a hit, stores new hit location and returns phases to 1', () => {
-
-    })
 
     test('AI React when receiving an AI Object set to triangulation, with phase at 1, fires at either hit location or legal moves of hit location', () => {
+        let phase1Obj = new AIObj(_testBoardGenerator('A1',1).testBoard)
+        let updatedPhase1 = AIReact(phase1Obj)
+        updatedPhase1.triangulation = true;
+        updatedPhase1.phase = 1;
+        updatedPhase1.hit = 'A1';
+
+        expect(_checkDamage(updatedPhase1.gameState,_testBoardGenerator('A1',1).targetKeys))
+
 
     })
 
     test(
     'AI React when receiving an AI Object set to triangulation, with phase at 2, fires at either hit location or legal moves of hit location or legal moves of legal moves of hit location'
     , () => {
+        let phase2Obj = new AIObj(_testBoardGenerator('C3',2).testBoard)
+        let updatedPhase2 = AIReact(phase2Obj)
+        updatedPhase2.triangulation = true;
+        updatedPhase2.phase = 2;
+        updatedPhase2.hit = 'C3';
+
+        expect(_checkDamage(updatedPhase2.gameState,_testBoardGenerator('C3',2).targetKeys))
+
+    })
+
+    test('AI React when receiving an AI Object set to triangulation, and has a hit, stores new hit location and returns phases to 1', () => {
+        let hitObject = new AIObj(fullBoardGenerator().board)
+        hitObject.triangulation = true;
+        hitObject.hit = 'C3';
+        hitObject.phase = 2;
+        let updatedHitObj = AIReact(hitObject)
+        
+        expect(fullBoardGenerator().allKeys).toContain(updatedHitObj.hit)
+        expect(updatedHitObj.triangulation).toBe(true)
+        expect(updatedHitObj.phase).toBe(1)
 
     })
 
     test('AI React when receiving an AI Object set to triangulation, with phase at 1, has missile blocked then fires at hit location', () => {
+       
         
 
     })
