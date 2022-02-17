@@ -7,10 +7,12 @@ describe('AI testing', () => {
 
     test('AI object has correct properites', () => {
         expect(new AIObj()).toEqual(
-            {
+            {   
+                gameState: new gameBoard('new game'),
                 mode: 'general',
                 phase: null,
-                gameState: new gameBoard('new game')
+                hit: null
+                
             }
         )
     })
@@ -23,14 +25,14 @@ describe('AI testing', () => {
             {
                 mode: 'general',
                 phase: null,
-                gameState: monkeyOnBoard
+                gameState: monkeyOnBoard,
+                hit: null
             }
         )
         expect(player2.gameState.board.F1.contains).toEqual({
                name: 'monkey'
         })
     })
-
 
 
     const planting = ships.plantingShip
@@ -46,6 +48,15 @@ describe('AI testing', () => {
         let secondMissileFired = fireMissile('A5',missileFired)
         expect(secondMissileFired).toEqual(missileFired)
         expect(secondMissileFired.board.A5.contains).toEqual(null)
+
+
+
+    })
+    test('AI React returns an AI Object with a different but valid gameboard key every time',() => {
+
+    })
+
+    test('AI React return an AI Object with mode set to trinagulation with missile hits a target', () => {
 
     })
 })

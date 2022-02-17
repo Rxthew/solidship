@@ -1,10 +1,11 @@
 import { gameBoard, createContainsObject,updateBoardContents } from "./gameboard"
 
 export const AIObj = class {
-    constructor(gameState=new gameBoard('new game'),mode='general',phase=null){
+    constructor(gameState=new gameBoard('new game'),mode='general',phase=null, hit=null){
         this.gameState = gameState,
         this.mode = mode,
-        this.phase = phase
+        this.phase = phase,
+        this.hit = hit
     }
 }
 
