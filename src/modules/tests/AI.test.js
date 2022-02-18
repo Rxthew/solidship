@@ -3,7 +3,7 @@ import { createContainsObject, gameBoard, updateBoardContents } from '../gameboa
 import * as ships from '../ships'
 import { fireMissile, AIObj, AIReact } from '../AI'
 
-const fullBoardGenerator = function(){
+const _fullBoardGenerator = function(){
     let defense = ships.defenseShip
     let board = new gameBoard('full');
     let contains = createContainsObject(board)
@@ -51,6 +51,11 @@ const _checkDamage = function(someBoard , targetKeys){
         }
     }
     return false
+}
+
+let _genNewObj = function(resultObj){
+    let updated = AIReact(resultObj)
+    return updated
 }
 
 
@@ -103,8 +108,8 @@ describe('AI testing', () => {
     })
 
     test('AI React returns an AI Object with a valid gameState',() => {
-        let fullBoard = fullBoardGenerator().board
-        let allKeys = fullBoardGenerator().allKeys
+        let fullBoard = _fullBoardGenerator().board
+        let allKeys = _fullBoardGenerator().allKeys
         let aiObject1 = new AIObj()
         let aiObject2 = new AIObj(fullBoard)
         expect(AIReact(aiObject1)).toEqual(aiObject1)
@@ -114,10 +119,10 @@ describe('AI testing', () => {
     })
 
     test('AI React returns an AI Object with mode set to triangulation, sets phase to 1 and stores hit location when missile hits a target', () => {
-        let aiObject3 = new AIObj(fullBoardGenerator().board)
+        let aiObject3 = new AIObj(_fullBoardGenerator().board)
         let newObj = AIReact(aiObject3)
         expect(newObj.triangulation).toBe(true)
-        expect(fullBoardGenerator().allKeys).toContain(newObj.hit)
+        expect(_fullBoardGenerator().allKeys).toContain(newObj.hit)
         expect(newObj.phase).toBe(1)
 
     })
@@ -125,8 +130,8 @@ describe('AI testing', () => {
     test('AI React when receiving an AI Object set to triangulation, returns an AI Object reverted to default settings if a ship has just been sunk', () => {
         
         let aiObject4 = (function(){
-            let firstFull = fullBoardGenerator().board
-            let allKeys = fullBoardGenerator().allKeys
+            let firstFull = _fullBoardGenerator().board
+            let allKeys = _fullBoardGenerator().allKeys
             let contObj = createContainsObject(firstFull)
             for(let key of allKeys){contObj[key].breakPoint = 1}
             let actualFull = updateBoardContents(firstFull, contObj)
@@ -185,25 +190,56 @@ describe('AI testing', () => {
     })
 
     test('AI React when receiving an AI Object set to triangulation, and has a hit, stores new hit location and returns phases to 1', () => {
-        let hitObject = new AIObj(fullBoardGenerator().board)
+        let hitObject = new AIObj(_fullBoardGenerator().board)
         hitObject.triangulation = true;
         hitObject.hit = 'C3';
         hitObject.phase = 2;
         let updatedHitObj = AIReact(hitObject)
         
-        expect(fullBoardGenerator().allKeys).toContain(updatedHitObj.hit)
+        expect(_fullBoardGenerator().allKeys).toContain(updatedHitObj.hit)
         expect(updatedHitObj.triangulation).toBe(true)
         expect(updatedHitObj.phase).toBe(1)
 
     })
 
     test('AI React when receiving an AI Object set to triangulation, with phase at 1, has missile blocked then fires at hit location', () => {
-       
-        
+
+        let missileObj = new AIObj(_fullBoardGenerator().board)
+        missileObj.triangulation = true;
+        missileObj.hit = 'C3';
+        missileObj.phase = 1;
+        missileObj.gameState.state = 'missile blocked';
+        missileObj.gameState.board.C3.contains.breakPoint = 7
+        let count = 0
+        let updatedMissileObj = missileObj
+        while(count <= 4){
+            updatedMissileObj = _genNewObj(updatedMissileObj)
+            updatedMissileObj.phase = 1
+            updatedMissileObj.gameState.state = 'missile blocked'
+            count += 1
+            expect(updatedMissileObj.gameState.board.C3.contains.damage).toBe(count)
+        }
+        expect(updatedMissileObj.gameState.board.C3.contains.damage).toBe(5)
 
     })
 
     test('AI React when receiving an AI Object set to triangulation, with phase at 2, has missile blocked, then fires at one of hit location or hit legal Moves', () => {
 
+        let missileObj = new AIObj(_fullBoardGenerator().board)
+        missileObj.triangulation = true;
+        missileObj.hit = 'C3';
+        missileObj.phase = 2;
+        missileObj.gameState.state = 'missile blocked';
+        missileObj.gameState.board.C3.contains.breakPoint = 7
+        let count = 0
+        let updatedMissileObj = missileObj
+        while(count <= 4){
+            updatedMissileObj = _genNewObj(updatedMissileObj)
+            updatedMissileObj.phase = 2
+            updatedMissileObj.gameState.state = 'missile blocked'
+            count += 1
+            expect(updatedMissileObj.gameState.board.C3.contains.damage).toBe(count)
+        }
+        expect(updatedMissileObj.gameState.board.C3.contains.damage).toBe(5)
     })
 })
