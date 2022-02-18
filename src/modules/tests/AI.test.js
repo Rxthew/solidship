@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals' 
 import { createContainsObject, gameBoard, updateBoardContents } from '../gameboard'
 import * as ships from '../ships'
-import { fireMissile, AIObj, AIReact } from '../AI'
+import {AIObj, AIReact } from '../AI'
 
 const _fullBoardGenerator = function(){
     let defense = ships.defenseShip
@@ -91,28 +91,18 @@ describe('AI testing', () => {
         })
     })
 
-//Note: when you finish this, check fire missile tests because they are likely redundant and will need to be removed.
-    const planting = ships.plantingShip
-    let someGameBoard = new gameBoard('some')
-    someGameBoard.board.B4.contains = planting()
-    let missileFired = fireMissile('B4', someGameBoard)
-
-    test('fireMissile damages a ship if it hits it',() => {
-        expect(missileFired.board.B4.contains.damage).toBe(1)
+    test('AI React returns an AI Object with a valid gameState which returns the same gameBoard if there is no impact',() => {
+        let aiObject1 = new AIObj()
+        expect(AIReact(aiObject1).gameState).toEqual(aiObject1.gameState)
+        expect(AIReact(aiObject1).gameState.board.A5.contains).toBe(null)
 
     })
-    test('fireMissile returns the same gameBoard if there is no impact',() => {
-        let secondMissileFired = fireMissile('A5',missileFired)
-        expect(secondMissileFired).toEqual(missileFired)
-        expect(secondMissileFired.board.A5.contains).toEqual(null)
-    })
 
-    test('AI React returns an AI Object with a valid gameState',() => {
+    test('AI React returns an AI Object with a valid gameState which damages a ship if it hits it',() => {
         let fullBoard = _fullBoardGenerator().board
         let allKeys = _fullBoardGenerator().allKeys
-        let aiObject1 = new AIObj()
         let aiObject2 = new AIObj(fullBoard)
-        expect(AIReact(aiObject1)).toEqual(aiObject1)
+
         let newState = AIReact(aiObject2).gameState
         expect(_checkDamage(newState, allKeys)).toBe(true)
 
