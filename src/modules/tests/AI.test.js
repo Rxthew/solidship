@@ -46,7 +46,7 @@ const _testBoardGenerator = function(someKey, someBorderRadius){
 
 const _checkDamage = function(someBoard , targetKeys){ 
     for (let key of targetKeys){
-        if(someBoard.board[key].contains.damage === 1){
+        if(someBoard.board[key].contains.damage >= 1){
             return true
         }
     }
@@ -216,20 +216,29 @@ describe('AI testing', () => {
     test('AI React when receiving an AI Object set to triangulation, with phase at 2, has missile blocked, then fires at legal Moves', () => {
 
         let missileObj = new AIObj(_fullBoardGenerator().board)
+        let allKeys = _fullBoardGenerator().allKeys
+        let targetedArea = _testBoardGenerator('C3',1).targetKeys.filter(elem => elem !== 'C3')
+        let forbiddenArea = ['C3', ..._testBoardGenerator('C3',2).targetKeys.filter(elem => targetedArea.includes(elem) === false)]
+        
         missileObj.triangulation = true;
         missileObj.hit = 'C3';
         missileObj.phase = 2;
         missileObj.gameState.state = 'missile blocked';
-        missileObj.gameState.board.C3.contains.breakPoint = 7
         let count = 0
         let updatedMissileObj = missileObj
-        while(count <= 4){
+        while(count <= 99){
             updatedMissileObj = _genNewObj(updatedMissileObj)
+            updatedMissileObj.gameState.board[updatedMissileObj.hit].contains.breakPoint += 20
             updatedMissileObj.phase = 2
+            updatedMissileObj.hit = 'C3'
             updatedMissileObj.gameState.state = 'missile blocked'
             count += 1
-            expect(updatedMissileObj.gameState.board.C3.contains.damage).toBe(count)
+            expect(_checkDamage(updatedMissileObj.gameState, allKeys)).toBe(true)
+            expect(_checkDamage(updatedMissileObj.gameState, targetedArea)).toBe(true)
+            expect(_checkDamage(updatedMissileObj.gameState, forbiddenArea)).toBe(false)
         }
-        expect(updatedMissileObj.gameState.board.C3.contains.damage).toBe(5)
+        expect(_checkDamage(updatedMissileObj.gameState, allKeys)).toBe(true)
+        expect(_checkDamage(updatedMissileObj.gameState, targetedArea)).toBe(true)
+        expect(_checkDamage(updatedMissileObj.gameState, forbiddenArea)).toBe(false)
     })
 })
