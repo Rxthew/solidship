@@ -213,7 +213,7 @@ describe('AI testing', () => {
 
     })
 
-    test('AI React when receiving an AI Object set to triangulation, with phase at 2, has missile blocked, then fires at one of hit location or hit legal Moves', () => {
+    test('AI React when receiving an AI Object set to triangulation, with phase at 2, has missile blocked, then fires at legal Moves', () => {
 
         let missileObj = new AIObj(_fullBoardGenerator().board)
         missileObj.triangulation = true;

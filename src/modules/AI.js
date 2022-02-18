@@ -137,6 +137,20 @@ const _configureMode = function(someGameBoard, triangulation, phase, hit, newHit
 }
 
 
-export const AIReact = function(){
-    return
+export const AIReact = function(currentAIObject){
+    let currentGameState = currentAIObject.gameState;
+    
+    if(currentAIObject.triangulation){
+        let missileBlocked = currentGameState.state === 'missile blocked';
+        let key = _triangulateKeyGenerator(currentAIObject.hit, currentAIObject.phase, missileBlocked)
+        let newGameState = _fireMissile(key,currentGameState)
+        let newObject = new AIObj(newGameState)
+        newObject = Object.assign(newObject,_configureMode(newGameState,currentAIObject.triangulation,currentAIObject.phase,currentAIObject.hit,key))
+        return newObject
+    }
+    let key = _generatePseudoRandomKey()
+    let newGameState = _fireMissile(key,currentGameState)
+    let newObject = new AIObj(newGameState)
+    newObject = Object.assign(newObject,_configureMode(newGameState,currentAIObject.triangulation,currentAIObject.phase,currentAIObject.hit,key))
+    return newObject
 }
