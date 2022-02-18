@@ -1,5 +1,5 @@
 import { gameBoard, createContainsObject,updateBoardContents } from "./gameboard"
-import { legacyShip } from "./ships"
+
 
 export const AIObj = class {
     constructor(gameState=new gameBoard('new game'),triangulation=false,phase=0, hit=null){
@@ -94,6 +94,46 @@ const _triangulateKeyGenerator = function(hitKey, phaseNo=1, missileBlocked=fals
         return _decisionByPhaseNo[phaseNo.toString()](hitKey,targetKeys,targetIndex)
     }
     return _decisionByPhaseNo[phaseNo.toString()](hitKey,targetKeys,targetIndex)      
+}
+
+const _configureMode = function(someGameBoard, triangulation, phase, hit, newHit){
+    
+    if(someGameBoard.state === 'vessel hit'){
+        triangulation = true
+        phase = 1
+        hit = newHit
+        return {
+            triangulation,
+            phase,
+            hit
+        }
+    }
+
+    else if(someGameBoard.state === 'vessel sunk' || phase === 2){
+        triangulation = false
+        phase = 0
+        hit = null
+        return {
+            triangulation,
+            phase,
+            hit     
+        }
+    }
+
+    else if(triangulation){
+        phase += 1
+        return {
+            triangulation,
+            phase,
+            hit     
+        }
+    }
+        
+    return {
+         triangulation,
+         phase,
+         hit     
+     }
 }
 
 
