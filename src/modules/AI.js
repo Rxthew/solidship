@@ -9,7 +9,7 @@ export const AIObj = class {
     }
 }
 
-export const fireMissile = function(key, currentBoard){
+const _fireMissile = function(key, currentBoard){
     let loc = currentBoard.board[key].contains
     if(loc === null){
         return currentBoard
@@ -21,6 +21,15 @@ export const fireMissile = function(key, currentBoard){
     vesselDamaged = updateBoardContents(vesselDamaged,containsObj)
     return vesselDamaged
 }
+
+const _generatePseudoRandomKey = function(){
+    const columns = ['A','B','C','D','E','F']
+    const rows = ['1','2','3','4','5','6']
+    let columnIndex = Math.floor(Math.random() * columns.length) 
+    let rowIndex = Math.floor(Math.random() * rows.length)
+    return `${columns[columnIndex]}${rows[rowIndex]}`
+}
+console.log(_generatePseudoRandomKey())
 
 export const AIReact = function(){
     return
