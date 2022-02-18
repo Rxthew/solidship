@@ -25,11 +25,64 @@ const _fireMissile = function(key, currentBoard){
 const _generatePseudoRandomKey = function(){
     const columns = ['A','B','C','D','E','F']
     const rows = ['1','2','3','4','5','6']
-    let columnIndex = Math.floor(Math.random() * columns.length) 
-    let rowIndex = Math.floor(Math.random() * rows.length)
+    let columnIndex = Math.floor((Math.random() * columns.length)) 
+    let rowIndex = Math.floor((Math.random() * rows.length))
     return `${columns[columnIndex]}${rows[rowIndex]}`
 }
-console.log(_generatePseudoRandomKey())
+
+const _decisionByPhaseNo = {
+    
+    '1' : function(someHitKey, someTargets, someTargetIndex){
+        if(Math.floor((Math.random() * 2)) === 0){
+            return someHitKey
+        }    
+        return someTargets[someTargetIndex]
+    },
+
+    '2' : function(someHitKey, someTargets, someTargetIndex){
+        let aBoard = new gameBoard('a board')
+        let pivot = Math.floor((Math.random() * 10))
+        if(pivot <= 4){
+            return someTargets[someTargetIndex]
+        }
+        else if(pivot <= 6){
+            return someHitKey
+        }
+        else{
+            let widerTarget = []
+            for (let key of someTargets){
+                widerTarget = [...widerTarget, ...aBoard.board[key].legalMoves]
+            }
+            widerTarget = [...new Set(widerTarget)]
+            let widerTargetIndex = Math.floor((Math.random() * widerTarget.length))
+            return widerTarget[widerTargetIndex] 
+        }    
+    },
+
+    '3': function(someHitKey){
+        return someHitKey
+
+    },
+
+    '4': function(someHitKey, someTargets, someTargetIndex){
+        someHitKey = false
+        return someTargets[someTargetIndex]
+
+    }
+}
+
+const _triangulateKeyGenerator = function(hitKey, phaseNo=1, missileBlocked=false){
+    
+    let someBoard = new gameBoard('some board')
+    let targetKeys = [...someBoard.board[hitKey].legalMoves]
+    let targetIndex = Math.floor((Math.random() * targetKeys.length))
+    if(missileBlocked){
+        phaseNo += 2
+        return _decisionByPhaseNo[phaseNo.toString()](hitKey,targetKeys,targetIndex)
+    }
+    return _decisionByPhaseNo[phaseNo.toString()](hitKey,targetKeys,targetIndex)      
+}
+
 
 export const AIReact = function(){
     return
