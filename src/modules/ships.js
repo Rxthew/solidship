@@ -46,6 +46,15 @@ export const basicShip = class {
 }
 Object.assign(basicShip.prototype,_shipMethods.basic())
 
+export const basicLegacyShip = class extends basicShip {
+    damage = this.breakPoint
+    reinforcedBreakPoint = (this.breakPoint * 2) + 1
+
+    constructor(type, breakPoint){
+        super(type, breakPoint)    
+    }
+}
+
 export const legacyShip = function(){
     return Object.assign(_shipMethods.legacy(), new basicShip('legacy',4))
 }

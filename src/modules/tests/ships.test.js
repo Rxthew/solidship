@@ -2,6 +2,7 @@ import { expect, test } from '@jest/globals';
 import * as ships from '../ships';
 
 const basicShip = ships.basicShip
+const basicLegacyShip = ships.basicLegacyShip
 const legacy = ships.legacyShip;
 const planting = ships.plantingShip;
 const defense = ships.defenseShip;
@@ -72,4 +73,11 @@ test('Other ships isSunk method is available (and returns true/false depending o
     expect(defenseShip.isSunk(defenseShip.damage,defenseShip.breakPoint)).toBe(
         false
    )
+
+})
+
+test('basicLegacyShip instance sinks instantly the first time isSunk is called',() => {
+    let plantingLegacyShip = new basicLegacyShip('planting')
+    expect(plantingLegacyShip.isSunk(plantingLegacyShip.damage,plantingLegacyShip.breakPoint)).toBe(true)
+    
 })
