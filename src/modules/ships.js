@@ -33,6 +33,9 @@ const _shipMethods = {
     },
     relay : function(){
         return  new _templateForCustomShipTypes(['message'], {messagingProtocol: ['message','relay']})
+    },
+    clear : function(){
+        return new _templateForCustomShipTypes(['clear debris'], {messagingProtocol: 'clear'})
     }
 }
 
@@ -70,5 +73,9 @@ export const defenseShip = function (){
 
 export const relayShip = function(){
     return Object.assign(_shipMethods.relay(), new basicShip('relay',3))
+}
+
+export const clearingShip = function(){
+    return Object.assign(_shipMethods.clear(), new basicShip('clear',3))
 }
 
