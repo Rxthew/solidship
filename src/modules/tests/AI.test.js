@@ -1,28 +1,21 @@
 import { describe, expect, test } from '@jest/globals' 
 import { createContainsObject, gameBoard, updateBoardContents } from '../gameboard'
-import * as ships from '../ships'
 import {AIObj, AIReact } from '../AI'
 
 
-const _fullBoardGenerator = function(){
-    let defense = ships.defenseShip
-    let board = new gameBoard('full');
+const _allKeys = function(){
+    let board = new gameBoard();
     let contains = createContainsObject(board)
     let allKeys = []
     for(let key of Object.keys(contains)){
-        contains[key] = defense()
         allKeys.push(key)
     }
-    board = updateBoardContents(board,contains)
-    return{
-        board,
-        allKeys
-    }
+    return allKeys
+    
 }
 
 
-const _testBoardGenerator = function(someKey, someBorderRadius){
-    let planting = ships.plantingShip
+const _targetKeys = function(someKey, someBorderRadius){
     let testBoard = new gameBoard('test')
     let targetKeys = [someKey]
     if(someBorderRadius === 1){
@@ -34,15 +27,8 @@ const _testBoardGenerator = function(someKey, someBorderRadius){
        }
        targetKeys = [...new Set(targetKeys)]
     }
-    let containsObj = createContainsObject(testBoard)
-    for(let key of targetKeys){
-        containsObj[key] = planting()
-    }
-    testBoard = updateBoardContents(testBoard,containsObj)
-    return {
-        testBoard,
-        targetKeys
-    }    
+    return targetKeys
+        
 }
 
 const _checkDamage = function(someBoard , targetKeys){ 
@@ -203,7 +189,7 @@ describe('AI testing', () => {
             updatedPhase1.phase = 1
             updatedPhase1.hit = 'A1'
             count = updatedPhase1.target === 'A1' ? count : ++count 
-            expect(_testBoardGenerator('A1',1).targetKeys).toContain(updatedPhase1.target)
+            expect(_targetKeys('A1',1)).toContain(updatedPhase1.target)
             i++
         }
         expect(count).toBeGreaterThan(0)
@@ -232,8 +218,8 @@ describe('AI testing', () => {
             updatedPhase2.phase = 2
             updatedPhase2.hit = 'C3'
             targetCount = updatedPhase2.target === 'C3' ? targetCount : ++targetCount
-            onlyFirstOrderLegalsCount = _testBoardGenerator('C3',1).targetKeys.includes(updatedPhase2.target) ? onlyFirstOrderLegalsCount : ++onlyFirstOrderLegalsCount 
-            expect(_testBoardGenerator('C3',2).targetKeys).toContain(updatedPhase2.target)
+            onlyFirstOrderLegalsCount = _targetKeys('C3',1).includes(updatedPhase2.target) ? onlyFirstOrderLegalsCount : ++onlyFirstOrderLegalsCount 
+            expect(_targetKeys('C3',2)).toContain(updatedPhase2.target)
             i++
         }
         expect(targetCount).toBeGreaterThan(0)
