@@ -2,27 +2,28 @@ import { gameBoard, createContainsObject,updateBoardContents } from "./gameboard
 
 
 export const AIObj = class {
-    constructor(gameState=new gameBoard('new game'),triangulation=false,phase=0, hit=null){
+    constructor(gameState=new gameBoard('new game'),triangulation=false,phase=0, hit=null, target=null ){
         this.gameState = gameState,
         this.triangulation = triangulation,
         this.phase = phase,
-        this.hit = hit
+        this.hit = hit,
+        this.target = target
     }
 }
 
-const _sunkVesselCheckUpdate = function(vesselSunk, vessel){
+const _sunkVesselCheckUpdate = function(vesselSunk, vessel){ //to modify
     if(vesselSunk){
         return null
     }
     return vessel
 }
 
-const _generateDamage = function(hitShip,hitValue=1){
+const _generateDamage = function(hitShip,hitValue=1){ //to modify
      hitShip.damage += hitValue
      return _sunkVesselCheckUpdate(hitShip.isSunk(hitShip.damage, hitShip.breakPoint), hitShip)
 }
 
-const _fireMissile = function(key, currentBoard){
+const _fireMissile = function(key, currentBoard){ //to modify
     let loc = currentBoard.board[key].contains
     if(loc === null){
         return currentBoard
