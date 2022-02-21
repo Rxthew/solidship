@@ -1,4 +1,4 @@
-import { gameBoard, createContainsObject,updateBoardContents } from "./gameboard"
+import { gameBoard } from "./gameboard"
 
 
 export const AIObj = class {
@@ -9,32 +9,6 @@ export const AIObj = class {
         this.hit = hit,
         this.target = target
     }
-}
-
-const _sunkVesselCheckUpdate = function(vesselSunk, vessel){ //to modify
-    if(vesselSunk){
-        return null
-    }
-    return vessel
-}
-
-const _generateDamage = function(hitShip,hitValue=1){ //to modify
-     hitShip.damage += hitValue
-     return _sunkVesselCheckUpdate(hitShip.isSunk(hitShip.damage, hitShip.breakPoint), hitShip)
-}
-
-const _fireMissile = function(key, currentBoard){ //to modify
-    let loc = currentBoard.board[key].contains
-    if(loc === null){
-        return currentBoard
-    }
-    //think it's just -> return currentBoard.state = key
-    let updatedValue = Object.assign(Object.create(Object.getPrototypeOf(loc)),loc)
-    updatedValue = _generateDamage(updatedValue)
-    let vesselStatus = updatedValue === null ? new gameBoard('vessel sunk') : new gameBoard('vessel hit')
-    let containsObj = createContainsObject(currentBoard,key, updatedValue)
-    vesselStatus = updateBoardContents(vesselStatus,containsObj)
-    return vesselStatus
 }
 
 const _generatePseudoRandomKey = function(){
@@ -184,16 +158,18 @@ export const AIReact = function(currentAIObject){
         return newObject
     }
 
-    if(currentAIObject.triangulation){ //fCHECK IF THAT LAST THING WORKS, I DUNNO NEWGAMESTATE SUCCESSFULLY OVERWRITES...
+    if(currentAIObject.triangulation){ 
         let key = _triangulateKeyGenerator(currentAIObject.hit, currentAIObject.phase)
-        let newGameState = { gameState: _fireMissile(key,currentGameState)}
+        let newGameState = { gameState: new gameBoard(`${key}`)}
+        let newTarget = {target : `${key}`}
         let newObject = new AIObj()
-        newObject = Object.assign(newObject, currentAIObject, newGameState )
+        newObject = Object.assign(newObject, currentAIObject, newGameState, newTarget )
         return newObject
     }
     let key = _generatePseudoRandomKey() 
-    let newGameState = { gameState: _fireMissile(key,currentGameState)}
+    let newGameState = { gameState: new gameBoard(`${key}`)}
+    let newTarget = {target : `${key}`}
     let newObject = new AIObj()
-    newObject = Object.assign(newObject, currentAIObject, newGameState )
+    newObject = Object.assign(newObject, currentAIObject, newGameState, newTarget )
     return newObject
 }

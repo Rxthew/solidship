@@ -101,7 +101,7 @@ describe('AI testing', () => {
         anotherAiObject3.target = 'A1'
 
         let newerObj = AIReact(anotherAiObject3)
-        expect(newerObj.gameState).toEqual(aiObject3.gameState)
+        expect(newerObj.gameState).toEqual(anotherAiObject3.gameState)
         expect(newerObj.triangulation).toBe(true)
         expect(newerObj.hit).toBe('A1')
         expect(newerObj.phase).toBe(1)
