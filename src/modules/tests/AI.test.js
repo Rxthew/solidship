@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals' 
-import { createContainsObject, gameBoard, updateBoardContents } from '../gameboard'
+import { createContainsObject, gameBoard } from '../gameboard'
 import {AIObj, AIReact } from '../AI'
 
 
@@ -29,15 +29,6 @@ const _targetKeys = function(someKey, someBorderRadius){
     }
     return targetKeys
         
-}
-
-const _checkDamage = function(someBoard , targetKeys){ 
-    for (let key of targetKeys){
-        if(someBoard.board[key].contains.damage >= 1){
-            return true
-        }
-    }
-    return false
 }
 
 let _genNewObj = function(resultObj){
@@ -82,8 +73,8 @@ describe('AI testing', () => {
     test('AI React returns an AI Object with a valid gameState which returns the same gameBoard & identifies the target attempted',() => {
         let aiObject1 = new AIObj()
         expect(AIReact(aiObject1).gameState.board).toEqual(aiObject1.gameState.board)
-        expect(_fullBoardGenerator().allKeys).toContain(AIReact(aiObject1).gameState.state)
-        expect(_fullBoardGenerator().allKeys).toContain(AIReact(aiObject1).target)
+        expect(_allKeys()).toContain(AIReact(aiObject1).gameState.state)
+        expect(_allKeys()).toContain(AIReact(aiObject1).target)
         
     })
 
