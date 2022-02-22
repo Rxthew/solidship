@@ -154,8 +154,8 @@ export const gameBoard = class {
 }
 
  
-export const createContainsObject = function(gameBoard, updatedKey, updatedValue){
-    let containsObject = gameBoard.board
+export const createContainsObject = function(gameBoard, updatedKey, updatedValue, path='board'){
+    let containsObject = gameBoard[path]
     let newContainsObject = {};
     for (let key of Object.keys(containsObject)){
         if(key === updatedKey){
@@ -181,3 +181,4 @@ export const updateBoardContents = function(gameBoard, containsObject){
     }
     return gameBoard
 }
+
