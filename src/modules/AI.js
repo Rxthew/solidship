@@ -146,7 +146,7 @@ const _configureMode = function(someGameBoard, phase, hit, target){
 }
 
 
-export const AIReact = function(currentAIObject, gb=function(someStr){return new gameBoard(someStr)}){
+export const AIReact = function(currentAIObject, gb= someStr =>  new gameBoard(someStr)){
     let currentGameState = currentAIObject.gameState;
     if(Object.keys(_stateOptions).includes(currentGameState.state)){
         let newObject = new AIObj(currentGameState)
