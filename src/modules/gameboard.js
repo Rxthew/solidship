@@ -168,8 +168,11 @@ export const defaultConfig = {
         return gb[key].legalMoves
     
     },
-    transformBoard: function(state,currentBoard){
-        if(currentBoard){
+    transformBoard: function(state,currentBoard,getState=false){
+        if(currentBoard && getState){
+            return currentBoard.state
+        }
+        else if(currentBoard){
             return currentBoard.board
         }
         return new gameBoard(state)

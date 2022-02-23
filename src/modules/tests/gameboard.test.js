@@ -182,10 +182,11 @@ describe('Custom transformers, getters and setters work as expected', () => {
 
     })
 
-    test('Initialise gameBoard with a function, but if gameBoard passed in return board only', () => {
+    test('Initialise gameBoard with a function if only state passed, but depending on what else gets passed in either return board or state', () => {
         let agB = new gameBoard('some state')
         expect(defaultC.transformBoard(null,agB).A1.contains).toBe(null)
         expect(defaultC.transformBoard('agB').state).toBe('agB')
+        expect(defaultC.transformBoard(null,agB,true)).toBe('some state')
 
     })
 

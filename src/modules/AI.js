@@ -1,4 +1,5 @@
-import { gameBoard, getBoardLegalMovesDefault } from "./gameboard"
+import { gameBoard, defaultConfig } from "./gameboard"
+const [getBoardLegalMoves, transformBoard] = [defaultConfig.getBoardLegalMoves, defaultConfig.transformBoard]
 
 
 export const AIObj = class {
@@ -36,7 +37,7 @@ const _decisionByPhaseNo = {
         return someTargets[someTargetIndex]
     },
 
-    '2' : function(someHitKey, someTargets, someTargetIndex, legalKeyGen = (akeyVar) => getBoardLegalMovesDefault(new gameBoard().board, akeyVar)){
+    '2' : function(someHitKey, someTargets, someTargetIndex, legalKeyGen = (akeyVar) => getBoardLegalMoves(new gameBoard().board, akeyVar)){
         let pivot = Math.floor((Math.random() * 10))
         if(pivot <= 4){
             return someTargets[someTargetIndex]
@@ -131,9 +132,8 @@ const _stateOptions = {
     'missile missed ship':  _missedMissileMode
 }
 
-const _configureMode = function(someGameBoard, phase, hit, target){
+const _configureMode = function(someState, phase, hit, target){
 
-    let state = someGameBoard.state
     
     let propsObj = {
         phase,
@@ -141,16 +141,18 @@ const _configureMode = function(someGameBoard, phase, hit, target){
         target
     }  
 
-    return _stateOptions[state](propsObj)
+    return _stateOptions[someState](propsObj)
 
 }
 
 
-export const AIReact = function(currentAIObject, gb= someStr =>  new gameBoard(someStr)){
-    let currentGameState = currentAIObject.gameState;
-    if(Object.keys(_stateOptions).includes(currentGameState.state)){
+export const AIReact = function(currentAIObject, gb= transformBoard){
+    let currentGameState = currentAIObject.gameState
+    let currentState = gb(null,currentGameState,true)
+
+    if(Object.keys(_stateOptions).includes(currentState)){
         let newObject = new AIObj(currentGameState)
-        newObject = Object.assign(newObject,_configureMode(currentGameState,currentAIObject.phase,currentAIObject.hit,currentAIObject.target))
+        newObject = Object.assign(newObject,_configureMode(currentState,currentAIObject.phase,currentAIObject.hit,currentAIObject.target))
         return newObject
     }
 
