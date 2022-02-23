@@ -1,4 +1,4 @@
-import { gameBoard } from "./gameboard"
+import { gameBoard, getBoardLegalMovesDefault } from "./gameboard"
 
 
 export const AIObj = class {
@@ -36,8 +36,7 @@ const _decisionByPhaseNo = {
         return someTargets[someTargetIndex]
     },
 
-    '2' : function(someHitKey, someTargets, someTargetIndex){
-        let aBoard = new gameBoard('a board')
+    '2' : function(someHitKey, someTargets, someTargetIndex, legalKeyGen = (akeyVar) => getBoardLegalMovesDefault(new gameBoard().board, akeyVar)){
         let pivot = Math.floor((Math.random() * 10))
         if(pivot <= 4){
             return someTargets[someTargetIndex]
@@ -48,7 +47,7 @@ const _decisionByPhaseNo = {
         else{
             let widerTarget = []
             for (let key of someTargets){
-                widerTarget = [...widerTarget, ...aBoard.board[key].legalMoves]
+                widerTarget = [...widerTarget, ...legalKeyGen(key)]
             }
             widerTarget = [...new Set(widerTarget)]
             let widerTargetIndex = Math.floor((Math.random() * widerTarget.length))
@@ -57,10 +56,7 @@ const _decisionByPhaseNo = {
     },
 }
 
-const _triangulateKeyGenerator = function(hitKey, phaseNo=1){
-    
-    let someBoard = new gameBoard('some board')
-    let targetKeys = [...someBoard.board[hitKey].legalMoves]
+const _triangulateKeyGenerator = function(hitKey, phaseNo=1,someBoard=new gameBoard('some board'),targetKeys=[...someBoard.board[hitKey].legalMoves]){
     let targetIndex = Math.floor((Math.random() * targetKeys.length))
     return _decisionByPhaseNo[phaseNo.toString()](hitKey,targetKeys,targetIndex)      
 }
@@ -150,7 +146,7 @@ const _configureMode = function(someGameBoard, phase, hit, target){
 }
 
 
-export const AIReact = function(currentAIObject){
+export const AIReact = function(currentAIObject, gb=function(someStr){return new gameBoard(someStr)}){
     let currentGameState = currentAIObject.gameState;
     if(Object.keys(_stateOptions).includes(currentGameState.state)){
         let newObject = new AIObj(currentGameState)
@@ -160,14 +156,14 @@ export const AIReact = function(currentAIObject){
 
     if(currentAIObject.triangulation){ 
         let key = _triangulateKeyGenerator(currentAIObject.hit, currentAIObject.phase)
-        let newGameState = { gameState: new gameBoard(`${key}`)}
+        let newGameState = { gameState: gb(`${key}`)}
         let newTarget = {target : `${key}`}
         let newObject = new AIObj()
         newObject = Object.assign(newObject, currentAIObject, newGameState, newTarget )
         return newObject
     }
     let key = _generatePseudoRandomKey() 
-    let newGameState = { gameState: new gameBoard(`${key}`)}
+    let newGameState = { gameState: gb(`${key}`)}
     let newTarget = {target : `${key}`}
     let newObject = new AIObj()
     newObject = Object.assign(newObject, currentAIObject, newGameState, newTarget )

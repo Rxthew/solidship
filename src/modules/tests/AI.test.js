@@ -4,7 +4,7 @@ import {AIObj, AIReact } from '../AI'
 
 
 const _allKeys = function(){
-    let board = new gameBoard();
+    let board = new gameBoard().board;
     let contains = createContainsObject(board)
     let allKeys = []
     for(let key of Object.keys(contains)){
