@@ -1,4 +1,4 @@
-//Gameboard object, letters represent columsn and numbers represent rows. Legal moves are one grid box in any available direction.
+
 export const gameBoard = class {
     board = {
         A1 : {
@@ -148,37 +148,55 @@ export const gameBoard = class {
     }
         
 
-    constructor(state){
+    constructor(state='new game'){
         this.state = state
     }
 }
 
+export const getBoardContainsDefault = function(gb,key){
+    return gb[key].contains
+    
+} 
+
+
+export const setBoardContainsDefault = function(gb,key,value){
+    gb[key].contains = value
+
+    return gb
+}
+
+export const getBoardLegalMovesDefault = function(gb,key){
+    return gb[key].legalMoves
+
+}
+
  
-export const createContainsObject = function(gameBoard, updatedKey, updatedValue, path='board'){
-    let containsObject = gameBoard[path]
+export const createContainsObject = function(board, updatedKey, updatedValue, getContents=getBoardContainsDefault){
     let newContainsObject = {};
-    for (let key of Object.keys(containsObject)){
+    for (let key of Object.keys(board)){
         if(key === updatedKey){
             Object.assign(newContainsObject, {[key]: updatedValue})
         }
         else{
-        Object.assign(newContainsObject, {[key]:containsObject[key].contains})
+        Object.assign(newContainsObject, {[key]:getContents(board,key)})
         }
     }
     return newContainsObject
 }
 
-export const updateBoardContents = function(gameBoard, containsObject){
-    const currentBoard = gameBoard.board
+
+
+export const updateBoardContents = function(currentBoard, containsObject,setContents= setBoardContainsDefault){
     for (let key of Object.keys(containsObject)){
         if(Object.is(containsObject[key], null)){
-            currentBoard[key].contains = null
+            setContents(currentBoard,key,null)
         }
         else{
-            currentBoard[key].contains = Object.assign(Object.create(Object.getPrototypeOf(containsObject[key])), containsObject[key]) 
+            let value = Object.assign(Object.create(Object.getPrototypeOf(containsObject[key])), containsObject[key])
+            setContents(currentBoard,key,value) 
         }
         
     }
-    return gameBoard
+    return currentBoard
 }
 

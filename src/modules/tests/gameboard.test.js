@@ -1,5 +1,8 @@
 import { test,expect,describe } from '@jest/globals';
-import {gameBoard, createContainsObject, updateBoardContents} from '../gameboard';
+import * as gameboard from '../gameboard';
+
+let [gameBoard, getBoardContainsDefault,setBoardContainsDefault] = [gameboard.gameBoard, gameboard.getBoardContainsDefault, gameboard.setBoardContainsDefault]
+let [getBoardLegalMovesDefault, createContainsObject, updateBoardContents] = [gameboard.getBoardLegalMovesDefault, gameboard.createContainsObject, gameboard.updateBoardContents]
 
 test('expect an empty board',() => {
 expect(new gameBoard('new')).toEqual(
@@ -155,12 +158,38 @@ expect(new gameBoard('new')).toEqual(
     }
 )})
 
+describe('Custom getters and setters work as expected', () => {
+    let gb = new gameBoard().board
+    gb.A1.contains = 'pop'
+    test('Get contains prop from gameboard when a key is passed in', () => {
+        expect(getBoardContainsDefault(gb,'A1')).toBe('pop')
+        expect(getBoardContainsDefault(gb,'F3')).toBe(null)         
+                       
+
+    })
+
+    test('Set contains prop of gameboard when a key is passed in',() => {
+        setBoardContainsDefault(gb,'F3','push')
+        expect(gb['F3'].contains).toBe('push')
+        setBoardContainsDefault(gb,'F3', null)
+        expect(gb['F3'].contains).toBe(null)
+    })
+
+
+    test('Get legal moves prop of gameboard when a key is passed in', () => {
+        expect(getBoardLegalMovesDefault(gb,'A1')).toEqual(['B1','A2','B2'])
+        expect(getBoardLegalMovesDefault(gb,'F6')).toEqual(['E5','F5','E6']) 
+
+    })
+
+})
+
 
 describe('test the mechanisms used to update the board', () => {
 
     test('create corresponding contains Object with correct details', () => {
         let someNewGame = new gameBoard('some new game');
-        let contains = createContainsObject(someNewGame)
+        let contains = createContainsObject(someNewGame.board)
         expect(contains.A6).toBe(null)
         expect(contains.A5).toBe(null)
         expect(contains.B6).toBe(null)
@@ -169,7 +198,7 @@ describe('test the mechanisms used to update the board', () => {
     })
 
     let anotherNewGame = new gameBoard('another new game')
-    let containsGame = createContainsObject(anotherNewGame)
+    let containsGame = createContainsObject(anotherNewGame.board)
     containsGame.A1 = { ts : 'this string'}
 
     test('ensure contains Object does not mutate the original gameBoard', () => {
@@ -179,7 +208,7 @@ describe('test the mechanisms used to update the board', () => {
     })
 
     test('createContainsObject also works when update parameters are passed', () => {
-        let newContainsGame = createContainsObject(anotherNewGame, 'A1', 'this is another string')
+        let newContainsGame = createContainsObject(anotherNewGame.board, 'A1', 'this is another string')
         expect(newContainsGame.A1).toEqual('this is another string')
         expect(containsGame.A1).toEqual({ ts : 'this string'})
         expect(anotherNewGame.board.A1.contains).toEqual(null)
@@ -188,8 +217,9 @@ describe('test the mechanisms used to update the board', () => {
     let someFreshBoard = new gameBoard('fresh board')
 
     test('create a new gameBoard and then update the contents to match the new contains object', () => {
-        expect(updateBoardContents(someFreshBoard,containsGame).board.A1.contains).toEqual({ ts : 'this string'})
+        expect(updateBoardContents(someFreshBoard.board,containsGame).A1.contains).toEqual({ ts : 'this string'})
     })
+
     test('no mutation when I change contains Object', () => {
         containsGame.A1 = null
         expect(someFreshBoard.board.A1.contains).toEqual({ts : 'this string'})
