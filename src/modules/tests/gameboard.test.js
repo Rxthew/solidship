@@ -1,8 +1,8 @@
 import { test,expect,describe } from '@jest/globals';
 import * as gameboard from '../gameboard';
 
-let [gameBoard, getBoardContainsDefault,setBoardContainsDefault] = [gameboard.gameBoard, gameboard.getBoardContainsDefault, gameboard.setBoardContainsDefault]
-let [getBoardLegalMovesDefault, createContainsObject, updateBoardContents] = [gameboard.getBoardLegalMovesDefault, gameboard.createContainsObject, gameboard.updateBoardContents]
+let [gameBoard, defaultC ] = [gameboard.gameBoard, gameboard.defaultConfig ]
+let [createContainsObject, updateBoardContents] = [gameboard.createContainsObject, gameboard.updateBoardContents]
 
 test('expect an empty board',() => {
 expect(new gameBoard('new')).toEqual(
@@ -158,27 +158,34 @@ expect(new gameBoard('new')).toEqual(
     }
 )})
 
-describe('Custom getters and setters work as expected', () => {
+describe('Custom transformers, getters and setters work as expected', () => {
     let gb = new gameBoard().board
     gb.A1.contains = 'pop'
     test('Get contains prop from gameboard when a key is passed in', () => {
-        expect(getBoardContainsDefault(gb,'A1')).toBe('pop')
-        expect(getBoardContainsDefault(gb,'F3')).toBe(null)         
+        expect(defaultC.getBoardContains(gb,'A1')).toBe('pop')
+        expect(defaultC.getBoardContains(gb,'F3')).toBe(null)         
                        
 
     })
 
     test('Set contains prop of gameboard when a key is passed in',() => {
-        setBoardContainsDefault(gb,'F3','push')
+        defaultC.setBoardContains(gb,'F3','push')
         expect(gb['F3'].contains).toBe('push')
-        setBoardContainsDefault(gb,'F3', null)
+        defaultC.setBoardContains(gb,'F3', null)
         expect(gb['F3'].contains).toBe(null)
     })
 
 
     test('Get legal moves prop of gameboard when a key is passed in', () => {
-        expect(getBoardLegalMovesDefault(gb,'A1')).toEqual(['B1','A2','B2'])
-        expect(getBoardLegalMovesDefault(gb,'F6')).toEqual(['E5','F5','E6']) 
+        expect(defaultC.getBoardLegalMoves(gb,'A1')).toEqual(['B1','A2','B2'])
+        expect(defaultC.getBoardLegalMoves(gb,'F6')).toEqual(['E5','F5','E6']) 
+
+    })
+
+    test('Initialise gameBoard with a function, but if gameBoard passed in return board only', () => {
+        let agB = new gameBoard('some state')
+        expect(defaultC.transformBoard(null,agB).A1.contains).toBe(null)
+        expect(defaultC.transformBoard('agB').state).toBe('agB')
 
     })
 

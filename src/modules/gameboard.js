@@ -153,25 +153,31 @@ export const gameBoard = class {
     }
 }
 
-export const getBoardContainsDefault = function(gb,key){
-    return gb[key].contains
+
+export const defaultConfig = {
+    getBoardContains: function(gb,key){
+        return gb[key].contains
+        
+    }, 
+    setBoardContains: function(gb,key,value){
+        gb[key].contains = value
     
-} 
-
-
-export const setBoardContainsDefault = function(gb,key,value){
-    gb[key].contains = value
-
-    return gb
-}
-
-export const getBoardLegalMovesDefault = function(gb,key){
-    return gb[key].legalMoves
-
+        return gb
+    },
+    getBoardLegalMoves: function(gb,key){
+        return gb[key].legalMoves
+    
+    },
+    transformBoard: function(state,currentBoard){
+        if(currentBoard){
+            return currentBoard.board
+        }
+        return new gameBoard(state)
+    }
 }
 
  
-export const createContainsObject = function(board, updatedKey, updatedValue, getContents=getBoardContainsDefault){
+export const createContainsObject = function(board, updatedKey, updatedValue, getContents=defaultConfig.getBoardContains){
     let newContainsObject = {};
     for (let key of Object.keys(board)){
         if(key === updatedKey){
@@ -186,7 +192,7 @@ export const createContainsObject = function(board, updatedKey, updatedValue, ge
 
 
 
-export const updateBoardContents = function(currentBoard, containsObject,setContents= setBoardContainsDefault){
+export const updateBoardContents = function(currentBoard, containsObject,setContents= defaultConfig.setBoardContains){
     for (let key of Object.keys(containsObject)){
         if(Object.is(containsObject[key], null)){
             setContents(currentBoard,key,null)
