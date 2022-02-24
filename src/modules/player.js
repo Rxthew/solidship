@@ -1,7 +1,5 @@
-import { gameBoard,createContainsObject,updateBoardContents } from "./gameboard"
-//import * as ships from './ships' 
+import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
 
-//const [legacyShip, plantingShip, relayShip, defenseShip] = [ships.legacyShip, ships.plantingShip, ships.relayShip, ships.defenseShip]
 
 export const playerObj =  class {
     constructor(name,gameState=new gameBoard('new game')){
@@ -13,46 +11,42 @@ export const playerObj =  class {
 
 const _checkShipObject = function(ship){
     if (Object.is(ship,null)){
-        return null
+        return {error: 'Ship has missing properties'}
         }
     
     const properties = ['isSunk', 'damage', 'breakPoint','type']
     for (let property of properties){
         if(property in ship === false){
-            return null
+            return {error: 'Ship has missing properties'}
         }
     }
     return ship
 }
 
 
-const _checkTargetLoc = function(targetLoc,ship){
+const _checkTargetLoc = function(board,ship,key,getBoardContents = defaultConfig.getBoardContains){
     
-    if(targetLoc.contains === null && Object.is(ship,null)===false){
+    if(getBoardContents(board,key) === null){
         let updateValue = Object.assign(Object.create(Object.getPrototypeOf(ship)),ship)
         return updateValue
     }
-    return targetLoc.contains
+    return {error : 'This zone is occupied'}
 }
 
 
-const _removeShip = function(currentBoard,sourceKey){
-    let sourceLoc = currentBoard.board[sourceKey]
-    if(Object.is(null,_checkShipObject(sourceLoc.contains))){
+const _removeShip = function(currentBoard, newGameBoard=new gameBoard().board, sourceKey, getShip=defaultConfig.getBoardContains){
+    if(Object.is(null,_checkShipObject(getShip(currentBoard,sourceKey)))){
         return currentBoard
     }
-    let finalBoard = new gameBoard('remove ship action')
     let containsObject = createContainsObject(currentBoard,sourceKey,null);
-    finalBoard = updateBoardContents(finalBoard,containsObject)
+    newGameBoard = updateBoardContents(newGameBoard,containsObject)
 
-    return finalBoard
+    return newGameBoard
 
 }
 
-const _checkMoveLegality = function(targetKey, currentBoard, sourceKey){
-     let sourceLoc = currentBoard.board[sourceKey];
-     
-     const legalMoves = [...sourceLoc.legalMoves]
+const _checkMoveLegality = function(currentBoard, sourceKey,targetKey, getSourceLegalMoves=defaultConfig.getBoardLegalMoves){
+     const legalMoves = [...getSourceLegalMoves(currentBoard, sourceKey)]
 
      if(legalMoves.includes(targetKey) === false){
          return false
@@ -62,33 +56,50 @@ const _checkMoveLegality = function(targetKey, currentBoard, sourceKey){
 }
 
 
-export const moveShip = function(targetKey,currentBoard,sourceKey){
-    if(_checkMoveLegality(targetKey,currentBoard,sourceKey) === false){
+export const moveShip = function(currentBoard, newGameBoard=new gameBoard().board, sourceKey, targetKey, getShip=defaultConfig.getBoardContains, gb=defaultConfig.transformBoard){
+    
+    if(Object.prototype.hasOwnProperty.call(currentBoard, 'error')){
         return currentBoard
     }
-    let ship = currentBoard.board[sourceKey].contains
-    let newBoard = placeShip(targetKey,currentBoard,ship)
+    if(_checkMoveLegality(currentBoard,sourceKey, targetKey) === false){
+        return {
+            error: 'This move is illegal'
+        }
+    }
     
+    let ship = getShip(currentBoard, sourceKey) 
+    newGameBoard = gb(null,placeShip(currentBoard,newGameBoard,ship,targetKey))
+
+    if(Object.prototype.hasOwnProperty.call(newGameBoard, 'error')){
+        return newGameBoard
+    }
     
-    let finalBoard = _removeShip(newBoard,sourceKey)
+    let finalBoard = gb('ship move action')
+    let nullBoard = gb('remove ship')
+    Object.assign(gb(null,finalBoard),  _removeShip(newGameBoard,gb(null, nullBoard),sourceKey))
     return finalBoard
      
-
 }
 
-export const placeShip = function(targetKey,currentBoard,ship){
+export const placeShip = function(currentBoard, newGameBoard, ship, targetKey, gb= defaultConfig.transformBoard){
     ship = _checkShipObject(ship)
-    let targetLoc = currentBoard.board[targetKey]
-    let updateValue = _checkTargetLoc(targetLoc,ship)
+    if(Object.prototype.hasOwnProperty.call(ship, 'error')){
+        return ship
+    }
+    let updateValue = _checkTargetLoc(currentBoard,ship,targetKey)
+    if(Object.prototype.hasOwnProperty.call(updateValue, 'error')){
+        return updateValue
+    }
     
-         
-    let newGameBoard = new gameBoard('place ship action')
     let containsObject = createContainsObject(currentBoard, targetKey, updateValue)
-    newGameBoard = updateBoardContents(newGameBoard, containsObject)
+    newGameBoard = gb('ship place action');
+    let board = gb(null, newGameBoard)
+    Object.assign(board, updateBoardContents(board, containsObject)) 
 
     return newGameBoard 
 
 }
+
 
 
 
