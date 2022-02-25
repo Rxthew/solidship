@@ -1,6 +1,7 @@
 import { describe, expect, test } from '@jest/globals' 
 import { createContainsObject, gameBoard } from '../gameboard'
-import {AIObj, AIReact } from '../AI'
+import {AIObj, AIReact, updateStatus } from '../AI'
+import { plantingShip } from '../ships'
 
 
 const _allKeys = function(){
@@ -248,4 +249,53 @@ describe('AI testing', () => {
 
     })
  
+})
+
+describe('testing updateStatus function',() => {
+    
+    test('updateStatus returns an AI Obj with the same gameBoard and a missile missed ship state if there is no impact',() => {
+        let AI1 = new AIObj()
+        let aiGameBoard = new gameBoard('A1')
+        AI1.gameState = aiGameBoard
+        expect(updateStatus(AI1).gameState.board).toEqual(aiGameBoard.board)
+        expect(updateStatus(AI1).gameState.state).toBe('missile missed ship')
+
+    })
+
+    test('updateStatus returns an AI Obj with a valid gameboard which reflects damage done to ship and a missile hit ship state if ship hit',() => {
+        let AI2 = new AIObj()
+        let aiGameBoard2 = new gameBoard('C2')
+        aiGameBoard2.board['C2'].contains = plantingShip()
+        AI2.gameState = aiGameBoard2
+
+        expect(updateStatus(AI2).gameState.board['C2'].contains.damage).toBe(1)
+        expect(updateStatus(AI2).gameState.state).toBe('missile hit ship')
+
+    })
+
+    test('updateStatus returns an AI Obj with a valid gameboard which replaces ship with null and a missile sunk ship state if ship sinks from a hit',() => {
+        let AI3 = new AIObj()
+        let aiGameBoard3 = new gameBoard('B3')
+        let plant = plantingShip()
+        plant.damage = plant.breakPoint - 1
+        aiGameBoard3.board['B3'].contains = plant
+        AI3.gameState = aiGameBoard3
+        
+        expect(updateStatus(AI3).gameState.board['B3']).toBe(null)
+        expect(updateStatus(AI3).gameState.state).toBe('missile sunk ship')
+
+    })
+
+    test('updateStatus returns an AI obj with the same board it receives with the state missile blocked, and returns a version without the missile blocked flag',() => {
+        let AI4 = new AIObj()
+        let aiGameBoard4 = new gameBoard('B3')
+        aiGameBoard4['missileBlocked'] = true
+        AI4.gameState = aiGameBoard4
+        
+        expect(updateStatus(AI4).gameState.board).toEqual(aiGameBoard4.board)
+        expect(updateStatus(AI4).gameState.state).toBe('missile blocked')
+        expect(Object.prototype.hasOwnProperty.call(updateStatus(AI4).gameState,'missileBlocked')).toBe(false)
+
+    })
+
 })
