@@ -1,4 +1,4 @@
-import { gameBoard } from "./gameboard"
+
 
 export const events = function(){
     
