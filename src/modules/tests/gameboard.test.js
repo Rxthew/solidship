@@ -182,12 +182,25 @@ describe('Custom transformers, getters and setters work as expected', () => {
 
     })
 
-    test('Initialise gameBoard with a function if only state passed, but depending on what else gets passed in either return board or state', () => {
-        let agB = new gameBoard('some state')
-        expect(defaultC.transformBoard(null,agB).A1.contains).toBe(null)
-        expect(defaultC.transformBoard('agB').state).toBe('agB')
-        expect(defaultC.transformBoard(null,agB,true)).toBe('some state')
+    test('Initialise gameBoard with a function if only state passed', () => {  
+        let someState = defaultC.newBoard('first state')
+        expect(someState).toEqual(new gameBoard('first state'))
+        someState.state = 'second state'
+        expect(someState).toEqual(new gameBoard('second state'))
+    })
 
+    test('get state from a gameBoard', () => {
+        let stateX = new gameBoard('x');
+        expect(defaultC.getState(stateX)).toBe('x')
+        let stateY = new gameBoard('y')
+        expect(defaultC.getState(stateY)).toBe('y')
+    })
+
+    test('get board from a gameBoard', () => {
+        let boardZ = new gameBoard('z');
+        expect(defaultC.getBoard(boardZ)).toEqual(boardZ.board)
+        let boardW = new gameBoard('w')
+        expect(defaultC.getBoard(boardW)).toEqual(boardW.board)
     })
 
 })

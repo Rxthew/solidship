@@ -168,14 +168,25 @@ export const defaultConfig = {
         return gb[key].legalMoves
     
     },
-    transformBoard: function(state,currentBoard,getState=false){
-        if(currentBoard && getState){
+    getBoard : function(currentBoard){
+        return currentBoard.board
+
+    },
+    getState : function(currentBoard){
+        return currentBoard.state
+
+    },
+    newBoard : function(state){
+        return new gameBoard(state) 
+    },
+    transformBoard: function(newState,currentBoard,getState=false){
+        if(currentBoard && getState){   
             return currentBoard.state
         }
         else if(currentBoard){
             return currentBoard.board
         }
-        return new gameBoard(state)
+        return new gameBoard(newState)
     }
 }
 
