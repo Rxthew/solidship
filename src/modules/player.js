@@ -56,7 +56,7 @@ const _checkMoveLegality = function(currentBoard, sourceKey,targetKey, getSource
 }
 
 
-export const moveShip = function(currentBoard, newGameBoard=new gameBoard().board, sourceKey, targetKey, getShip=defaultConfig.getBoardContains, gb=defaultConfig.transformBoard){
+export const moveShip = function(currentBoard, newGameBoard=new gameBoard().board, sourceKey, targetKey, getShip=defaultConfig.getBoardContains, ngb=defaultConfig.newBoard, gb=defaultConfig.getBoard){
     
     if(Object.prototype.hasOwnProperty.call(currentBoard, 'error')){
         return currentBoard
@@ -68,20 +68,20 @@ export const moveShip = function(currentBoard, newGameBoard=new gameBoard().boar
     }
     
     let ship = getShip(currentBoard, sourceKey) 
-    newGameBoard = gb(null,placeShip(currentBoard,newGameBoard,ship,targetKey))
+    newGameBoard = gb(placeShip(currentBoard,newGameBoard,ship,targetKey))
 
     if(Object.prototype.hasOwnProperty.call(newGameBoard, 'error')){
         return newGameBoard
     }
     
-    let finalBoard = gb('ship move action')
-    let nullBoard = gb('remove ship')
-    Object.assign(gb(null,finalBoard),  _removeShip(newGameBoard,gb(null, nullBoard),sourceKey))
+    let finalBoard = ngb('ship move action')
+    let nullBoard = ngb('remove ship')
+    Object.assign(gb(finalBoard),  _removeShip(newGameBoard,gb(nullBoard),sourceKey)) 
     return finalBoard
      
 }
 
-export const placeShip = function(currentBoard, newGameBoard, ship, targetKey, gb= defaultConfig.transformBoard){
+export const placeShip = function(currentBoard, newGameBoard, ship, targetKey, ngb= defaultConfig.newBoard, gb=defaultConfig.getBoard){
     ship = _checkShipObject(ship)
     if(Object.prototype.hasOwnProperty.call(ship, 'error')){
         return ship
@@ -92,8 +92,8 @@ export const placeShip = function(currentBoard, newGameBoard, ship, targetKey, g
     }
     
     let containsObject = createContainsObject(currentBoard, targetKey, updateValue)
-    newGameBoard = gb('ship place action');
-    let board = gb(null, newGameBoard)
+    newGameBoard = ngb('ship place action');
+    let board = gb(newGameBoard)
     Object.assign(board, updateBoardContents(board, containsObject)) 
 
     return newGameBoard 

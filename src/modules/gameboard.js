@@ -178,15 +178,6 @@ export const defaultConfig = {
     },
     newBoard : function(state){
         return new gameBoard(state) 
-    },
-    transformBoard: function(newState,currentBoard,getState=false){
-        if(currentBoard && getState){   
-            return currentBoard.state
-        }
-        else if(currentBoard){
-            return currentBoard.board
-        }
-        return new gameBoard(newState)
     }
 }
 
