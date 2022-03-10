@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals' 
-import { createContainsObject, gameBoard } from '../gameboard'
-import {AIObj, AIReact, updateStatus } from '../AI'
+import { createContainsObject, gameBoard, defaultConfig } from '../gameboard'
+import {AIObj, AIReact, updateStatus, sendStatus } from '../AI'
 import { plantingShip } from '../ships'
 
 
@@ -253,6 +253,17 @@ describe('AI testing', () => {
 
 describe('testing updateStatus function',() => {
     
+    test('updateStatus returns same AI Obj if gameState state is not a key',() => {
+        let AI0 = new AIObj()
+        let aiGameBoard0 = new gameBoard('missile blocked Panda')
+        aiGameBoard0.board['B3'] = {'Panda': 'Panda'}
+        AI0.gameState = aiGameBoard0
+        expect(updateStatus(AI0).gameState.board).toEqual(aiGameBoard0.board)
+        expect(updateStatus(AI0).gameState.state).toBe('missile blocked Panda')
+
+    })
+
+
     test('updateStatus returns an AI Obj with the same gameBoard and a missile missed ship state if there is no impact',() => {
         let AI1 = new AIObj()
         let aiGameBoard = new gameBoard('A1')
@@ -281,7 +292,7 @@ describe('testing updateStatus function',() => {
         aiGameBoard3.board['B3'].contains = plant
         AI3.gameState = aiGameBoard3
         
-        expect(updateStatus(AI3).gameState.board['B3']).toBe(null)
+        expect(updateStatus(AI3).gameState.board['B3'].contains).toBe(null)
         expect(updateStatus(AI3).gameState.state).toBe('missile sunk ship')
 
     })
@@ -289,12 +300,51 @@ describe('testing updateStatus function',() => {
     test('updateStatus returns an AI obj with the same board it receives with the state missile blocked, and returns a version without the missile blocked flag',() => {
         let AI4 = new AIObj()
         let aiGameBoard4 = new gameBoard('B3')
-        aiGameBoard4['missileBlocked'] = true
+        aiGameBoard4.board['missileBlocked'] = true
+        aiGameBoard4.board['B4'].contains = {test: 'test'}
         AI4.gameState = aiGameBoard4
-        
-        expect(updateStatus(AI4).gameState.board).toEqual(aiGameBoard4.board)
+    
+        expect(updateStatus(AI4).gameState.board['B4'].contains).toEqual({test: 'test'})
         expect(updateStatus(AI4).gameState.state).toBe('missile blocked')
-        expect(Object.prototype.hasOwnProperty.call(updateStatus(AI4).gameState,'missileBlocked')).toBe(false)
+        expect(Object.prototype.hasOwnProperty.call(updateStatus(AI4).gameState.board,'missileBlocked')).toBe(false)
+
+    })
+
+})
+
+describe('testing sendStatus function', () => {
+    
+    const fakeEventPublisher = function(someStr){
+        if(someStr === 'updatePlayerState'){
+            return 1
+        }
+        else if(someStr === 'updateAIObject'){
+            return 2
+        } 
+    }
+
+    let transformBoard = defaultConfig.transformBoard
+
+    const aiObjWithTargetKey = new AIObj()
+    aiObjWithTargetKey.gameState.state = 'B5'
+
+    const aiObjWithMissile = new AIObj()
+    aiObjWithMissile.gameState.state = 'missile blocked'
+
+    const aiObjWithTargetKey2 = new AIObj()
+    aiObjWithTargetKey2.gameState.state = 'F3'
+
+    const aiObjWithMissile2 = new AIObj()
+    aiObjWithMissile2.gameState.state = 'missile hit ship'
+
+    test('expect sendStatus to publish player state if the AI Object gameboard state is a target key', () => {
+        expect(sendStatus(aiObjWithTargetKey, transformBoard, fakeEventPublisher)).toBe(1)  
+        expect(sendStatus(aiObjWithTargetKey2,transformBoard, fakeEventPublisher)).toBe(1)                                                                            
+    })
+
+    test('expect sendStatus to re-publish AI Object state if the AI Object gameboard state is about missile status', () => {
+        expect(sendStatus(aiObjWithMissile, transformBoard, fakeEventPublisher)).toBe(2)
+        expect(sendStatus(aiObjWithMissile2,transformBoard, fakeEventPublisher)).toBe(2)
 
     })
 

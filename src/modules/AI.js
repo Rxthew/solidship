@@ -1,5 +1,6 @@
-import { gameBoard, defaultConfig } from "./gameboard"
-const [getBoardLegalMoves, transformBoard] = [defaultConfig.getBoardLegalMoves, defaultConfig.transformBoard]
+import { gameBoard, createContainsObject, updateBoardContents, defaultConfig } from "./gameboard"
+const [getBoardLegalMoves, getState, newBoard] = [defaultConfig.getBoardLegalMoves, defaultConfig.getState, defaultConfig.newBoard]
+const [getBoard, getBoardContains] = [defaultConfig.getBoard, defaultConfig.getBoardContains]
 
 
 export const AIObj = class {
@@ -146,9 +147,12 @@ const _configureMode = function(someState, phase, hit, target){
 }
 
 
-export const AIReact = function(currentAIObject, gb= transformBoard){
+export const AIReact = function(currentAIObject, gs=getState, gbs=[newBoard,getBoard]){
+    
     let currentGameState = currentAIObject.gameState
-    let currentState = gb(null,currentGameState,true)
+    let currentState = gs(currentGameState)
+    let ngb = gbs[0];
+    
 
     if(Object.keys(_stateOptions).includes(currentState)){
         let newObject = new AIObj(currentGameState)
@@ -158,16 +162,89 @@ export const AIReact = function(currentAIObject, gb= transformBoard){
 
     if(currentAIObject.triangulation){ 
         let key = _triangulateKeyGenerator(currentAIObject.hit, currentAIObject.phase)
-        let newGameState = { gameState: gb(`${key}`)}
+        let newGameState = { gameState: ngb(`${key}`)}
         let newTarget = {target : `${key}`}
         let newObject = new AIObj()
         newObject = Object.assign(newObject, currentAIObject, newGameState, newTarget )
         return newObject
     }
     let key = _generatePseudoRandomKey() 
-    let newGameState = { gameState: gb(`${key}`)}
+    let newGameState = { gameState: ngb(`${key}`)}
     let newTarget = {target : `${key}`}
     let newObject = new AIObj()
     newObject = Object.assign(newObject, currentAIObject, newGameState, newTarget )
     return newObject
 }
+
+const _sunkVesselCheckUpdate = function(vesselSunk, vessel){ 
+    if(vesselSunk){
+        return null
+    }
+    return vessel
+}
+
+const _generateDamage = function(hitShip,hitValue=1){
+     hitShip.damage += hitValue
+     return _sunkVesselCheckUpdate(hitShip.isSunk(hitShip.damage, hitShip.breakPoint), hitShip)
+}
+
+const _hitCheckingMechanism = function(key, currentBoard, nb=newBoard, gb=getBoard, getKey=getBoardContains){
+
+    if(Object.prototype.hasOwnProperty.call(currentBoard, 'missileBlocked')){
+        let blocked = nb('missile blocked')
+        let blockedBoard = gb(blocked)
+        let blockedContainsObj = createContainsObject(currentBoard)
+        delete blockedContainsObj['missileBlocked']
+        updateBoardContents(blockedBoard, blockedContainsObj)
+        return blocked
+    }
+    
+    let loc = getKey(currentBoard, key)
+    if(loc === null){
+        let missed = nb('missile missed ship');
+        let missedBoard = gb(missed)
+        let missedContainsObj = createContainsObject(currentBoard)
+        updateBoardContents(missedBoard, missedContainsObj)
+        return missed
+    }
+    
+    let updatedValue = Object.assign(Object.create(Object.getPrototypeOf(loc)),loc)
+    updatedValue = _generateDamage(updatedValue)
+    let vesselStatus = updatedValue === null ? nb('missile sunk ship') : nb('missile hit ship')
+    let containsObj = createContainsObject(currentBoard, key, updatedValue)
+    let boardWithUpdatedVessel = gb(vesselStatus)
+
+    updateBoardContents(boardWithUpdatedVessel,containsObj)
+
+    return vesselStatus
+}
+
+
+export const updateStatus = function(currentAIObject, gs=getState, gbs=[newBoard,getBoard,getBoardContains]){
+    let [ngb,gb,getKey] = [gbs[0],gbs[1],gbs[2]]
+    let currentGameState = currentAIObject.gameState;
+    let currentState = gs(currentGameState);
+    let currentBoard = gb(currentGameState)
+    let keys = Object.keys(currentBoard)
+    if(keys.includes(currentState)){
+        let updatedAIObject = new AIObj()
+        updatedAIObject = Object.assign(updatedAIObject, currentAIObject, {gameState: _hitCheckingMechanism(currentState, currentBoard,ngb,gb,getKey)})
+        return updatedAIObject
+    }
+    else{
+        return currentAIObject
+
+    }    
+    
+}
+
+export const sendStatus = function(currentAIObject, gs=getState){
+    let currentGameState = currentAIObject.gameState
+    let currentState = gs(currentGameState)
+    if(Object.keys(_stateOptions).includes(currentState)){
+        return
+
+    }
+    
+}
+
