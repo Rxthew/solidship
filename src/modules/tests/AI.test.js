@@ -248,6 +248,32 @@ describe('AI testing', () => {
         expect(updatedBlockedObj.hit).toBe('C3')
 
     })
+
+    test('AI React receives board with blocked targets, where the key it generates is within range of those, then returns a board with a missileBlocked flag', () => {
+        let toBeBlocked = new AIObj()
+        toBeBlocked.gameState.state = 'missile block action'
+        let blockedTargets = ['C2','D3', 'C4','E4','A1','F6']
+        toBeBlocked.gameState.board['missileBlocked'] = blockedTargets
+        let blockedTargetsAndLegals = (function(){
+            let finArr = [];
+            for(elem of blockedTargets){
+                finArr = [...finArr, elem, new gameBoard().board[elem].legalMoves]
+            }
+            finArr = new Set([...finArr])
+            return finArr
+        })()
+        let i = 0;
+        while(i <= 1000){
+            let newTry = AIReact(toBeBlocked)
+            if(blockedTargetsAndLegals.includes(newTry.target)){
+                expect(newTry.gameState.board['missileBlocked'].toBe(true))
+            }
+        }
+    })
+
+    test('AI React receives board with a blocked targets, where its generated key is not in ragne of those, then behaves normally and removes them from the board', () => {
+
+    } )
  
 })
 
