@@ -146,8 +146,29 @@ const _configureMode = function(someState, phase, hit, target){
 
 }
 
+const _missileBlockingCheck = function(board, target, legalKeyGen = (akeyVar) => getBoardLegalMoves(board, akeyVar)){
+    if(Object.prototype.hasOwnProperty.call(board,'missileBlocked')){
+        let keys = board.missileBlocked 
+        let blockedTargets = (function(){
+            let trgts = [];
+            for(let key of keys){
+                trgts = [...trgts, ...legalKeyGen(key)]
+            }
+            return trgts
+            
+        })()
+        if(blockedTargets.includes(target)){
+            //
+        }
+        
+            
+    }
+    return board
 
-export const AIReact = function(currentAIObject, gs=getState, gbs=[newBoard,getBoard]){
+}
+
+
+export const AIReact = function(currentAIObject, gs=getState, gbs=[newBoard,getBoard,getBoardLegalMoves]){
     
     let currentGameState = currentAIObject.gameState
     let currentState = gs(currentGameState)

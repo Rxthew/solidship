@@ -267,6 +267,7 @@ describe('AI testing', () => {
             let newTry = AIReact(toBeBlocked)
             if(blockedTargetsAndLegals.includes(newTry.target)){
                 expect(newTry.gameState.board['missileBlocked'].toBe(true))
+                return
             }
         }
     })
