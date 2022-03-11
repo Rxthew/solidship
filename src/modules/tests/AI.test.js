@@ -256,7 +256,7 @@ describe('AI testing', () => {
         toBeBlocked.gameState.board['missileBlocked'] = blockedTargets
         let blockedTargetsAndLegals = (function(){
             let finArr = [];
-            for(elem of blockedTargets){
+            for(let elem of blockedTargets){
                 finArr = [...finArr, elem, new gameBoard().board[elem].legalMoves]
             }
             finArr = new Set([...finArr])
@@ -271,9 +271,14 @@ describe('AI testing', () => {
         }
     })
 
-    test('AI React receives board with a blocked targets, where its generated key is not in ragne of those, then behaves normally and removes them from the board', () => {
+    test('AI React receives board with blocked targets, where its generated key is not in ragne of those, then behaves normally and removes them from the board', () => {
+        let toBeBlocked2 = new AIObj()
+        toBeBlocked2.gameState.state = 'missile block action'
+        toBeBlocked2.gameState.board['missileBlocked'] = 'No Block Found'
+        expect(Object.prototype.hasOwnProperty.call(AIReact(toBeBlocked2).gameState.board,'missileBlocked')).toBe(false)
 
-    } )
+      
+    })
  
 })
 
