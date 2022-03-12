@@ -158,17 +158,15 @@ const _missileBlockingCheck = function(board, target, legalKeyGen = getBoardLega
             
         })()
         const newBoard = Object.assign({},board)
+        delete newBoard.missileBlocked
+        const newContainsObj = createContainsObject(board, null, null, getCont)
+        updateBoardContents(newBoard,newContainsObj, setCont)
+
         if(blockedTargets.includes(target)){
-            const blockedContainsObj = createContainsObject(board, 'missileBlocked',true, getCont)
-            updateBoardContents(newBoard,blockedContainsObj, setCont)
+            newBoard.missileBlocked = true
             return newBoard         
         }
-        else{
-            const normalContainsObj = createContainsObject(board, null, null, getCont)
-            delete normalContainsObj.missileBlocked
-            updateBoardContents(newBoard,normalContainsObj, setCont)
-            return newBoard
-        }
+        return newBoard
         
     }
     return board
