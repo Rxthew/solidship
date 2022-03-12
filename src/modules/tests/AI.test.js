@@ -349,16 +349,17 @@ describe('testing updateStatus function',() => {
 
 describe('testing sendStatus function', () => {
     
+    const checkArray = []
     const fakeEventPublisher = function(someStr){
         if(someStr === 'updatePlayerState'){
-            return 1
+            checkArray.push(1) 
         }
         else if(someStr === 'updateAIObject'){
-            return 2
+            checkArray.push(2)
         } 
     }
 
-    let transformBoard = defaultConfig.transformBoard
+    let getState = defaultConfig.getState
 
     const aiObjWithTargetKey = new AIObj()
     aiObjWithTargetKey.gameState.state = 'B5'
@@ -373,14 +374,18 @@ describe('testing sendStatus function', () => {
     aiObjWithMissile2.gameState.state = 'missile hit ship'
 
     test('expect sendStatus to publish player state if the AI Object gameboard state is a target key', () => {
-        expect(sendStatus(aiObjWithTargetKey, transformBoard, fakeEventPublisher)).toBe(1)  
-        expect(sendStatus(aiObjWithTargetKey2,transformBoard, fakeEventPublisher)).toBe(1)                                                                            
+        sendStatus(aiObjWithTargetKey, getState, undefined, fakeEventPublisher)
+        expect(checkArray[checkArray.length - 1]).toBe(1) 
+        sendStatus(aiObjWithTargetKey2,getState, undefined, fakeEventPublisher) 
+        expect(checkArray[checkArray.length - 1]).toBe(1)                                                                            
     })
 
     test('expect sendStatus to re-publish AI Object state if the AI Object gameboard state is about missile status', () => {
-        expect(sendStatus(aiObjWithMissile, transformBoard, fakeEventPublisher)).toBe(2)
-        expect(sendStatus(aiObjWithMissile2,transformBoard, fakeEventPublisher)).toBe(2)
+        sendStatus(aiObjWithMissile, getState, undefined, fakeEventPublisher)
+        expect(checkArray[checkArray.length - 1]).toBe(2)
+        sendStatus(aiObjWithMissile2, getState, undefined, fakeEventPublisher)
+        expect(checkArray[checkArray.length - 1]).toBe(2)
 
     })
 
-})
+}) 

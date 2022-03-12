@@ -1,6 +1,7 @@
 import { gameBoard, createContainsObject, updateBoardContents, defaultConfig } from "./gameboard"
 const [getBoardLegalMoves, getState, newBoard] = [defaultConfig.getBoardLegalMoves, defaultConfig.getState, defaultConfig.newBoard]
 const [getBoard, getBoardContains, setBoardContains] = [defaultConfig.getBoard, defaultConfig.getBoardContains, defaultConfig.setBoardContains]
+import {gameEvents, updateState} from "./gamestate"
 
 
 export const AIObj = class {
@@ -178,10 +179,10 @@ const _missileBlockingCheck = function(board, target, legalKeyGen = getBoardLega
 }
 
 
-export const AIReact = function(currentAIObject, gs=getState, gbs=[newBoard,getBoard,getBoardLegalMoves,getBoardContains,setBoardContains]){
+export const AIReact = function(currentAIObject, gs=getState, gbs=[newBoard,getBoard,getBoardContains,setBoardContains,getBoardLegalMoves]){
     let currentGameState = currentAIObject.gameState
     let currentState = gs(currentGameState)
-    const [ngb,gb,lgl,getCont,setCont] = gbs;
+    const [ngb,gb,getCont,setCont,lgl] = gbs;
     
 
     if(Object.keys(_stateOptions).includes(currentState)){
@@ -270,13 +271,18 @@ export const updateStatus = function(currentAIObject, gs=getState, gbs=[newBoard
     
 }
 
-export const sendStatus = function(currentAIObject, gs=getState){
+export const sendStatus = function(currentAIObject, gs=getState, gbs=[newBoard,getBoard,getBoardContains,setBoardContains,getBoardLegalMoves],publish=gameEvents.publish){
+    
     let currentGameState = currentAIObject.gameState
     let currentState = gs(currentGameState)
     if(Object.keys(_stateOptions).includes(currentState)){
+        publish('updateAIObject',gs,gbs,publish)
         return
-
     }
-    
+    publish('updatePlayerState',currentGameState)
+    //To include:
+    //check if game over, and if so reset.
+    //renderState
+    return 
 }
 
