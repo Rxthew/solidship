@@ -254,19 +254,21 @@ describe('AI testing', () => {
         toBeBlocked.gameState.state = 'missile block action'
         let blockedTargets = ['C2','D3', 'C4','E4','A1','F6']
         toBeBlocked.gameState.board['missileBlocked'] = blockedTargets
+        toBeBlocked.gameState.board['A5'].contains = plantingShip()
         let blockedTargetsAndLegals = (function(){
             let finArr = [];
             for(let elem of blockedTargets){
-                finArr = [...finArr, elem, new gameBoard().board[elem].legalMoves]
+                finArr = [...finArr, elem, ...new gameBoard().board[elem].legalMoves]
             }
-            finArr = new Set([...finArr])
+            finArr = [...new Set([...finArr])]
             return finArr
         })()
         let i = 0;
         while(i <= 1000){
             let newTry = AIReact(toBeBlocked)
             if(blockedTargetsAndLegals.includes(newTry.target)){
-                expect(newTry.gameState.board['missileBlocked'].toBe(true))
+                expect(newTry.gameState.board['missileBlocked']).toBe(true)
+                expect(newTry.gameState.board['A5'].contains).toEqual(plantingShip())
                 return
             }
         }
@@ -275,9 +277,10 @@ describe('AI testing', () => {
     test('AI React receives board with blocked targets, where its generated key is not in ragne of those, then behaves normally and removes them from the board', () => {
         let toBeBlocked2 = new AIObj()
         toBeBlocked2.gameState.state = 'missile block action'
-        toBeBlocked2.gameState.board['missileBlocked'] = 'No Block Found'
+        toBeBlocked2.gameState.board['missileBlocked'] = []
+        toBeBlocked2.gameState.board['A3'].contains = plantingShip()
         expect(Object.prototype.hasOwnProperty.call(AIReact(toBeBlocked2).gameState.board,'missileBlocked')).toBe(false)
-
+        expect(AIReact(toBeBlocked2).gameState.board['A3'].contains).toEqual(plantingShip())
       
     })
  

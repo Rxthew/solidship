@@ -152,14 +152,14 @@ const _missileBlockingCheck = function(board, target, legalKeyGen = getBoardLega
         let blockedTargets = (function(){
             let trgts = [];
             for(let key of keys){
-                trgts = [...trgts, ...legalKeyGen(key)]
+                trgts = [...trgts, ...legalKeyGen(board,key)]
             }
             return trgts
             
         })()
         const newBoard = Object.assign({},board)
         delete newBoard.missileBlocked
-        const newContainsObj = createContainsObject(board, null, null, getCont)
+        const newContainsObj = createContainsObject(newBoard, null, null, getCont)
         updateBoardContents(newBoard,newContainsObj, setCont)
 
         if(blockedTargets.includes(target)){
@@ -169,16 +169,19 @@ const _missileBlockingCheck = function(board, target, legalKeyGen = getBoardLega
         return newBoard
         
     }
-    return board
+    const oldBoard = Object.assign({},board)
+    const oldContainsObj = createContainsObject(board, null, null, getCont)
+    updateBoardContents(oldBoard,oldContainsObj, setCont)
+
+    return oldBoard
 
 }
 
 
 export const AIReact = function(currentAIObject, gs=getState, gbs=[newBoard,getBoard,getBoardLegalMoves,getBoardContains,setBoardContains]){
-    
     let currentGameState = currentAIObject.gameState
     let currentState = gs(currentGameState)
-    let ngb = gbs[0];
+    const [ngb,gb,lgl,getCont,setCont] = gbs;
     
 
     if(Object.keys(_stateOptions).includes(currentState)){
@@ -190,6 +193,7 @@ export const AIReact = function(currentAIObject, gs=getState, gbs=[newBoard,getB
     if(currentAIObject.triangulation){ 
         let key = _triangulateKeyGenerator(currentAIObject.hit, currentAIObject.phase)
         let newGameState = { gameState: ngb(`${key}`)}
+        Object.assign(gb(newGameState.gameState), _missileBlockingCheck(gb(currentGameState),key,lgl,getCont,setCont))
         let newTarget = {target : `${key}`}
         let newObject = new AIObj()
         newObject = Object.assign(newObject, currentAIObject, newGameState, newTarget )
@@ -197,6 +201,7 @@ export const AIReact = function(currentAIObject, gs=getState, gbs=[newBoard,getB
     }
     let key = _generatePseudoRandomKey() 
     let newGameState = { gameState: ngb(`${key}`)}
+    Object.assign(gb(newGameState.gameState), _missileBlockingCheck(gb(currentGameState),key,lgl,getCont,setCont))
     let newTarget = {target : `${key}`}
     let newObject = new AIObj()
     newObject = Object.assign(newObject, currentAIObject, newGameState, newTarget )
