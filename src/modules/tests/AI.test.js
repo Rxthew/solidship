@@ -387,4 +387,7 @@ test('updateAIWrapper takes a function which produces an AI Object, invokes that
     
     updateAIWrapper(turnIntoTestMonkey)
     expect(gameAI.sessionAI.gameState.state).toBe('test monkey')
+    updateAIWrapper(AIReact)
+    expect(gameAI.sessionAI.gameState.state.length).toBe(2)
+
 })
