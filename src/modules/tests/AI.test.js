@@ -248,41 +248,6 @@ describe('AI testing', () => {
         expect(updatedBlockedObj.hit).toBe('C3')
 
     })
-
-    test('AI React receives board with blocked targets, where the key it generates is within range of those, then returns a board with a missileBlocked flag', () => {
-        let toBeBlocked = new AIObj()
-        toBeBlocked.gameState.state = 'missile block action'
-        let blockedTargets = ['C2','D3', 'C4','E4','A1','F6']
-        toBeBlocked.gameState.board['missileBlocked'] = blockedTargets
-        toBeBlocked.gameState.board['A5'].contains = plantingShip()
-        let blockedTargetsAndLegals = (function(){
-            let finArr = [];
-            for(let elem of blockedTargets){
-                finArr = [...finArr, elem, ...new gameBoard().board[elem].legalMoves]
-            }
-            finArr = [...new Set([...finArr])]
-            return finArr
-        })()
-        let i = 0;
-        while(i <= 1000){
-            let newTry = AIReact(toBeBlocked)
-            if(blockedTargetsAndLegals.includes(newTry.target)){
-                expect(newTry.gameState.board['missileBlocked']).toBe(true)
-                expect(newTry.gameState.board['A5'].contains).toEqual(plantingShip())
-                return
-            }
-        }
-    })
-
-    test('AI React receives board with blocked targets, where its generated key is not in ragne of those, then behaves normally and removes them from the board', () => {
-        let toBeBlocked2 = new AIObj()
-        toBeBlocked2.gameState.state = 'missile block action'
-        toBeBlocked2.gameState.board['missileBlocked'] = []
-        toBeBlocked2.gameState.board['A3'].contains = plantingShip()
-        expect(Object.prototype.hasOwnProperty.call(AIReact(toBeBlocked2).gameState.board,'missileBlocked')).toBe(false)
-        expect(AIReact(toBeBlocked2).gameState.board['A3'].contains).toEqual(plantingShip())
-      
-    })
  
 })
 
@@ -332,17 +297,41 @@ describe('testing updateStatus function',() => {
 
     })
 
-    test('updateStatus returns an AI obj with the same board it receives with the state missile blocked, and returns a version without the missile blocked flag',() => {
-        let AI4 = new AIObj()
-        let aiGameBoard4 = new gameBoard('B3')
-        aiGameBoard4.board['missileBlocked'] = true
-        aiGameBoard4.board['B4'].contains = {test: 'test'}
-        AI4.gameState = aiGameBoard4
-    
-        expect(updateStatus(AI4).gameState.board['B4'].contains).toEqual({test: 'test'})
-        expect(updateStatus(AI4).gameState.state).toBe('missile blocked')
-        expect(Object.prototype.hasOwnProperty.call(updateStatus(AI4).gameState.board,'missileBlocked')).toBe(false)
+    test('updateStatus receives board with blocked targets, where the key is within range of those, then returns the same board (w/out trgts) with a missile blocked state', () => {
+        let toBeBlocked = new AIObj()
+        toBeBlocked.gameState.state = 'F5'
+        toBeBlocked.target = 'F5'
+        let blockedTargets = ['C2','D3', 'C4','E4','A1','F6']
+        toBeBlocked.gameState.board['missileBlocked'] = blockedTargets
+        toBeBlocked.gameState.board['A5'].contains = plantingShip()
+        let blockedTargetsAndLegals = (function(){
+            let finArr = [];
+            for(let elem of blockedTargets){
+                finArr = [...finArr, elem, ...new gameBoard().board[elem].legalMoves]
+            }
+            finArr = [...new Set([...finArr])]
+            return finArr
+        })()
+        let i = 0;
+        while(i <= 100){
+            let newTry = updateStatus(toBeBlocked)
+            if(blockedTargetsAndLegals.includes(newTry.target)){
+                expect(Object.prototype.hasOwnProperty.call(newTry.gameState.board, 'missileBlocked')).toBe(false)
+                expect(newTry.gameState.board['A5'].contains).toEqual(plantingShip())
+                expect(newTry.gameState.state).toBe('missile blocked')
+                return
+            }
+        }
+    })
 
+    test('updateStatus receives board with blocked targets, where the key is not in range, then behaves normally and removes them from the board', () => {
+        let toBeBlocked2 = new AIObj()
+        toBeBlocked2.gameState.state = 'F5'
+        toBeBlocked2.gameState.board['missileBlocked'] = []
+        toBeBlocked2.gameState.board['A3'].contains = plantingShip()
+        expect(Object.prototype.hasOwnProperty.call(updateStatus(toBeBlocked2).gameState.board,'missileBlocked')).toBe(false)
+        expect(updateStatus(toBeBlocked2).gameState.board['A3'].contains).toEqual(plantingShip())
+      
     })
 
 })
