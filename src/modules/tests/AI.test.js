@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals' 
 import { createContainsObject, gameBoard, defaultConfig } from '../gameboard'
-import {AIObj, AIReact, updateStatus, sendStatus } from '../AI'
+import {AIObj, AIReact, updateStatus, sendStatus, gameAI, updateAIWrapper } from '../AI'
 import { plantingShip } from '../ships'
 
 
@@ -378,3 +378,13 @@ describe('testing sendStatus function', () => {
     })
 
 }) 
+
+test('updateAIWrapper takes a function which produces an AI Object, invokes that function sets gameAI to the resulting AI Object', () =>{
+    const turnIntoTestMonkey = function(aiobj){
+        aiobj.gameState.state = 'test monkey'
+        return aiobj
+    }
+    
+    updateAIWrapper(turnIntoTestMonkey)
+    expect(gameAI.sessionAI.gameState.state).toBe('test monkey')
+})

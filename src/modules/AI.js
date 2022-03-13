@@ -287,3 +287,9 @@ export const sendStatus = function(currentAIObject, gs=getState, gbs=[newBoard,g
     return 
 }
 
+export let gameAI = {sessionAI : new AIObj()}
+
+export const updateAIWrapper = function(someFunc,...params){
+    gameAI.sessionAI = someFunc(gameAI.sessionAI, ...params)
+    return
+}
