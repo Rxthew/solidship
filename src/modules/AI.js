@@ -1,7 +1,7 @@
 import { gameBoard, createContainsObject, updateBoardContents, defaultConfig } from "./gameboard"
 const [getBoardLegalMoves, getState, newBoard] = [defaultConfig.getBoardLegalMoves, defaultConfig.getState, defaultConfig.newBoard]
 const [getBoard, getBoardContains, setBoardContains] = [defaultConfig.getBoard, defaultConfig.getBoardContains, defaultConfig.setBoardContains]
-import {gameEvents, updateState} from "./gamestate"
+import {gameEvents} from "./gamestate"
 
 
 export const AIObj = class {

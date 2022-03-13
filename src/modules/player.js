@@ -1,5 +1,5 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
-[getBrdCont, setBrdCont] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains]
+const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
 
 export const playerObj =  class {
     constructor(name,gameState=new gameBoard('new game')){
@@ -34,7 +34,7 @@ const _checkTargetLoc = function(board,ship,key,getBoardContents = defaultConfig
 }
 
 
-const _removeShip = function(currentBoard, newGameBoard=new gameBoard().board, sourceKey, getShip=getBrdCont, setCont = defaultConfig.setBoardContains){
+const _removeShip = function(currentBoard, newGameBoard=new gameBoard().board, sourceKey, getShip=getBrdCont, setCont = setBrdCont){
     if(Object.is(null,_checkShipObject(getShip(currentBoard,sourceKey)))){
         return currentBoard
     }
@@ -56,7 +56,7 @@ const _checkMoveLegality = function(currentBoard, sourceKey,targetKey, getSource
 }
 
 
-export const moveShip = function(currentBoard, newGameBoard=new gameBoard().board, sourceKey, targetKey, getShip=defaultConfig.getBoardContains, ngb=defaultConfig.newBoard, gb=defaultConfig.getBoard){
+export const moveShip = function(currentBoard, newGameBoard=new gameBoard().board, sourceKey, targetKey, getShip=getBrdCont, ngb=newBrd, gb=getBrd){
     
     if(Object.prototype.hasOwnProperty.call(currentBoard, 'error')){
         return currentBoard
@@ -81,7 +81,7 @@ export const moveShip = function(currentBoard, newGameBoard=new gameBoard().boar
      
 }
 
-export const placeShip = function(currentBoard, newGameBoard, ship, targetKey, ngb= defaultConfig.newBoard, gb=defaultConfig.getBoard, getCont=defaultConfig.getBoardContains, setCont=defaultConfig.setBoardContains){
+export const placeShip = function(currentBoard, newGameBoard, ship, targetKey, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont){
     ship = _checkShipObject(ship)
     if(Object.prototype.hasOwnProperty.call(ship, 'error')){
         return ship
