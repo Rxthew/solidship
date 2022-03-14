@@ -301,27 +301,22 @@ describe('testing updateStatus function',() => {
         let toBeBlocked = new AIObj()
         toBeBlocked.gameState.state = 'F5'
         toBeBlocked.target = 'F5'
-        let blockedTargets = ['C2','D3', 'C4','E4','A1','F6']
+        let toBeBlocked1 = new AIObj()
+        toBeBlocked1.gameState.state = 'B6'
+        toBeBlocked1.target = 'B6'
+        let blockedTargets = ['F5','B6','C2']
         toBeBlocked.gameState.board['missileBlocked'] = blockedTargets
         toBeBlocked.gameState.board['A5'].contains = plantingShip()
-        let blockedTargetsAndLegals = (function(){
-            let finArr = [];
-            for(let elem of blockedTargets){
-                finArr = [...finArr, elem, ...new gameBoard().board[elem].legalMoves]
-            }
-            finArr = [...new Set([...finArr])]
-            return finArr
-        })()
-        let i = 0;
-        while(i <= 100){
-            let newTry = updateStatus(toBeBlocked)
-            if(blockedTargetsAndLegals.includes(newTry.target)){
-                expect(Object.prototype.hasOwnProperty.call(newTry.gameState.board, 'missileBlocked')).toBe(false)
-                expect(newTry.gameState.board['A5'].contains).toEqual(plantingShip())
-                expect(newTry.gameState.state).toBe('missile blocked')
-                return
-            }
-        }
+        toBeBlocked1.gameState.board['missileBlocked'] = blockedTargets
+        let newTry = updateStatus(toBeBlocked)
+        let newTry2 = updateStatus(toBeBlocked1)
+        expect(Object.prototype.hasOwnProperty.call(newTry.gameState.board, 'missileBlocked')).toBe(false)
+        expect(Object.prototype.hasOwnProperty.call(newTry2.gameState.board, 'missileBlocked')).toBe(false)
+        expect(newTry.gameState.board['A5'].contains).toEqual(plantingShip())
+        expect(newTry.gameState.state).toBe('missile blocked')
+        expect(newTry2.gameState.state).toBe('missile blocked')
+        
+        
     })
 
     test('updateStatus receives board with blocked targets, where the key is not in range, then behaves normally and removes them from the board', () => {

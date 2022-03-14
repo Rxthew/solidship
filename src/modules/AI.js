@@ -193,20 +193,12 @@ const _generateDamage = function(hitShip,hitValue=1){
 const _missileBlockingCheck = function(board, target, getCont=getBoardContains, setCont=setBoardContains, legalKeyGen=getBoardLegalMoves,){
     if(Object.prototype.hasOwnProperty.call(board,'missileBlocked')){
         let keys = board.missileBlocked 
-        let blockedTargets = (function(){
-            let trgts = [];
-            for(let key of keys){
-                trgts = [...trgts, ...legalKeyGen(board,key)]
-            }
-            return trgts
-            
-        })()
         const newBoard = Object.assign({},board)
         delete newBoard.missileBlocked
         const newContainsObj = createContainsObject(newBoard, null, null, getCont)
         updateBoardContents(newBoard,newContainsObj, setCont)
 
-        if(blockedTargets.includes(target)){
+        if(keys.includes(target)){
             newBoard.missileBlocked = true
             return newBoard         
         }
