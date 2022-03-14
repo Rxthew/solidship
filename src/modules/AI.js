@@ -190,7 +190,7 @@ const _generateDamage = function(hitShip,hitValue=1){
      return _sunkVesselCheckUpdate(hitShip.isSunk(hitShip.damage, hitShip.breakPoint), hitShip)
 }
 
-const _missileBlockingCheck = function(board, target, getCont=getBoardContains, setCont=setBoardContains, legalKeyGen=getBoardLegalMoves,){
+const _missileBlockingCheck = function(board, target, getCont=getBoardContains, setCont=setBoardContains){
     if(Object.prototype.hasOwnProperty.call(board,'missileBlocked')){
         let keys = board.missileBlocked 
         const newBoard = Object.assign({},board)
@@ -213,9 +213,9 @@ const _missileBlockingCheck = function(board, target, getCont=getBoardContains, 
 
 }
 
-const _hitCheckingMechanism = function(key, currentBoard, nb=newBoard, gb=getBoard, getKey=getBoardContains, setKey=setBoardContains, lgl=getBoardLegalMoves){
+const _hitCheckingMechanism = function(key, currentBoard, nb=newBoard, gb=getBoard, getKey=getBoardContains, setKey=setBoardContains){
     
-    const currentBoardChecked = _missileBlockingCheck(currentBoard,key,getKey,setKey,lgl)
+    const currentBoardChecked = _missileBlockingCheck(currentBoard,key,getKey,setKey)
     if(Object.prototype.hasOwnProperty.call(currentBoardChecked, 'missileBlocked')){
         let blocked = nb('missile blocked')
         let blockedBoard = gb(blocked)
