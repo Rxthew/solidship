@@ -1,5 +1,6 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
+const legal = defaultConfig.getBoardLegalMoves
 
 export const playerObj =  class {
     constructor(name,gameState=new gameBoard('new game')){
@@ -100,7 +101,19 @@ export const placeShip = function(currentBoard, newGameBoard, ship, targetKey, g
 
 }
 
-
+export const blockMissileAction = function(currentBoard, newGameBoard, shipLocation, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont, lgl=legal){
+    newGameBoard = ngb('missile block action');
+    let board = gb(newGameBoard);
+    let blocked = {missileBlocked : [shipLocation, ...lgl(board,shipLocation)]}
+    let cont = createContainsObject(currentBoard,null,null,getCont)
+    if(currentBoard.missileBlocked){
+        blocked.missileBlocked = [...currentBoard.missileBlocked,...blocked.missileBlocked]
+        delete cont.missileBlocked
+    }
+    updateBoardContents(board,cont, setCont)
+    Object.assign(board,blocked)
+    return newGameBoard
+}
 
 
 

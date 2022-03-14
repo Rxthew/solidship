@@ -1,6 +1,6 @@
 import {test,expect,describe} from "@jest/globals";
 import { gameBoard } from "../gameboard";
-import {playerObj, placeShip,moveShip} from '../player';
+import {playerObj, placeShip, moveShip, blockMissileAction} from '../player';
 import {legacyShip,plantingShip} from '../ships'
 
 
@@ -93,6 +93,27 @@ describe('testing moveShip function', () => {
     })
     
     
+})
+
+describe('testing missile block action',() => {
+    const missileFree = new gameBoard()
+    const blocked1 = blockMissileAction(missileFree.board,new gameBoard().board,'A5')
+    const blocked2 = blockMissileAction(missileFree.board,new gameBoard().board, 'F6')
+    test('expect board to identify which zones are blocked, based on ship location', () => {
+        expect(blocked1.board.missileBlocked).toEqual(['A5', ...blocked1.board['A5'].legalMoves])
+        expect(blocked2.board.missileBlocked).toEqual(['F6', ...blocked2.board['F6'].legalMoves])
+    })
+    test('expect board state to change to missile block action', () => {
+        expect(blocked1.state).toBe('missile block action')
+        expect(blocked2.state).toBe('missile block action')
+
+    })
+
+    test('if blocked zones exist already on current board, then adds to them',() => {
+        let blocked3 = blockMissileAction(blocked1.board,new gameBoard().board, 'C3')
+        expect(blocked3.board.missileBlocked).toEqual([...blocked1.board.missileBlocked, 'C3', ...blocked1.board['C3'].legalMoves])
+    })
+
 })
 
 
