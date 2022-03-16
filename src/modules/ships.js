@@ -26,7 +26,13 @@ const _shipMethods = {
         return  new _templateForCustomShipTypes(['legacy'], {messagingProtocol: 'legacy'})
     },
     planting : function(){
-        return  new _templateForCustomShipTypes(['seagrass planting'], {messagingProtocol: 'planting'})
+        return  new _templateForCustomShipTypes(['seagrass planting'], {
+            messagingProtocol: 'planting',
+            equipment : {
+                type : 'legacy',
+                count : 0
+            }
+        })
     },
     defense : function(){
         return  new _templateForCustomShipTypes(['launch decoys'], {messagingProtocol: 'defense'})
@@ -35,7 +41,13 @@ const _shipMethods = {
         return  new _templateForCustomShipTypes(['message'], {messagingProtocol: ['message','relay']})
     },
     clear : function(){
-        return new _templateForCustomShipTypes(['clear debris'], {messagingProtocol: 'clear'})
+        return new _templateForCustomShipTypes(['clear debris'], {
+            messagingProtocol: 'clear',
+            equipment : {
+                type: 'legacy',
+                count: 0
+            }
+        })
     }
 }
 
@@ -79,3 +91,50 @@ export const clearingShip = function(){
     return Object.assign(_shipMethods.clear(), new basicShip('clear',3))
 }
 
+export const components = function(act, inter){
+
+    const _actionToProtocol = {
+        'legacy' : 'legacy',
+        'seagrass planting': 'planting',
+        'launch decoys' : 'defense',
+        'message' : 'message',
+        'clear debris' : 'clear'
+    }
+
+
+    const _executeInterface = function(act,inter){
+
+        const _interfaceChoice = {
+            'single' : _actionToProtocol[act],
+            'receiver' : [_actionToProtocol[act], 'trigger'],
+            'relay' : [_actionToProtocol[act], 'relay']
+        }
+
+        return _interfaceChoice[inter]
+    }
+       
+
+    return {
+
+        action : {
+            legacy : ['legacy'],
+            planting : ['seagrass planting'],
+            defense : ['launch decoys'],
+            relay : ['message'],
+            clearing : ['clear debris']
+        },
+
+        properties : {
+            messagingProtocol : _executeInterface(act, inter),
+            equipment : {  
+                    type: {
+                        legacy : 'legacy',
+                        modern : 'modern'
+                    },
+                    count: 0
+            }
+        }
+    
+    }
+    
+}
