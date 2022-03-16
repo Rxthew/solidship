@@ -1,4 +1,4 @@
-import { expect, test } from '@jest/globals';
+import { expect, test, describe } from '@jest/globals';
 import * as ships from '../ships';
 
 const basicShip = ships.basicShip
@@ -7,6 +7,7 @@ const legacy = ships.legacyShip;
 const planting = ships.plantingShip;
 const defense = ships.defenseShip;
 const relay = ships.relayShip;
+const components = ships.components
 
 
 test('Basic ship returns an object with a damage equalling 0, some new type, and a breakpoint', () => {
@@ -81,3 +82,32 @@ test('basicLegacyShip instance sinks instantly the first time isSunk is called',
     expect(plantingLegacyShip.isSunk(plantingLegacyShip.damage,plantingLegacyShip.breakPoint)).toBe(true)
     
 })
+
+describe('components can be used to customise ships',() => {
+    let customPlantingShip = new basicShip();
+    const plantingAction = components().action.planting
+
+    test('customPlantingShip possesses same action as regular instance of planting ship', () => {
+        customPlantingShip = Object.assign(customPlantingShip, {action : plantingAction})
+        expect(customPlantingShip.action).toEqual(new planting().action)
+    })
+    let plantingProperties = {properties : components().properties}
+    Object.assign(plantingProperties['properties'].equipment,{type : components().properties.equipment.type.legacy})
+    Object.assign(plantingProperties['properties'],{messagingProtocol : components('seagrass planting','single').properties.messagingProtocol})
+
+    test('customPlantingShip possesses same properties as regular instance of planting ship', () => {
+        customPlantingShip = Object.assign(customPlantingShip, plantingProperties)
+        expect(customPlantingShip.properties).toEqual(new planting().properties)
+    })
+    let customLegacyShip = new basicLegacyShip();
+    let customActions = {action : [...components().action.defense,...components().action.relay]}
+    let customProperties = {properties :  { messagingProtocol : components('clear debris', 'relay').properties.messagingProtocol}}
+
+
+    test('ships can be customised in an ad hoc way with components', () => {
+        customLegacyShip = Object.assign(customLegacyShip, customActions, customProperties)
+        expect(customLegacyShip.action).toEqual(['launch decoys', 'message'])
+        expect(customLegacyShip.properties).toEqual({messagingProtocol : ['clear','relay']})
+    })
+})
+
