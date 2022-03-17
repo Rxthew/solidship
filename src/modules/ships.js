@@ -115,7 +115,6 @@ export const components = function(act, inter){
        
 
     return {
-
         action : {
             legacy : ['legacy'],
             planting : ['seagrass planting'],
@@ -135,6 +134,36 @@ export const components = function(act, inter){
             }
         }
     
-    }
-    
+    }   
 }
+
+ export  const getChangedShip = function(oldShip, changes, key){//review holistically, also review issue below
+       let ship = Object.create(Object.getPrototypeOf(oldShip));
+       Object.assign(ship,oldShip) 
+       const targetKey = changes[changes.length - 1]
+       const _iterateThroughProperties = function(someRef){   
+        let finalTarget = ship     
+        for(let elem of changes){
+            if(!Object.prototype.hasOwnProperty.call(finalTarget,elem)){//issue, is first property covered? 
+                Object.assign(finalTarget, someRef[elem])
+            }
+            if(elem === targetKey){
+              Object.assign(finalTarget,{[key] : someRef[elem][key]})
+            }
+            finalTarget = finalTarget[elem]
+            someRef = someRef[elem]    
+        }
+    }
+       if(targetKey === 'messagingProtocol'){
+           let ref = components(ship.action[0],key)
+           changes = changes.filter(elem => elem !== 'messagingProtocol');
+           key = targetKey
+           _iterateThroughProperties(ref)
+           return ship
+       }
+       let ref = components()
+       _iterateThroughProperties(ref)
+       return ship
+   }
+
+

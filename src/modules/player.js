@@ -117,4 +117,43 @@ export const blockMissileAction = function(currentBoard, newGameBoard, shipLocat
 
 
 
+const _unwrapChanges = function(actualShip, mode, keys, change, getChangedShip){ //review
+    let newShip = Object.create(Object.getPrototypeOf(actualShip))
+    Object.assign(newShip,actualShip)
+    let newerShip = getChangedShip(newShip, keys, change)
+
+    if(mode === 'extend'){
+        let targetKey = keys[keys.length - 1]
+        let finalTarget = newShip;
+        for(let elem of keys){
+            if(targetKey === elem){
+                if(typeof finalTarget[targetKey] === 'string'){
+                    finalTarget.push(newerShip[elem])
+                }
+                finalTarget.push(newerShip[elem][0])
+            }
+            finalTarget = finalTarget[elem]
+            newerShip = newerShip[elem]
+        }
+        return newShip
+    }
+    return newerShip
+    
+}
+
+export const upgradeShip =  function(currentBoard, newGameBoard, shipLocation, mode, changeConfig, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont){
+    const changedShip = _unwrapChanges(shipLocation, mode, ...changeConfig)
+    
+    newGameBoard = ngb('upgrade ship')
+    let cont = createContainsObject(currentBoard,shipLocation,changedShip, getCont)
+    updateBoardContents(gb(newGameBoard),cont,setCont)
+    return newGameBoard
+
+
+}
+
+
+
+
+
 
