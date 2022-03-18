@@ -86,7 +86,7 @@ test('basicLegacyShip instance sinks instantly the first time isSunk is called',
     
 })
 
-test('getShipCount returns an object with the plant/wreckage count, or false if property was not present', () => {
+test('getShipCount returns an object with the plant/wreckage count, or error if property was not present', () => {
     let plantingShip2 = planting();
     plantingShip2.properties.equipment.count.plants = 20;
     expect(getShipCount(plantingShip2)).toEqual({plants : 20})

@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals' 
 import { createContainsObject, gameBoard, defaultConfig } from '../gameboard'
 import {AIObj, AIReact, updateStatus, sendStatus, gameAI, updateAIWrapper } from '../AI'
-import { plantingShip } from '../ships'
+import { plantingShip, legacyShip, clearingShip } from '../ships'
 
 
 const _allKeys = function(){
@@ -273,6 +273,15 @@ describe('testing updateStatus function',() => {
 
     })
 
+    test('updateStatus w/missed missile increases wreckage count by 1', () => {
+        let missedAI = new AIObj()
+        let missedGb = new gameBoard('A6')
+        missedGb.wreckage = 2
+        missedAI.gameState = missedGb
+        expect(updateStatus(missedAI).gameState.wreckage).toBe(3)
+
+    })
+
     test('updateStatus returns an AI Obj with a valid gameboard which reflects damage done to ship and a missile hit ship state if ship hit',() => {
         let AI2 = new AIObj()
         let aiGameBoard2 = new gameBoard('C2')
@@ -282,6 +291,17 @@ describe('testing updateStatus function',() => {
         expect(updateStatus(AI2).gameState.board['C2'].contains.damage).toBe(1)
         expect(updateStatus(AI2).gameState.state).toBe('missile hit ship')
 
+    })
+
+    test('updateStatus w/missile hit increases wreckage count by 2', () => {
+        let hitAI = new AIObj()
+        let hitGb = new gameBoard('C2')
+        hitGb.board['C2'].contains = legacyShip()
+        hitGb.wreckage = 2
+        hitAI.gameState = hitGb
+
+        expect(updateStatus(hitAI).gameState.wreckage).toBe(4)
+        
     })
 
     test('updateStatus returns an AI Obj with a valid gameboard which replaces ship with null and a missile sunk ship state if ship sinks from a hit',() => {
@@ -295,6 +315,68 @@ describe('testing updateStatus function',() => {
         expect(updateStatus(AI3).gameState.board['B3'].contains).toBe(null)
         expect(updateStatus(AI3).gameState.state).toBe('missile sunk ship')
 
+    })
+
+    test('updateStatus w/missile sinking random ship increases wreckage count by 5', () => {
+        let sunkAI = new AIObj()
+        let sunkGb = new gameBoard('B3')
+        let l = legacyShip()
+        l.damage = l.breakPoint - 1
+        sunkGb.board['B3'].contains = l
+        sunkGb.wreckage = 3
+        sunkAI.gameState = sunkGb
+        expect(updateStatus(sunkAI).gameState.wreckage).toBe(8)
+        
+    })
+
+    test('updateStatus w/missile sinking planting ship decreases plant count by amount held by ship, if any, (& no negaive numbers)', () => {
+        let hugePlants = plantingShip()
+        hugePlants.properties.equipment.count.plants = 51
+        hugePlants.damage = hugePlants.breakPoint - 1
+
+        let sunkAI2 = new AIObj()
+        let sunkGb2 = new gameBoard('B3')
+        let sunkGb3 = new gameBoard('B3')
+        sunkGb2.plants = 50
+        sunkGb3.plants = 10
+        sunkGb2.board['B3'].contains = hugePlants
+        sunkGb3.board['B3'].contains = hugePlants
+        sunkAI2.gameState = sunkGb2
+        expect(updateStatus(sunkAI2).gameState.plants).toBe(1)
+        sunkAI2.gameState = sunkGb3
+        expect(updateStatus(sunkAI2).gameState.plants).toBe(0)
+        sunkAI2.gameState = new gameBoard('A6')
+        sunkAI2.gameState.board.A6.contains = plantingShip()
+        sunkAI2.gameState.plants = 5;
+        expect(updateStatus(sunkAI2).gameState.plants).toBe(5)
+
+
+        
+    })
+
+    test('updateStatus w/missile sinking clearing ship increases wreckage count by amount held by ship (+ the usual sinking amount)', () => {
+        let clearer = clearingShip();
+        clearer.properties.equipment.count.wreckage = 10
+        let clearer2 = clearingShip();
+        clearer2.properties.equipment.count.wreckage = 4
+
+        clearer.damage = clearer.breakPoint - 1
+        clearer2.damage = clearer2.breakPoint - 1
+
+
+        let sunkAI3 = new AIObj()
+        let sunkGb4 = new gameBoard('B3')
+        sunkGb4.wreckage = 5
+        sunkGb4.board.B3.contains = clearer
+        let sunkGb5 = new gameBoard('B5')
+        sunkGb5.board.B5.contains = clearer2
+        sunkAI3.gameState = sunkGb4
+        expect(updateStatus(sunkAI3).gameState.wreckage).toBe(20)
+        sunkAI3.gameState = sunkGb5
+        expect(updateStatus(sunkAI3).gameState.wreckage).toBe(9)
+
+
+        
     })
 
     test('updateStatus receives board with blocked targets, where the key is within range of those, then returns the same board (w/out trgts) with a missile blocked state', () => {
@@ -316,6 +398,16 @@ describe('testing updateStatus function',() => {
         expect(newTry.gameState.state).toBe('missile blocked')
         expect(newTry2.gameState.state).toBe('missile blocked')
         
+        
+    })
+
+    test('updateStatus w/missile blocked increases wreckage count by 2', () => {
+        let blockedWreck = new AIObj()
+        blockedWreck.gameState.state = 'C4'
+        blockedWreck.target = 'C4'
+        blockedWreck.gameState.wrecked = 2
+        blockedWreck.gameState.board['missileBLocked'] = ['C4']
+        expect(updateStatus(blockedWreck).gameState.wrecked).toBe(4)
         
     })
 
