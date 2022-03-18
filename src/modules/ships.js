@@ -30,7 +30,9 @@ const _shipMethods = {
             messagingProtocol: 'planting',
             equipment : {
                 type : ['legacy'],
-                count : 0
+                count : {
+                    plants : 0
+                }
             }
         })
     },
@@ -45,7 +47,9 @@ const _shipMethods = {
             messagingProtocol: 'clear',
             equipment : {
                 type: ['legacy'],
-                count: 0
+                count : {
+                    wreckage: 0
+                }
             }
         })
     }
@@ -121,7 +125,15 @@ export const components = function(act){
                         legacy : ['legacy'],
                         modern : ['modern']
                     },
-                    count: 0
+                    count: {
+                        planting : {
+                            plants : 0
+                        },
+                        clearing : {
+                            wreckage : 0
+                        }
+                    }
+                    
             }
         }
     
@@ -158,5 +170,18 @@ export const components = function(act){
        _iterateThroughProperties(ref)
        return ship
    }
+
+export const getShipCount = function(ship){
+    let checked = ['properties','equipment']
+    let shipSearch = ship
+    for(let elem of checked){
+        if(!Object.prototype.hasOwnProperty.call(shipSearch,elem)){
+            return {error : 'Ship does not have a valid equipment property'}
+        }
+        shipSearch = shipSearch[elem]
+    }
+    return ship.properties.equipment.count
+
+}
 
 

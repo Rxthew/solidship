@@ -10,6 +10,7 @@ const relay = ships.relayShip;
 const clear = ships.clearingShip
 const components = ships.components
 const getChangedShip = ships.getChangedShip
+const getShipCount = ships.getShipCount
 
 
 test('Basic ship returns an object with a damage equalling 0, some new type, and a breakpoint', () => {
@@ -87,10 +88,10 @@ test('basicLegacyShip instance sinks instantly the first time isSunk is called',
 
 test('getShipCount returns an object with the plant/wreckage count, or false if property was not present', () => {
     let plantingShip2 = planting();
-    plantingShip2.properties.equipment.count = 20;
-    expect(getShipCount(plantingShip2)).toEqual({planting : 20})
+    plantingShip2.properties.equipment.count.plants = 20;
+    expect(getShipCount(plantingShip2)).toEqual({plants : 20})
     let clearingShip =  clear();
-    clearingShip.properties.equipment.count = 50;
+    clearingShip.properties.equipment.count.wreckage = 50;
     expect(getShipCount(clearingShip)).toEqual({wreckage : 50})
     let leg = legacy()
     expect(getShipCount(leg)).toEqual({error : 'Ship does not have a valid equipment property'})
@@ -106,7 +107,7 @@ describe('testing getChangedShip and components to evaluate that they can be use
         expect(customPlantingShip.action).toEqual(new planting().action)
     })
     let plantingProperties = {properties : components().properties}
-    Object.assign(plantingProperties['properties'].equipment,{type : components().properties.equipment.type.legacy})
+    Object.assign(plantingProperties['properties'].equipment,{type : components().properties.equipment.type.legacy}, {count : components().properties.equipment.count.planting})
     Object.assign(plantingProperties['properties'],{messagingProtocol : components('seagrass planting').properties.messagingProtocol.single})
 
     test('customPlantingShip possesses same properties as regular instance of planting ship', () => {
