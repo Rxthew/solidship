@@ -8,6 +8,7 @@ const planting = ships.plantingShip;
 const defense = ships.defenseShip;
 const relay = ships.relayShip;
 const components = ships.components
+const getChangedShip = ships.getChangedShip
 
 
 test('Basic ship returns an object with a damage equalling 0, some new type, and a breakpoint', () => {
@@ -83,7 +84,7 @@ test('basicLegacyShip instance sinks instantly the first time isSunk is called',
     
 })
 
-describe('components can be used to customise ships',() => {
+describe('testing getChangedShip and components to evaluate that they can be used to customise ships',() => {
     let customPlantingShip = new basicShip();
     const plantingAction = components().action.planting
 
@@ -93,7 +94,7 @@ describe('components can be used to customise ships',() => {
     })
     let plantingProperties = {properties : components().properties}
     Object.assign(plantingProperties['properties'].equipment,{type : components().properties.equipment.type.legacy})
-    Object.assign(plantingProperties['properties'],{messagingProtocol : components('seagrass planting','single').properties.messagingProtocol})
+    Object.assign(plantingProperties['properties'],{messagingProtocol : components('seagrass planting').properties.messagingProtocol.single})
 
     test('customPlantingShip possesses same properties as regular instance of planting ship', () => {
         customPlantingShip = Object.assign(customPlantingShip, plantingProperties)
@@ -101,7 +102,7 @@ describe('components can be used to customise ships',() => {
     })
     let customLegacyShip = new basicLegacyShip();
     let customActions = {action : [...components().action.defense,...components().action.relay]}
-    let customProperties = {properties :  { messagingProtocol : components('clear debris', 'relay').properties.messagingProtocol}}
+    let customProperties = {properties :  { messagingProtocol : components('clear debris').properties.messagingProtocol.relay}}
 
 
     test('ships can be customised in an ad hoc way with components', () => {
@@ -109,5 +110,25 @@ describe('components can be used to customise ships',() => {
         expect(customLegacyShip.action).toEqual(['launch decoys', 'message'])
         expect(customLegacyShip.properties).toEqual({messagingProtocol : ['clear','relay']})
     })
+
+    test('getChangedShip should return the same ship except changed area', () => {
+        let customLegacyShip2 = getChangedShip(customLegacyShip,['action'],'legacy')
+        expect(customLegacyShip2.action).toEqual(components().action.legacy);
+        expect(customLegacyShip2.properties).toEqual(customLegacyShip.properties)
+    })
+
+    test('getChangedShip should be able to add a property if it is not there', () => {
+        let customMessagingShip = getChangedShip(new basicShip(),['action'],'relay')
+        customMessagingShip = getChangedShip(customMessagingShip,['properties','messagingProtocol'],'relay')
+        expect(customMessagingShip.properties).toEqual({messagingProtocol : ['message', 'relay']})
+
+    })
+    test('getChangedShip should return an error if messagingProtocol is somehow attached without action', () => {
+        let customMessagingShip2 = getChangedShip(new basicShip(),['properties','messagingProtocol'],'relay')
+        expect(customMessagingShip2).toEqual({error : 'Ship does not have a valid action property'})
+    })
+
+
+
 })
 

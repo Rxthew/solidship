@@ -54,7 +54,7 @@ const _shipMethods = {
 export const basicShip = class {
     damage = 0
     
-    constructor(type, breakPoint=3){
+    constructor(type='custom', breakPoint=3){
         this.type = type
         this.breakPoint = breakPoint
     }
@@ -91,7 +91,7 @@ export const clearingShip = function(){
     return Object.assign(_shipMethods.clear(), new basicShip('clear',3))
 }
 
-export const components = function(act, inter){
+export const components = function(act){
 
     const _actionToProtocol = {
         'legacy' : 'legacy',
@@ -100,19 +100,6 @@ export const components = function(act, inter){
         'message' : 'message',
         'clear debris' : 'clear'
     }
-
-
-    const _executeInterface = function(act,inter){
-
-        const _interfaceChoice = {
-            'single' : _actionToProtocol[act],
-            'receiver' : [_actionToProtocol[act], 'trigger'],
-            'relay' : [_actionToProtocol[act], 'relay']
-        }
-
-        return _interfaceChoice[inter]
-    }
-       
 
     return {
         action : {
@@ -124,7 +111,11 @@ export const components = function(act, inter){
         },
 
         properties : {
-            messagingProtocol : _executeInterface(act, inter),
+            messagingProtocol : {
+                single : _actionToProtocol[act],
+                receiver : [_actionToProtocol[act], 'trigger'],
+                relay : [_actionToProtocol[act], 'relay']
+            },
             equipment : {  
                     type: {
                         legacy : 'legacy',
@@ -137,29 +128,31 @@ export const components = function(act, inter){
     }   
 }
 
- export  const getChangedShip = function(oldShip, changes, key){//review holistically, also review issue below
-       let ship = Object.create(Object.getPrototypeOf(oldShip));
-       Object.assign(ship,oldShip) 
-       const targetKey = changes[changes.length - 1]
+ export  const getChangedShip = function(previousShip, changes, key){
+       let ship = Object.create(Object.getPrototypeOf(previousShip));
+       Object.assign(ship,previousShip) 
+       let targetKey = changes[changes.length - 1]
+
        const _iterateThroughProperties = function(someRef){   
         let finalTarget = ship     
         for(let elem of changes){
-            if(!Object.prototype.hasOwnProperty.call(finalTarget,elem)){//issue, is first property covered? 
-                Object.assign(finalTarget, someRef[elem])
+            if(!Object.prototype.hasOwnProperty.call(finalTarget,elem)){ 
+                finalTarget[elem] = {}
             }
-            if(elem === targetKey){
-              Object.assign(finalTarget,{[key] : someRef[elem][key]})
+            if(elem === targetKey){ 
+              Object.assign(finalTarget,{[targetKey] : someRef[elem][key]})
             }
             finalTarget = finalTarget[elem]
             someRef = someRef[elem]    
         }
     }
        if(targetKey === 'messagingProtocol'){
-           let ref = components(ship.action[0],key)
-           changes = changes.filter(elem => elem !== 'messagingProtocol');
-           key = targetKey
-           _iterateThroughProperties(ref)
-           return ship
+           if(ship.action){
+            let ref = components(ship.action[0],key)
+            _iterateThroughProperties(ref)
+            return ship
+           }
+           return {error : 'Ship does not have a valid action property'}
        }
        let ref = components()
        _iterateThroughProperties(ref)
