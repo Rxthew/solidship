@@ -146,6 +146,8 @@ export const gameBoard = class {
             contains: null
         }
     }
+    plants = 0;
+    wreckage = 0;
         
 
     constructor(state='new game'){
@@ -155,30 +157,49 @@ export const gameBoard = class {
 
 
 export const defaultConfig = {
-    getBoardContains: function(gb,key){
-        return gb[key].contains
+    getBoardContains: function(currentGameBoard,key){
+        return currentGameBoard[key].contains
         
     }, 
-    setBoardContains: function(gb,key,value){
-        gb[key].contains = value
+    setBoardContains: function(currentGameBoard,key,value){
+        currentGameBoard[key].contains = value
     
-        return gb
+        return currentGameBoard
     },
-    getBoardLegalMoves: function(gb,key){
-        return gb[key].legalMoves
+    getBoardLegalMoves: function(currentGameBoard,key){
+        return currentGameBoard[key].legalMoves
     
     },
-    getBoard : function(currentBoard){
-        return currentBoard.board
+    getBoard : function(currentGameBoard){
+        return currentGameBoard.board
 
     },
-    getState : function(currentBoard){
-        return currentBoard.state
+    getState : function(currentGameBoard){
+        return currentGameBoard.state
 
     },
     newBoard : function(state){
         return new gameBoard(state) 
+    },
+    getWreckCount : function(currentGameBoard){
+        return currentGameBoard.wreckage
+
+    },
+    getPlantCount : function(currentGameBoard){
+        return currentGameBoard.plants
+    },
+    setWreckCount : function(currentGameBoard, value){
+        currentGameBoard.wreckage = value
+
+        return currentGameBoard
+    },
+    setPlantCount : function(currentGameBoard,value){
+        currentGameBoard.plants = value 
+
+        return currentGameBoard
     }
+
+
 }
 
  

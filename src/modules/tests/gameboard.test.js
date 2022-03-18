@@ -207,7 +207,7 @@ describe('Custom transformers, getters and setters work as expected', () => {
 
     test('get plant count from a gameBoard',() => {
         let plantBoard = new gameBoard('plants!');
-        expect(defaultC.getPlantCount(plantBoard).toBe(0))
+        expect(defaultC.getPlantCount(plantBoard)).toBe(0)
         expect(plantBoard.plants).toBe(0)
 
     })
@@ -221,14 +221,14 @@ describe('Custom transformers, getters and setters work as expected', () => {
 
     test('get wreckage count from a gameBoard', () => {
         let wreckBoard = new gameBoard('wrecked');
-        expect(defaultC.getWreckCount(wreckBoard).toBe(0))
+        expect(defaultC.getWreckCount(wreckBoard)).toBe(0)
         expect(wreckBoard.wreckage).toBe(0)
 
     })
 
     test('set wreckage count on  a gameBoard', () => {
         let wreckBoard2 = new gameBoard('wrecked again')
-        defaultC.setPlantCount(wreckBoard2,233)
+        defaultC.setWreckCount(wreckBoard2,233)
         expect(wreckBoard2.wreckage).toBe(233)
 
     })
