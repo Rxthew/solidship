@@ -8,6 +8,8 @@ test('expect an empty board',() => {
 expect(new gameBoard('new')).toEqual(
     {
         state: 'new',
+        plants : 0,
+        wreckage : 0,
         board: {
             A1 : {
                 legalMoves:['B1','A2','B2'], 
@@ -201,6 +203,34 @@ describe('Custom transformers, getters and setters work as expected', () => {
         expect(defaultC.getBoard(boardZ)).toEqual(boardZ.board)
         let boardW = new gameBoard('w')
         expect(defaultC.getBoard(boardW)).toEqual(boardW.board)
+    })
+
+    test('get plant count from a gameBoard',() => {
+        let plantBoard = new gameBoard('plants!');
+        expect(defaultC.getPlantCount(plantBoard).toBe(0))
+        expect(plantBoard.plants).toBe(0)
+
+    })
+
+    test('set plant count on a gameBoard',() => {
+        let plantBoard2 = new gameBoard('plants!')
+        defaultC.setPlantCount(plantBoard2,23)
+        expect(plantBoard2.plants).toBe(23)
+
+    })
+
+    test('get wreckage count from a gameBoard', () => {
+        let wreckBoard = new gameBoard('wrecked');
+        expect(defaultC.getWreckCount(wreckBoard).toBe(0))
+        expect(wreckBoard.wreckage).toBe(0)
+
+    })
+
+    test('set wreckage count on  a gameBoard', () => {
+        let wreckBoard2 = new gameBoard('wrecked again')
+        defaultC.setPlantCount(wreckBoard2,233)
+        expect(wreckBoard2.wreckage).toBe(233)
+
     })
 
 })

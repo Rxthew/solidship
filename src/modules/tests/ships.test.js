@@ -7,6 +7,7 @@ const legacy = ships.legacyShip;
 const planting = ships.plantingShip;
 const defense = ships.defenseShip;
 const relay = ships.relayShip;
+const clear = ships.clearingShip
 const components = ships.components
 const getChangedShip = ships.getChangedShip
 
@@ -84,6 +85,18 @@ test('basicLegacyShip instance sinks instantly the first time isSunk is called',
     
 })
 
+test('getShipCount returns an object with the plant/wreckage count, or false if property was not present', () => {
+    let plantingShip2 = planting();
+    plantingShip2.properties.equipment.count = 20;
+    expect(getShipCount(plantingShip2)).toEqual({planting : 20})
+    let clearingShip =  clear();
+    clearingShip.properties.equipment.count = 50;
+    expect(getShipCount(clearingShip)).toEqual({wreckage : 50})
+    let leg = legacy()
+    expect(getShipCount(leg)).toEqual({error : 'Ship does not have a valid equipment property'})
+
+})
+
 describe('testing getChangedShip and components to evaluate that they can be used to customise ships',() => {
     let customPlantingShip = new basicShip();
     const plantingAction = components().action.planting
@@ -127,8 +140,6 @@ describe('testing getChangedShip and components to evaluate that they can be use
         let customMessagingShip2 = getChangedShip(new basicShip(),['properties','messagingProtocol'],'relay')
         expect(customMessagingShip2).toEqual({error : 'Ship does not have a valid action property'})
     })
-
-
 
 })
 
