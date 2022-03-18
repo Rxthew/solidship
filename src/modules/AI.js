@@ -1,7 +1,10 @@
 import { gameBoard, createContainsObject, updateBoardContents, defaultConfig } from "./gameboard"
-const [getBoardLegalMoves, getState, newBoard] = [defaultConfig.getBoardLegalMoves, defaultConfig.getState, defaultConfig.newBoard]
-const [getBoard, getBoardContains, setBoardContains] = [defaultConfig.getBoard, defaultConfig.getBoardContains, defaultConfig.setBoardContains]
+const [getLgalMovs, getSt, newBrd] = [defaultConfig.getBoardLegalMoves, defaultConfig.getState, defaultConfig.newBoard]
+const [getBrd, getBCont, setBCont] = [defaultConfig.getBoard, defaultConfig.getBoardContains, defaultConfig.setBoardContains]
+const [getW, setW, getP, setP] = [defaultConfig.getWreckCount, defaultConfig.setWreckCount, defaultConfig.getPlantCount, defaultConfig.setPlantCount]
 import {gameEvents} from "./gamestate"
+import {getShipCount} from "./ships"
+const getC = getShipCount
 
 
 export const AIObj = class {
@@ -39,7 +42,7 @@ const _decisionByPhaseNo = {
         return someTargets[someTargetIndex]
     },
 
-    '2' : function(someHitKey, someTargets, someTargetIndex, legalKeyGen = (akeyVar) => getBoardLegalMoves(new gameBoard().board, akeyVar)){
+    '2' : function(someHitKey, someTargets, someTargetIndex, legalKeyGen = (akeyVar) => getLgalMovs(new gameBoard().board, akeyVar)){
         let pivot = Math.floor((Math.random() * 10))
         if(pivot <= 4){
             return someTargets[someTargetIndex]
@@ -148,7 +151,7 @@ const _configureMode = function(someState, phase, hit, target){
 }
 
 
-export const AIReact = function(currentAIObject, gs=getState, gbs=[newBoard,getBoard]){
+export const AIReact = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd]){
     let currentGameState = currentAIObject.gameState
     let currentState = gs(currentGameState)
     const [ngb,gb] = gbs;
@@ -190,7 +193,7 @@ const _generateDamage = function(hitShip,hitValue=1){
      return _sunkVesselCheckUpdate(hitShip.isSunk(hitShip.damage, hitShip.breakPoint), hitShip)
 }
 
-const _missileBlockingCheck = function(board, target, getCont=getBoardContains, setCont=setBoardContains){
+const _missileBlockingCheck = function(board, target, getCont=getBCont, setCont=setBCont){
     if(Object.prototype.hasOwnProperty.call(board,'missileBlocked')){
         let keys = board.missileBlocked 
         const newBoard = Object.assign({},board)
@@ -213,11 +216,26 @@ const _missileBlockingCheck = function(board, target, getCont=getBoardContains, 
 
 }
 
-const _hitCheckingMechanism = function(key, currentBoard, nb=newBoard, gb=getBoard, getKey=getBoardContains, setKey=setBoardContains){
+const _wreckageCounter = function(someBoard, getState, getWreckage, setWreckage){
+    const state = getState(someBoard)
+    const options = Object.keys(_stateOptions)
+    const values = [2,2,5,1]
+    let rubric = {}
+    for(let x = 0; x < options.length; x++){
+        rubric[options[x]] = values[x]
+    }
+    const currentWreckage = getWreckage(someBoard)
+    const newWreckage = currentWreckage + rubric[state]
+    return setWreckage(someBoard, newWreckage)
+}
+
+//params for below & updatStat need to include getters & setters for wreckage/plant re: gameboard. accountContribution needs a getter from ships too.   
+const _hitCheckingMechanism = function(key, currentBoard, gs=getSt, nb=newBrd, gb=getBrd, getKey=getBCont, setKey=setBCont,gw=getW,sw=setW,gp=getP,sp=setP, gc=getC){
     
     const currentBoardChecked = _missileBlockingCheck(currentBoard,key,getKey,setKey)
     if(Object.prototype.hasOwnProperty.call(currentBoardChecked, 'missileBlocked')){
         let blocked = nb('missile blocked')
+        blocked = _wreckageCounter(blocked, gs, gw, sw)
         let blockedBoard = gb(blocked)
         let blockedContainsObj = createContainsObject(currentBoardChecked,null,null,getKey)
         delete blockedContainsObj.missileBlocked
@@ -228,6 +246,7 @@ const _hitCheckingMechanism = function(key, currentBoard, nb=newBoard, gb=getBoa
     let loc = getKey(currentBoardChecked, key)
     if(loc === null){
         let missed = nb('missile missed ship');
+        missed = _wreckageCounter(missed, gs, gw, sw)
         let missedBoard = gb(missed)
         let missedContainsObj = createContainsObject(currentBoardChecked, null,null, getKey)
         updateBoardContents(missedBoard, missedContainsObj, setKey)
@@ -235,8 +254,11 @@ const _hitCheckingMechanism = function(key, currentBoard, nb=newBoard, gb=getBoa
     }
     
     let updatedValue = Object.assign(Object.create(Object.getPrototypeOf(loc)),loc)
+    //let shipActionCount = accountContribution(updatedValue)
     updatedValue = _generateDamage(updatedValue)
     let vesselStatus = updatedValue === null ? nb('missile sunk ship') : nb('missile hit ship')
+    vesselStatus = _wreckageCounter(vesselStatus, gs, gw, sw)
+    //vesselStatus = discountContribution(vesselStatus, shipActionCount)
     let containsObj = createContainsObject(currentBoardChecked, key, updatedValue, getKey)
     let boardWithUpdatedVessel = gb(vesselStatus)
 
@@ -246,7 +268,7 @@ const _hitCheckingMechanism = function(key, currentBoard, nb=newBoard, gb=getBoa
 }
 
 
-export const updateStatus = function(currentAIObject, gs=getState, gbs=[newBoard,getBoard,getBoardContains,setBoardContains, getBoardLegalMoves]){
+export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd,getBCont,setBCont,getLgalMovs,getW,setW,getP,setP],gc=getC){
     let gb = gbs[1]
     let currentGameState = currentAIObject.gameState;
     let currentState = gs(currentGameState);
@@ -254,7 +276,7 @@ export const updateStatus = function(currentAIObject, gs=getState, gbs=[newBoard
     let keys = Object.keys(currentBoard)
     if(keys.includes(currentState)){
         let updatedAIObject = new AIObj()
-        updatedAIObject = Object.assign(updatedAIObject, currentAIObject, {gameState: _hitCheckingMechanism(currentState, currentBoard, ...gbs)})
+        updatedAIObject = Object.assign(updatedAIObject, currentAIObject, {gameState: _hitCheckingMechanism(currentState, currentBoard, gs, ...gbs)})
         return updatedAIObject
     }
     else{
@@ -264,7 +286,7 @@ export const updateStatus = function(currentAIObject, gs=getState, gbs=[newBoard
     
 }
 
-export const sendStatus = function(currentAIObject, gs=getState, gbs=[newBoard,getBoard,getBoardContains,setBoardContains,getBoardLegalMoves],publish=gameEvents.publish){
+export const sendStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd,getBCont,setBCont,getLgalMovs],publish=gameEvents.publish){
     
     let currentGameState = currentAIObject.gameState
     let currentState = gs(currentGameState)
