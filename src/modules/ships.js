@@ -29,7 +29,7 @@ const _shipMethods = {
         return  new _templateForCustomShipTypes(['seagrass planting'], {
             messagingProtocol: 'planting',
             equipment : {
-                type : 'legacy',
+                type : ['legacy'],
                 count : 0
             }
         })
@@ -44,7 +44,7 @@ const _shipMethods = {
         return new _templateForCustomShipTypes(['clear debris'], {
             messagingProtocol: 'clear',
             equipment : {
-                type: 'legacy',
+                type: ['legacy'],
                 count: 0
             }
         })
@@ -118,8 +118,8 @@ export const components = function(act){
             },
             equipment : {  
                     type: {
-                        legacy : 'legacy',
-                        modern : 'modern'
+                        legacy : ['legacy'],
+                        modern : ['modern']
                     },
                     count: 0
             }

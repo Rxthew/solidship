@@ -1,4 +1,5 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
+
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
 const legal = defaultConfig.getBoardLegalMoves
 
@@ -117,7 +118,7 @@ export const blockMissileAction = function(currentBoard, newGameBoard, shipLocat
 
 
 
-const _unwrapChanges = function(actualShip, mode, keys, change, getChangedShip){ //review
+const _unwrapChanges = function(actualShip, mode, keys, change, getChangedShip){
     let newShip = Object.create(Object.getPrototypeOf(actualShip))
     Object.assign(newShip,actualShip)
     let newerShip = getChangedShip(newShip, keys, change)
@@ -127,10 +128,7 @@ const _unwrapChanges = function(actualShip, mode, keys, change, getChangedShip){
         let finalTarget = newShip;
         for(let elem of keys){
             if(targetKey === elem){
-                if(typeof finalTarget[targetKey] === 'string'){
-                    finalTarget.push(newerShip[elem])
-                }
-                finalTarget.push(newerShip[elem][0])
+                finalTarget[targetKey].push(newerShip[targetKey][0])
             }
             finalTarget = finalTarget[elem]
             newerShip = newerShip[elem]
@@ -141,10 +139,13 @@ const _unwrapChanges = function(actualShip, mode, keys, change, getChangedShip){
     
 }
 
-export const upgradeShip =  function(currentBoard, newGameBoard, shipLocation, mode, changeConfig, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont){
-    const changedShip = _unwrapChanges(shipLocation, mode, ...changeConfig)
-    
-    newGameBoard = ngb('upgrade ship')
+export const upgradeShip =  function(currentBoard, newGameBoard, shipLocation, changeConfig, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont){
+    const shipToChange = getCont(currentBoard,shipLocation)
+    const changedShip = _unwrapChanges(shipToChange, ...changeConfig)
+    if(changedShip.error){
+        return changedShip.error
+    }
+    newGameBoard = ngb('upgrade ship action')
     let cont = createContainsObject(currentBoard,shipLocation,changedShip, getCont)
     updateBoardContents(gb(newGameBoard),cont,setCont)
     return newGameBoard

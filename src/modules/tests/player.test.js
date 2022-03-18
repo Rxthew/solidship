@@ -1,7 +1,7 @@
 import {test,expect,describe} from "@jest/globals";
 import { gameBoard } from "../gameboard";
-import {playerObj, placeShip, moveShip, blockMissileAction} from '../player';
-import {legacyShip,plantingShip} from '../ships'
+import {playerObj, placeShip, moveShip, blockMissileAction, upgradeShip} from '../player';
+import {basicShip,legacyShip,plantingShip,getChangedShip} from '../ships'
 
 
 test('Player object has correct properites', () => {
@@ -113,6 +113,32 @@ describe('testing missile block action',() => {
         let blocked3 = blockMissileAction(blocked1.board,new gameBoard().board, 'C3')
         expect(blocked3.board.missileBlocked).toEqual([...blocked1.board.missileBlocked, 'C3', ...blocked1.board['C3'].legalMoves])
     })
+
+})
+
+describe('testing upgradeShip (both re modification & re extending', () => {
+       let upgradeBoard = new gameBoard();
+       upgradeBoard = placeShip(upgradeBoard.board,undefined,plantingShip(),'A6')
+       upgradeBoard = placeShip(upgradeBoard.board,undefined,plantingShip(),'B2')
+       test('plantingShip action is modified to legacy',() => {
+        upgradeBoard = upgradeShip(upgradeBoard.board,undefined,'A6',['modify',['action'],'legacy',getChangedShip])
+        expect(upgradeBoard.state).toBe('upgrade ship action')
+        expect(upgradeBoard.board.B2.contains).toEqual(plantingShip())
+        expect(upgradeBoard.board.A6.contains.type).toBe('planting')
+        expect(upgradeBoard.board.A6.contains.action).toEqual(['legacy'])
+
+       })
+       test('plantingShip action is extended to include legacy', () => {
+        upgradeBoard = upgradeShip(upgradeBoard.board,undefined,'B2',['extend',['action'],'legacy',getChangedShip])
+        expect(upgradeBoard.state).toBe('upgrade ship action')
+        expect(upgradeBoard.board.B2.contains.action).toEqual(['seagrass planting', 'legacy'])
+       })
+       test('if there is an error the function generates it',() => {
+         let upgradeBoard2 = placeShip(upgradeBoard.board,undefined,new basicShip(),'F2')
+         upgradeBoard2 = upgradeShip(upgradeBoard2.board,undefined,'F2',['modify',['properties','messagingProtocol'],'single',getChangedShip])  
+         expect(upgradeBoard2).toBe('Ship does not have a valid action property')
+       })
+       
 
 })
 
