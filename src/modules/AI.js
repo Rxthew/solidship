@@ -229,7 +229,10 @@ const _wreckageCounter = function(someBoard, getState, getWreckage, setWreckage)
     return setWreckage(someBoard, newWreckage)
 }
 
-//params for below & updatStat need to include getters & setters for wreckage/plant re: gameboard. accountContribution needs a getter from ships too.   
+const _discountContribution = function(){
+
+}
+   
 const _hitCheckingMechanism = function(key, currentBoard, gs=getSt, nb=newBrd, gb=getBrd, getKey=getBCont, setKey=setBCont,gw=getW,sw=setW,gp=getP,sp=setP, gc=getC){
     
     const currentBoardChecked = _missileBlockingCheck(currentBoard,key,getKey,setKey)
@@ -254,7 +257,7 @@ const _hitCheckingMechanism = function(key, currentBoard, gs=getSt, nb=newBrd, g
     }
     
     let updatedValue = Object.assign(Object.create(Object.getPrototypeOf(loc)),loc)
-    //let shipActionCount = accountContribution(updatedValue)
+    let shipActionCount = getC(updatedValue) 
     updatedValue = _generateDamage(updatedValue)
     let vesselStatus = updatedValue === null ? nb('missile sunk ship') : nb('missile hit ship')
     vesselStatus = _wreckageCounter(vesselStatus, gs, gw, sw)
