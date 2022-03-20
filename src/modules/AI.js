@@ -216,7 +216,7 @@ const _missileBlockingCheck = function(board, target, getCont=getBCont, setCont=
 
 }
 
-const _wreckageCounter = function(someBoard, getState, getWreckage, setWreckage){
+const _wreckageCounter = function(someBoard, getState, getWreckage, setWreckage, newBoard){
     const state = getState(someBoard)
     const options = Object.keys(_stateOptions)
     const values = [2,2,5,1]
@@ -226,10 +226,50 @@ const _wreckageCounter = function(someBoard, getState, getWreckage, setWreckage)
     }
     const currentWreckage = getWreckage(someBoard)
     const newWreckage = currentWreckage + rubric[state]
-    return setWreckage(someBoard, newWreckage)
+    const newGB = newBoard()
+    Object.assign(newGB, someBoard)
+    return setWreckage(newGB, newWreckage)
 }
 
-const _discountContribution = function(){
+const _discountContribution = function(someBoard, someCount, getState, getWreckage, setWreckage, getPlants, setPlants, newBoard){
+
+    let newB = newBoard();
+    Object.assign(newB, someBoard)
+    
+    const _discountPlants = function(){
+        let shipRef = someCount.plants;
+        let boardRef = getPlants(someBoard);
+        let newRef = boardRef - shipRef
+        if(newRef < 0){
+            setPlants(newB, 0)
+            
+        }
+        else{
+            setPlants(newB, newRef)
+        }
+        
+    }
+
+    const _discountWreckage = function(){
+        let shipRef = someCount.wreckage;
+        let boardRef = getWreckage(someBoard);
+        let newRef = boardRef + shipRef
+        setWreckage(newB, newRef)
+    }
+    
+    if(getState(someBoard) === 'missile sunk ship'){
+        const props = {'plants' : _discountPlants,
+                       'wreckage': _discountWreckage};
+        for(let elem of Object.keys(props)){
+            if(Object.prototype.hasOwnProperty.call(someCount, elem)){
+                props[elem]()
+            }
+        }
+        return newB
+
+    }
+    return someBoard
+
 
 }
    
@@ -257,11 +297,11 @@ const _hitCheckingMechanism = function(key, currentBoard, gs=getSt, nb=newBrd, g
     }
     
     let updatedValue = Object.assign(Object.create(Object.getPrototypeOf(loc)),loc)
-    let shipActionCount = getC(updatedValue) 
+    let shipActionCount = gc(updatedValue) 
     updatedValue = _generateDamage(updatedValue)
     let vesselStatus = updatedValue === null ? nb('missile sunk ship') : nb('missile hit ship')
-    vesselStatus = _wreckageCounter(vesselStatus, gs, gw, sw)
-    //vesselStatus = discountContribution(vesselStatus, shipActionCount)
+    vesselStatus = _wreckageCounter(vesselStatus, gs, gw, sw, nb)
+    vesselStatus = _discountContribution(vesselStatus, shipActionCount,gs,gw,sw,gp,sp,nb)
     let containsObj = createContainsObject(currentBoardChecked, key, updatedValue, getKey)
     let boardWithUpdatedVessel = gb(vesselStatus)
 
@@ -279,7 +319,7 @@ export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getB
     let keys = Object.keys(currentBoard)
     if(keys.includes(currentState)){
         let updatedAIObject = new AIObj()
-        updatedAIObject = Object.assign(updatedAIObject, currentAIObject, {gameState: _hitCheckingMechanism(currentState, currentBoard, gs, ...gbs)})
+        updatedAIObject = Object.assign(updatedAIObject, currentAIObject, {gameState: _hitCheckingMechanism(currentState, currentBoard, gs, ...gbs,gc)})
         return updatedAIObject
     }
     else{
