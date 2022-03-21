@@ -11,6 +11,8 @@ const clear = ships.clearingShip
 const components = ships.components
 const getChangedShip = ships.getChangedShip
 const getShipCount = ships.getShipCount
+const setShipCount = ships.setShipCount
+const getEquipmentType = ships.getEquipmentType
 
 
 test('Basic ship returns an object with a damage equalling 0, some new type, and a breakpoint', () => {
@@ -96,6 +98,24 @@ test('getShipCount returns an object with the plant/wreckage count, or error if 
     let leg = legacy()
     expect(getShipCount(leg)).toEqual({error : 'Ship does not have a valid equipment property'})
 
+})
+
+test('setShipCount sets the count of an object to a new object passed in as the second parameter', () => {
+    let plantingShip3 = planting();
+    expect(setShipCount(plantingShip3, {plants: 40}).properties.equipment.count.plants).toBe(40)
+    let clearingShip2 = clear()
+    clearingShip2.properties.equipment.count.wreckage = 10
+    setShipCount(clearingShip2, {plants: 50, wreckage:60, food:20})
+    expect(clearingShip2.properties.equipment.count.wreckage).toBe(60)
+    expect(clearingShip2.properties.equipment.count.plants).toBe(50)
+    expect(clearingShip2.properties.equipment.count.food).toBe(20)
+    let leg = legacy()
+    expect(setShipCount(legacy,{plants:20})).toEqual({error : 'Ship does not have a valid equipment property'})
+
+})
+
+test('getEquipmentType returns object with the equipment type, or error if property was not present', () => {
+    //continue
 })
 
 describe('testing getChangedShip and components to evaluate that they can be used to customise ships',() => {

@@ -187,7 +187,7 @@ export const getShipCount = function(ship){
 export const setShipCount = function(ship, propsObj){
     let count = getShipCount(ship);
     if(count.error){
-        return count.error
+        return {error : count.error}
     }
     ship.properties.equipment.count = Object.assign(count, propsObj)
     return ship 
