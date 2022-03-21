@@ -331,13 +331,13 @@ describe('testing updateStatus function',() => {
 
     test('updateStatus w/missile sinking planting ship decreases plant count by amount held by ship, if any, (& no negaive numbers)', () => {
         let hugePlants = plantingShip()
-        hugePlants.properties.equipment.count.plants = 51
+        hugePlants.properties.equipment.count.plants = 50
         hugePlants.damage = hugePlants.breakPoint - 1
 
         let sunkAI2 = new AIObj()
         let sunkGb2 = new gameBoard('B3')
         let sunkGb3 = new gameBoard('B3')
-        sunkGb2.plants = 50
+        sunkGb2.plants = 51
         sunkGb3.plants = 10
         sunkGb2.board['B3'].contains = hugePlants
         sunkGb3.board['B3'].contains = hugePlants
@@ -405,9 +405,9 @@ describe('testing updateStatus function',() => {
         let blockedWreck = new AIObj()
         blockedWreck.gameState.state = 'C4'
         blockedWreck.target = 'C4'
-        blockedWreck.gameState.wrecked = 2
-        blockedWreck.gameState.board['missileBLocked'] = ['C4']
-        expect(updateStatus(blockedWreck).gameState.wrecked).toBe(4)
+        blockedWreck.gameState.wreckage = 2
+        blockedWreck.gameState.board['missileBlocked'] = ['C4']
+        expect(updateStatus(blockedWreck).gameState.wreckage).toBe(4)
         
     })
 

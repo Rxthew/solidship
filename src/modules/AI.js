@@ -233,13 +233,14 @@ const _wreckageCounter = function(someBoard, getState, getWreckage, setWreckage,
 
 const _discountContribution = function(someBoard, someCount, getState, getWreckage, setWreckage, getPlants, setPlants, newBoard){
 
-    let newB = newBoard();
+    let newB = newBoard('missile sunk ship');
     Object.assign(newB, someBoard)
-    
+
     const _discountPlants = function(){
         let shipRef = someCount.plants;
         let boardRef = getPlants(someBoard);
         let newRef = boardRef - shipRef
+        
         if(newRef < 0){
             setPlants(newB, 0)
             
@@ -270,29 +271,32 @@ const _discountContribution = function(someBoard, someCount, getState, getWrecka
     }
     return someBoard
 
-
 }
+
+//returning undefined legalMoves. Most probably it's the Object.assign problem. Console.log some newboards somewhere below and see what the results are. 
    
-const _hitCheckingMechanism = function(key, currentBoard, gs=getSt, nb=newBrd, gb=getBrd, getKey=getBCont, setKey=setBCont,gw=getW,sw=setW,gp=getP,sp=setP, gc=getC){
+const _hitCheckingMechanism = function(key, currentGameState, currentBoard, gs=getSt, nb=newBrd, gb=getBrd, getKey=getBCont, setKey=setBCont,gw=getW,sw=setW,gp=getP,sp=setP, gc=getC){
     
     const currentBoardChecked = _missileBlockingCheck(currentBoard,key,getKey,setKey)
     if(Object.prototype.hasOwnProperty.call(currentBoardChecked, 'missileBlocked')){
         let blocked = nb('missile blocked')
-        blocked = _wreckageCounter(blocked, gs, gw, sw)
+        Object.assign(blocked, {wreckage : gw(currentGameState)}, {plants: gp(currentGameState)})
         let blockedBoard = gb(blocked)
         let blockedContainsObj = createContainsObject(currentBoardChecked,null,null,getKey)
         delete blockedContainsObj.missileBlocked
         updateBoardContents(blockedBoard, blockedContainsObj, setKey)
+        blocked = _wreckageCounter(blocked, gs, gw, sw,nb)
         return blocked
     }
     
     let loc = getKey(currentBoardChecked, key)
     if(loc === null){
         let missed = nb('missile missed ship');
-        missed = _wreckageCounter(missed, gs, gw, sw)
+        Object.assign(missed, {wreckage : gw(currentGameState)},{plants: gp(currentGameState)})
         let missedBoard = gb(missed)
         let missedContainsObj = createContainsObject(currentBoardChecked, null,null, getKey)
         updateBoardContents(missedBoard, missedContainsObj, setKey)
+        missed = _wreckageCounter(missed, gs, gw, sw, nb)
         return missed
     }
     
@@ -300,6 +304,7 @@ const _hitCheckingMechanism = function(key, currentBoard, gs=getSt, nb=newBrd, g
     let shipActionCount = gc(updatedValue) 
     updatedValue = _generateDamage(updatedValue)
     let vesselStatus = updatedValue === null ? nb('missile sunk ship') : nb('missile hit ship')
+    Object.assign(vesselStatus,{wreckage : gw(currentGameState)},{plants: gp(currentGameState)})
     vesselStatus = _wreckageCounter(vesselStatus, gs, gw, sw, nb)
     vesselStatus = _discountContribution(vesselStatus, shipActionCount,gs,gw,sw,gp,sp,nb)
     let containsObj = createContainsObject(currentBoardChecked, key, updatedValue, getKey)
@@ -311,7 +316,7 @@ const _hitCheckingMechanism = function(key, currentBoard, gs=getSt, nb=newBrd, g
 }
 
 
-export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd,getBCont,setBCont,getLgalMovs,getW,setW,getP,setP],gc=getC){
+export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],gc=getC){
     let gb = gbs[1]
     let currentGameState = currentAIObject.gameState;
     let currentState = gs(currentGameState);
@@ -319,7 +324,7 @@ export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getB
     let keys = Object.keys(currentBoard)
     if(keys.includes(currentState)){
         let updatedAIObject = new AIObj()
-        updatedAIObject = Object.assign(updatedAIObject, currentAIObject, {gameState: _hitCheckingMechanism(currentState, currentBoard, gs, ...gbs,gc)})
+        updatedAIObject = Object.assign(updatedAIObject, currentAIObject, {gameState: _hitCheckingMechanism(currentState, currentGameState, currentBoard, gs, ...gbs,gc)})
         return updatedAIObject
     }
     else{
