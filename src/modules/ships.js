@@ -184,4 +184,25 @@ export const getShipCount = function(ship){
 
 }
 
+export const setShipCount = function(ship, propsObj){
+    let count = getShipCount(ship);
+    if(count.error){
+        return count.error
+    }
+    ship.properties.equipment.count = Object.assign(count, propsObj)
+    return ship 
+}
+
+export const getEquipmentType = function(ship){
+    let checked = ['properties','equipment']
+    let shipSearch = ship
+    for(let elem of checked){
+        if(!Object.prototype.hasOwnProperty.call(shipSearch,elem)){
+            return {error : 'Ship does not have a valid equipment property'}
+        }
+        shipSearch = shipSearch[elem]
+    }
+    return ship.properties.equipment.type
+}
+
 

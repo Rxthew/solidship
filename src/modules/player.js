@@ -1,9 +1,9 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
-import { getShipCount } from "./ships"
+import { getShipCount,setShipCount,getEquipmentType } from "./ships"
 
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
 const [legal,getP,setP,getW,setW] = [defaultConfig.getBoardLegalMoves, defaultConfig.getPlantCount, defaultConfig.setPlantCount, defaultConfig.getWreckCount, defaultConfig.setWreckCount]
-const getSc = getShipCount
+const [getSc, setSc, getEt] = [getShipCount,setShipCount, getEquipmentType]
 
 export const playerObj =  class {
     constructor(name,gameState=new gameBoard('new game')){
@@ -155,15 +155,41 @@ export const upgradeShip =  function(currentBoard, newGameBoard, shipLocation, c
 
 }
 
+const _countIncrementByType = {
+    'legacy' : 1,
+    'modern' : 2
+}
 
-export const effectFarm = function(currentBoard, newGameBoard, shipLoc, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,gp=getP,sp=setP, gc=getSc){
+
+export const effectFarm = function(currentBoard, newGameBoard, shipLoc, currentGameState, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,gp=getP,sp=setP, gc=getSc, sc=setSc, gte=getEt){
+    
+    newGameBoard = ngb()
     const ship = getCont(currentBoard,shipLoc)
-    //have to think about checking for equipment and checking for action. Should those checks be done here or at the playerAction level? 
-    let currentCount = gc(ship)
+    let type = gte(ship)
 
+    const _incrementShip = function(){
+        let currentShipCount = gc(ship)
+        let newShipCount = currentShipCount.plants + _countIncrementByType[type] 
+        let newShip = sc(ship,{plants : newShipCount})
+        return newShip
+    }
 
+    const _incrementState = function(){
+        const plantCount = gp(currentGameState)
+        const newPlantCount = plantCount + _countIncrementByType[type]
+        Object.assign(newGameBoard, currentGameState,{state : 'effect farm action'})
+        newGameBoard = sp(newGameBoard,newPlantCount)
+        return newGameBoard
+
+    }
+    newGameBoard = _incrementState()
+    let cont = createContainsObject(currentBoard,shipLoc, _incrementShip(),getCont)
+    updateBoardContents(gb(newGameBoard),cont,setCont)
+    return newGameBoard
 
 }
+
+
 
 export const effectClear = function(){
 
