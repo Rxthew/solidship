@@ -1,7 +1,9 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
+import { getShipCount } from "./ships"
 
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
-const legal = defaultConfig.getBoardLegalMoves
+const [legal,getP,setP,getW,setW] = [defaultConfig.getBoardLegalMoves, defaultConfig.getPlantCount, defaultConfig.setPlantCount, defaultConfig.getWreckCount, defaultConfig.setWreckCount]
+const getSc = getShipCount
 
 export const playerObj =  class {
     constructor(name,gameState=new gameBoard('new game')){
@@ -154,7 +156,18 @@ export const upgradeShip =  function(currentBoard, newGameBoard, shipLocation, c
 }
 
 
+export const effectFarm = function(currentBoard, newGameBoard, shipLoc, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,gp=getP,sp=setP, gc=getSc){
+    const ship = getCont(currentBoard,shipLoc)
+    //have to think about checking for equipment and checking for action. Should those checks be done here or at the playerAction level? 
+    let currentCount = gc(ship)
 
+
+
+}
+
+export const effectClear = function(){
+
+}
 
 
 
