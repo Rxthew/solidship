@@ -110,12 +110,18 @@ test('setShipCount sets the count of an object to a new object passed in as the 
     expect(clearingShip2.properties.equipment.count.plants).toBe(50)
     expect(clearingShip2.properties.equipment.count.food).toBe(20)
     let leg = legacy()
-    expect(setShipCount(legacy,{plants:20})).toEqual({error : 'Ship does not have a valid equipment property'})
+    expect(setShipCount(leg,{plants:20})).toEqual({error : 'Ship does not have a valid equipment property'})
 
 })
 
 test('getEquipmentType returns object with the equipment type, or error if property was not present', () => {
-    //continue
+    let plantingShip4 = planting()
+    expect(getEquipmentType(plantingShip4)).toEqual(['legacy'])
+    let clearingShip3 = clear()
+    expect(getEquipmentType(clearingShip3)).toEqual(['legacy'])
+    getChangedShip(clearingShip3,['properties','equipment','type'],'modern')
+    expect(getEquipmentType(clearingShip3)).toEqual(['modern'])
+    
 })
 
 describe('testing getChangedShip and components to evaluate that they can be used to customise ships',() => {
