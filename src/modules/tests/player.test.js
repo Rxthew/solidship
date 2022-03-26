@@ -197,6 +197,7 @@ describe('testing effectFarm & effectClear', () => {
     })
     test('effectClear returns a new gameBoard, equipment type is valid but does not add to wreckage if there is none to be added from the board',() => {
         expect(fifthIter.board.C4.contains.properties.equipment.count.wreckage).toBe(1)
+        expect(fifthIter.board.C4.contains.properties.equipment.count.plants).toBe(2)
 
         
     })
