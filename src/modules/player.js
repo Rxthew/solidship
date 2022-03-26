@@ -1,9 +1,9 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
-import { getShipCount,setShipCount,getEquipmentType } from "./ships"
+import { getShipCount,setShipCount,getEquipmentType, setNewShip } from "./ships"
 
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
 const [legal,getP,setP,getW,setW] = [defaultConfig.getBoardLegalMoves, defaultConfig.getPlantCount, defaultConfig.setPlantCount, defaultConfig.getWreckCount, defaultConfig.setWreckCount]
-const [getSc, setSc, getEt] = [getShipCount,setShipCount, getEquipmentType]
+const [getSc, setSc, getEt,setNs] = [getShipCount,setShipCount, getEquipmentType,setNewShip]
 
 export const playerObj =  class {
     constructor(name,gameState=new gameBoard('new game')){
@@ -161,7 +161,7 @@ const _countIncrementByType = {
 }
 
 
-export const effectFarm = function(currentBoard, newGameBoard, shipLoc, currentGameState, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,gp=getP,sp=setP, gc=getSc, sc=setSc, gte=getEt){
+export const effectFarm = function(currentBoard, newGameBoard, shipLoc, currentGameState, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,gp=getP,sp=setP, gw=getW, gc=getSc, sc=setSc, gte=getEt, newS=setNs){
     
     newGameBoard = ngb()
     const ship = getCont(currentBoard,shipLoc)
@@ -169,22 +169,26 @@ export const effectFarm = function(currentBoard, newGameBoard, shipLoc, currentG
 
     const _incrementShip = function(){
         let currentShipCount = gc(ship)
-        let newShipCount = currentShipCount.plants + _countIncrementByType[type] 
-        let newShip = sc(ship,{plants : newShipCount})
+        let newShipCount = currentShipCount.plants + _countIncrementByType[type]
+        let newShip = newS(ship,['properties','equipment','count'])    
+        newShip = sc(newShip,{plants : newShipCount})        
         return newShip
     }
 
     const _incrementState = function(){
         const plantCount = gp(currentGameState)
         const newPlantCount = plantCount + _countIncrementByType[type]
-        Object.assign(newGameBoard, currentGameState,{state : 'effect farm action'})
+        Object.assign(newGameBoard, {wreckage : gw(currentGameState)} ,{state : 'effect farm action'}) 
         newGameBoard = sp(newGameBoard,newPlantCount)
         return newGameBoard
 
     }
     newGameBoard = _incrementState()
+    
     let cont = createContainsObject(currentBoard,shipLoc, _incrementShip(),getCont)
+
     updateBoardContents(gb(newGameBoard),cont,setCont)
+    
     return newGameBoard
 
 }

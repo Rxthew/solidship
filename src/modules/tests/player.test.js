@@ -1,6 +1,6 @@
 import {test,expect,describe} from "@jest/globals";
 import { gameBoard } from "../gameboard";
-import {playerObj, placeShip, moveShip, blockMissileAction, upgradeShip} from '../player';
+import {playerObj, placeShip, moveShip, blockMissileAction, upgradeShip, effectFarm} from '../player';
 import {basicShip,legacyShip,plantingShip,getChangedShip} from '../ships'
 
 
@@ -140,6 +140,53 @@ describe('testing upgradeShip (both re modification & re extending', () => {
        })
        
 
+})
+
+describe('testing effectFarm & effectClear', () => {
+    let greatBigGB = new gameBoard();
+    let aPlant = plantingShip()
+    let anothPlant = plantingShip()
+    anothPlant.properties.equipment.type = ['modern']
+    greatBigGB.board.B1.contains = aPlant
+    greatBigGB.board.C4.contains = anothPlant
+
+    const firstIter = effectFarm(greatBigGB.board, undefined, 'B1', greatBigGB)
+    
+    const secondIter = effectFarm(firstIter.board, undefined, 'C4', firstIter )
+    
+
+    test('effectFarm returns a new gameBoard, if equipment type is legacy, adds to plant count by 1',() => {
+        expect(firstIter.board.B1.contains.properties.equipment.count.plants).toBe(1)
+        expect(secondIter.board.B1.contains.properties.equipment.count.plants).toBe(1)
+
+    })
+    test('effectFarm returns a new gameBoard, if equipment type is modern, adds to plant count by 2',() => {
+        expect(firstIter.board.C4.contains.properties.equipment.count.plants).toBe(0)
+        expect(secondIter.board.C4.contains.properties.equipment.count.plants).toBe(2)
+        
+    })
+    test('effectFarm returns a new gameBoard, if equipment type is legacy, adds to global plant count by 1',() => {
+        expect(greatBigGB.plants).toBe(0)
+        expect(firstIter.plants).toBe(1)
+        
+        
+    })
+    test('effectFarm returns a new gameBoard, if equipment type is modern, adds to global plant count by 2',() => {
+        expect(secondIter.plants).toBe(3)
+        
+    })
+    test('effectClear returns a new gameBoard, if equipment type is legacy, adds to wreckage count by 1',() => {
+
+    })
+    test('effectClear returns a new gameBoard, if equipment type is modern, adds to wreckage count by 2',() => {
+        
+    })
+    test('effectClear returns a new gameBoard, if equipment type is legacy, removes from global wreckage by 1 (no negatives)',() => {
+        
+    })
+    test('effectClear returns a new gameBoard, if equipment type is modern, removes from global wreckage by 2 (no negatives)',() => {
+        
+    })
 })
 
 

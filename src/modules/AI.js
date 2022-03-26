@@ -273,7 +273,6 @@ const _discountContribution = function(someBoard, someCount, getState, getWrecka
 
 }
 
-//returning undefined legalMoves. Most probably it's the Object.assign problem. Console.log some newboards somewhere below and see what the results are. 
    
 const _hitCheckingMechanism = function(key, currentGameState, currentBoard, gs=getSt, nb=newBrd, gb=getBrd, getKey=getBCont, setKey=setBCont,gw=getW,sw=setW,gp=getP,sp=setP, gc=getC){
     
