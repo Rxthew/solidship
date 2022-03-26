@@ -13,6 +13,7 @@ const getChangedShip = ships.getChangedShip
 const getShipCount = ships.getShipCount
 const setShipCount = ships.setShipCount
 const getEquipmentType = ships.getEquipmentType
+const setNewShip = ships.setNewShip
 
 
 test('Basic ship returns an object with a damage equalling 0, some new type, and a breakpoint', () => {
@@ -119,9 +120,20 @@ test('getEquipmentType returns object with the equipment type, or error if prope
     expect(getEquipmentType(plantingShip4)).toEqual(['legacy'])
     let clearingShip3 = clear()
     expect(getEquipmentType(clearingShip3)).toEqual(['legacy'])
-    getChangedShip(clearingShip3,['properties','equipment','type'],'modern')
-    expect(getEquipmentType(clearingShip3)).toEqual(['modern'])
+    let clear4 = getChangedShip(clearingShip3,['properties','equipment','type'],'modern')
+    expect(getEquipmentType(clear4)).toEqual(['modern'])
     
+})
+
+test('setNewShip takes a ship and some properties and copies them. Properties mentioned should not mutate original ship if modified', () => {
+    let newShip = new planting();
+    let newerShip = setNewShip(newShip,['properties','messagingProtocol'])
+    newerShip.properties.messagingProtocol = 'I am not a messaging protocol'
+    expect(newerShip.properties.messagingProtocol).toBe('I am not a messaging protocol')
+    expect(newShip.properties.messagingProtocol).toBe('planting')
+    newerShip.properties.equipment.type = 'no equipment here'
+    expect(newerShip.properties.equipment.type).toBe('no equipment here')
+    expect(newShip.properties.equipment.type).toBe('no equipment here')
 })
 
 describe('testing getChangedShip and components to evaluate that they can be used to customise ships',() => {

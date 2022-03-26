@@ -140,14 +140,65 @@ export const components = function(act){
     }   
 }
 
- export  const getChangedShip = function(previousShip, changes, key){
-       let ship = Object.create(Object.getPrototypeOf(previousShip));
-       Object.assign(ship,previousShip) 
-       let targetKey = changes[changes.length - 1]
+
+export const setNewShip = function(someShip, someShipProps){
+    let propsObj = {}
+    let finalTarget = someShip
+    let falseShip = Object.create(Object.getPrototypeOf(someShip))
+    Object.assign(falseShip,someShip) 
+    delete falseShip[someShipProps[0]]
+   
+    for(let elem of someShipProps){
+        propsObj[elem] = Object.assign({}, finalTarget[elem])
+        finalTarget = finalTarget[elem]
+    }
+    let newShip = Object.create(Object.getPrototypeOf(someShip))
+    Object.assign(newShip,falseShip)
+    let newFinalTarget = newShip
+    for(let elem of someShipProps){
+        Object.assign(newFinalTarget, {[elem] : propsObj[elem]})
+        newFinalTarget = newFinalTarget[elem]
+    }
+    return newShip
+
+}
+
+const _checkForProps = function(someShip, someProps){
+    let target = someProps[someProps.length - 1]
+    let revisedProps = someProps.filter(elem => elem !== target)
+    let result = []
+    let inside = someShip
+    for(let elem of revisedProps){
+        if(Object.prototype.hasOwnProperty.call(inside,elem)){
+            result = [...result,elem]
+        }
+        else{
+            break
+        }
+        inside = inside[elem]
+    }
+    return result
+
+
+}
+
+
+ export const getChangedShip = function(previousShip, changePath, key){
+    let targetKey = changePath[changePath.length - 1]
+       
+    let _haves = _checkForProps(previousShip, changePath)
+          
+    let ship = (function(){
+        if(_haves.length > 0){
+            return setNewShip(previousShip,_haves)
+        }
+        return Object.assign(Object.create(Object.getPrototypeOf(previousShip)),previousShip)
+       })() 
+       
 
        const _iterateThroughProperties = function(someRef){   
         let finalTarget = ship     
-        for(let elem of changes){
+        for(let elem of changePath){
             if(!Object.prototype.hasOwnProperty.call(finalTarget,elem)){ 
                 finalTarget[elem] = {}
             }
@@ -192,6 +243,8 @@ export const setShipCount = function(ship, propsObj){
     ship.properties.equipment.count = Object.assign(count, propsObj)
     return ship 
 }
+
+
 
 export const getEquipmentType = function(ship){
     let checked = ['properties','equipment']
