@@ -68,7 +68,7 @@ test('Other ship objects contain right properties', () => {
         } 
     )
 
-test('Other ships isSunk method is available (and returns true/false depending on the relationsihp between damage and breakpoint)', () => {
+test('Other ships isSunk method is available (and returns true/false depending on the relationship between damage and breakpoint)', () => {
     let plantingShip = planting();
     plantingShip.damage += 3
     expect(plantingShip.isSunk(plantingShip.damage,plantingShip.breakPoint)).toBe(
@@ -163,6 +163,16 @@ describe('testing getChangedShip and components to evaluate that they can be use
         expect(customMessagingShip.properties).toEqual({messagingProtocol : ['message', 'relay']})
 
     })
+
+    test('getChangedShip should not mutate the original ship passed through', () => {
+        let customMessagingCopy = getChangedShip(new basicShip(),['action'],'relay')
+        customMessagingCopy = getChangedShip(customMessagingCopy,['properties','messagingProtocol'],'relay')
+        let customMessCopy2 = getChangedShip(customMessagingCopy,['properties', 'messagingProtocol'], 'receiver')
+        expect(customMessCopy2.properties).toEqual({messagingProtocol : ['message','trigger']})
+        expect(customMessagingCopy.properties).toEqual({messagingProtocol : ['message','relay']})
+        
+    })
+
     test('getChangedShip should return an error if messagingProtocol is somehow attached without action', () => {
         let customMessagingShip2 = getChangedShip(new basicShip(),['properties','messagingProtocol'],'relay')
         expect(customMessagingShip2).toEqual({error : 'Ship does not have a valid action property'})
