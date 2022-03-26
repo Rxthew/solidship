@@ -196,7 +196,31 @@ export const effectFarm = function(currentBoard, newGameBoard, shipLoc, currentG
 
 
 export const effectClear = function(currentBoard, newGameBoard, shipLoc, currentGameState, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,gw=getW, sw=setW, gp=getP, gc=getSc, sc=setSc, gte=getEt, newS=setNs){
+    newGameBoard = ngb()
+    const ship = getCont(currentBoard, shipLoc)
+    let type = gte(ship)
+    const wreckCount = gw(currentGameState)
+    const provisoryWreckCount =  wreckCount - _countIncrementByType[type] 
 
+    const _incrementShip = function(){
+        let currentShipCount = gc(ship)
+        let actualWreckCount = (() => {
+            if(provisoryWreckCount < 0){
+                let addedToCount = provisoryWreckCount + _countIncrementByType[type]
+                //you're not doing this right. 
+
+            }
+        })()
+        let newShipCount = currentShipCount.wreckage + _countIncrementByType[type]
+        let newShip = newS(ship,['properties','equipment','count'])
+        newShip = sc(newShip, {wreckage : newShipCount})
+        return newShip
+    }
+
+    const _decrementState = function(){
+        
+        const newWreckCount = - _countIncrementByType[type] - wreckCount 
+    }
 }
 
 
