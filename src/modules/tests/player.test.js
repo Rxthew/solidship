@@ -1,7 +1,7 @@
 import {test,expect,describe} from "@jest/globals";
 import { gameBoard } from "../gameboard";
-import {playerObj, placeShip, moveShip, blockMissileAction, upgradeShip, effectFarm} from '../player';
-import {basicShip,legacyShip,plantingShip,getChangedShip} from '../ships'
+import {playerObj, placeShip, moveShip, blockMissileAction, upgradeShip, effectFarm,effectClear} from '../player';
+import {basicShip,legacyShip,plantingShip,clearingShip,getChangedShip} from '../ships'
 
 
 test('Player object has correct properites', () => {
@@ -149,10 +149,21 @@ describe('testing effectFarm & effectClear', () => {
     anothPlant.properties.equipment.type = ['modern']
     greatBigGB.board.B1.contains = aPlant
     greatBigGB.board.C4.contains = anothPlant
+    greatBigGB.wreckage = 4
 
     const firstIter = effectFarm(greatBigGB.board, undefined, 'B1', greatBigGB)
     
     const secondIter = effectFarm(firstIter.board, undefined, 'C4', firstIter )
+
+    let aWreck = clearingShip()
+    let anothWreck = clearingShip()
+    anothWreck.properties.equipment.type = ['modern']
+    greatBigGB.board.B5.contains = aWreck
+    greatBigGB.board.C5.contains = anothWreck
+
+    const thirdIter = effectClear(secondIter.board, undefined, 'B5', secondIter)
+    const fourthIter = effectClear(thirdIter.board, undefined, 'C5', thirdIter)
+    const fifthIter = effectClear(fourthIter.board, undefined, 'C4', fourthIter)
     
 
     test('effectFarm returns a new gameBoard, if equipment type is legacy, adds to plant count by 1',() => {
@@ -176,15 +187,29 @@ describe('testing effectFarm & effectClear', () => {
         
     })
     test('effectClear returns a new gameBoard, if equipment type is legacy, adds to wreckage count by 1',() => {
+        expect(thirdIter.board.B5.contains.properties.equipment.count.wreckage).toBe(1)
 
     })
     test('effectClear returns a new gameBoard, if equipment type is modern, adds to wreckage count by 2',() => {
+        expect(fourthIter.board.C5.contains.properties.equipment.count.wreckage).toBe(2)
+
+        
+    })
+    test('effectClear returns a new gameBoard, equipment type is valid but does not add to wreckage if there is none to be added from the board',() => {
+        expect(fifthIter.board.C4.contains.properties.equipment.count.wreckage).toBe(1)
+
         
     })
     test('effectClear returns a new gameBoard, if equipment type is legacy, removes from global wreckage by 1 (no negatives)',() => {
+        expect(greatBigGB.wreckage).toBe(4)
+        expect(firstIter.wreckage).toBe(4)
+        expect(secondIter).wreckage.toBe(4)
+        expect(thirdIter).wreckage.toBe(3)
         
     })
     test('effectClear returns a new gameBoard, if equipment type is modern, removes from global wreckage by 2 (no negatives)',() => {
+        expect(fourthIter.wreckage).toBe(1)
+        expect(fifthIter.wreckage).toBe(0)
         
     })
 })
