@@ -204,14 +204,8 @@ export const effectClear = function(currentBoard, newGameBoard, shipLoc, current
 
     const _incrementShip = function(){
         let currentShipCount = gc(ship)
-        let actualWreckCount = (() => {
-            if(provisoryWreckCount < 0){
-                let addedToCount = provisoryWreckCount + _countIncrementByType[type]
-                //you're not doing this right. 
-
-            }
-        })()
-        let newShipCount = currentShipCount.wreckage + _countIncrementByType[type]
+        let actualWreckCount = provisoryWreckCount <= 0 ? wreckCount : provisoryWreckCount
+        let newShipCount = currentShipCount.wreckage + actualWreckCount
         let newShip = newS(ship,['properties','equipment','count'])
         newShip = sc(newShip, {wreckage : newShipCount})
         return newShip
