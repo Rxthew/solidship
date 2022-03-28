@@ -212,9 +212,16 @@ export const effectClear = function(currentBoard, newGameBoard, shipLoc, current
     }
 
     const _decrementState = function(){
-        
-        const newWreckCount = - _countIncrementByType[type] - wreckCount 
+        const newWreckCount = - provisoryWreckCount <= 0 ? 0 : provisoryWreckCount
+        Object.assign(newGameBoard, {plants : gp(currentGameState)}, {state : 'effect clear action'})
+        newGameBoard = sw(newGameBoard, newWreckCount)
+        return newGameBoard 
     }
+
+    newGameBoard = _decrementState()
+    let cont = createContainsObject(currentBoard, shipLoc, _incrementShip(),getCont)
+    updateBoardContents(gb(newGameBoard),cont,setCont)
+    return newGameBoard
 }
 
 
