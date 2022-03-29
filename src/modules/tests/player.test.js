@@ -149,17 +149,19 @@ describe('testing effectFarm & effectClear', () => {
     anothPlant.properties.equipment.type = ['modern']
     greatBigGB.board.B1.contains = aPlant
     greatBigGB.board.C4.contains = anothPlant
+    greatBigGB.board.C4.contains.properties.equipment.count.wreckage = 0 
     greatBigGB.wreckage = 4
-
-    const firstIter = effectFarm(greatBigGB.board, undefined, 'B1', greatBigGB)
-    
-    const secondIter = effectFarm(firstIter.board, undefined, 'C4', firstIter )
-
     let aWreck = clearingShip()
     let anothWreck = clearingShip()
     anothWreck.properties.equipment.type = ['modern']
     greatBigGB.board.B5.contains = aWreck
     greatBigGB.board.C5.contains = anothWreck
+
+    const firstIter = effectFarm(greatBigGB.board, undefined, 'B1', greatBigGB)
+    
+    const secondIter = effectFarm(firstIter.board, undefined, 'C4', firstIter )
+
+    
 
     const thirdIter = effectClear(secondIter.board, undefined, 'B5', secondIter)
     const fourthIter = effectClear(thirdIter.board, undefined, 'C5', thirdIter)
@@ -204,8 +206,8 @@ describe('testing effectFarm & effectClear', () => {
     test('effectClear returns a new gameBoard, if equipment type is legacy, removes from global wreckage by 1 (no negatives)',() => {
         expect(greatBigGB.wreckage).toBe(4)
         expect(firstIter.wreckage).toBe(4)
-        expect(secondIter).wreckage.toBe(4)
-        expect(thirdIter).wreckage.toBe(3)
+        expect(secondIter.wreckage).toBe(4)
+        expect(thirdIter.wreckage).toBe(3)
         
     })
     test('effectClear returns a new gameBoard, if equipment type is modern, removes from global wreckage by 2 (no negatives)',() => {
