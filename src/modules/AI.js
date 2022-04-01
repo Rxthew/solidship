@@ -354,3 +354,4 @@ export const updateAIWrapper = function(someFunc,...params){
     gameAI.sessionAI = someFunc(gameAI.sessionAI, ...params)
     return
 }
+
