@@ -355,3 +355,15 @@ export const updateAIWrapper = function(someFunc,...params){
     return
 }
 
+export const subscribeAIEvts = function(someSubFunc){
+    someSubFunc('updateAIObj',updateAIWrapper)
+    return    
+
+}
+
+export const triggerAIEvts = function(somePubFunc, aiReactParams=[getSt, [newBrd,getBrd]],updateStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],getC], sendStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getLgalMovs],somePubFunc]){
+    somePubFunc('updateAIObj', AIReact, ...aiReactParams)
+    somePubFunc('updateAIObj', updateStatus,...updateStatParams)
+    somePubFunc('updateAIObj', sendStatus,...sendStatParams)
+    return
+}
