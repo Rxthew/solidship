@@ -1,12 +1,16 @@
 const _buildBoard = function(){
-    const gameBoard = document.createElement('table')
-    const gameBody = document.createElement('tbody')
-    gameBoard.appendChild(gameBody)
     const lets = ['A','B','C','D','E','F']
     const nums = ['1','2','3','4','5','6']
+
+    const gameBoard = document.createElement('table')
+    gameBoard.classList.add('gamezone')
+    const gameBody = document.createElement('tbody')
     const rowHead = document.createElement('tr')
-    let whiteSpace = document.createElement('th')
+    const whiteSpace = document.createElement('th')
     rowHead.appendChild(whiteSpace)
+    
+    gameBoard.appendChild(gameBody)
+
     for(let elem of lets){
         let th = document.createElement('th')
         th.textContent = elem
@@ -21,14 +25,24 @@ const _buildBoard = function(){
         for(let letr of lets){
             let td = document.createElement('td')
             tr.appendChild(td)
-            td.className = `${letr}${elem}`
+            td.classList.add(`${letr}${elem}`) 
         }
         gameBody.appendChild(tr)
     }
+    return gameBoard
 }
 
 
 export const renderState = function(someGb, someGetCont){
-
-
+    let newBoard = _buildBoard()
+    if(document.querySelector('.gamezone')){
+        document.querySelector('.gamezone').remove()
+    }
+    document.body.appendChild(newBoard)
+    
+    for (let elem of Object.keys(someGb)){
+        if(document.querySelector(`.${elem}`) && someGetCont(someGb,elem)){
+            document.querySelector(`.${elem}`).textContent = 'S'
+        }
+    }   
 }
