@@ -32,6 +32,91 @@ const _buildBoard = function(){
     return gameBoard
 }
 
+export const actionParser = function(event,somePubFunc, someGb){
+    if(event.target.textContent === ''){
+        return
+    }
+    let keys = Object.keys(someGb)
+    for(let elem of keys){
+        if(event.target.classList.contains(elem)){
+            somePubFunc('filterAction', elem)
+        }
+    }
+
+}
+
+
+const _createConsole = function(){
+    if(document.querySelector('.console')){
+        document.querySelector('.console').remove()
+    }
+    let console = document.createElement('div')
+    console.classList.add('console')
+    document.body.appendChild(console)
+    return document.querySelector('.console')
+
+}
+
+const _shipKeyToUserElement = function(ship){
+    let shipProps = Object.keys(ship)
+    let props = []
+        for(let elem of shipProps){
+            let prop = document.createElement('div')
+            let title = document.createElement('span')
+            prop.classList.add('property')
+            title.classList.add('propertyTitle')
+            title.textContent = elem
+            prop.appendChild(title)
+            props.push(prop)
+        }
+        return props
+}
+
+const _shipValueToUserElement = function(shipObj,propArr){
+    const parent = propArr[0]
+    let value = Object.values(shipObj)[0]
+    if(Array.isArray(value)){
+        let container = document.createElement('div')
+        container.classList.add('container')
+        for(let elem of value){
+            let uiElement = document.createElement('span')
+            uiElement.classList.add('element')
+            uiElement.textContent = elem
+            container.appendChild(uiElement)
+        }
+        parent.appendChild(container)
+    }
+    else if(typeof value === 'string'){
+        let uiElement = document.createElement('span')
+        uiElement.classList.add('element')
+        uiElement.textContent = value
+        parent.appendChild()
+    }
+    let newPropArr = [parent]
+    return newPropArr
+}
+
+
+
+
+const _displayShipProperties = function(event,someGb,someGetCont){
+    if(event.target.textContent === ''){
+        return
+    }
+    let console = _createConsole()
+    let keys = Object.keys(someGb)
+    for (let elem of keys){
+        if(event.target.classList.contains(elem)){
+            let ship = someGetCont(someGb,elem)
+            let shipKeys = _shipKeyToUserElement(ship)
+            for(let shipKey of shipKeys){
+                shipKey.classList.add(`${elem}`)
+                console.appendChild(shipKey)
+            }
+        }
+    }
+    return console
+}
 
 export const renderState = function(someGb, someGetCont){
     let newBoard = _buildBoard()
@@ -46,3 +131,4 @@ export const renderState = function(someGb, someGetCont){
         }
     }   
 }
+
