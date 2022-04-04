@@ -45,19 +45,18 @@ export const actionParser = function(event,somePubFunc, someGb){
 
 }
 
-
-const _createConsole = function(){
-    if(document.querySelector('.console')){
-        document.querySelector('.console').remove()
+const _createViewConsole = function(){
+    if(document.querySelector('.viewConsole')){
+        document.querySelector('.viewConsole').remove()
     }
-    let console = document.createElement('div')
-    console.classList.add('console')
-    document.body.appendChild(console)
-    return document.querySelector('.console')
+    let viewConsole = document.createElement('div')
+    viewConsole.classList.add('viewConsole')
+    document.querySelector('.mainConsole').appendChild(viewConsole) 
+    return document.querySelector('.viewConsole')
 
 }
 
-const _shipKeyToUserElement = function(ship){
+const _shipKeyToUserElement = function(ship,someGb,someGetCont){
     let shipProps = Object.keys(ship)
     let props = []
         for(let elem of shipProps){
@@ -66,19 +65,42 @@ const _shipKeyToUserElement = function(ship){
             prop.classList.add('property')
             title.classList.add('propertyTitle')
             title.textContent = elem
+            title.onclick = function(event){
+                _displayFurtherShipProperties(event,someGb,someGetCont) //Note: modify to be in line with other events
+                title.onclick = null}   
             prop.appendChild(title)
             props.push(prop)
         }
         return props
 }
 
-const _shipValueToUserElement = function(shipObj,propArr){
-    const parent = propArr[0]
-    let value = Object.values(shipObj)[0]
-    if(Array.isArray(value)){
+
+const _chartShipObjPath = function(event){
+    let parent = event.target.parentElement
+    let path = [event.target.textContent]
+    while(parent !== document.querySelector('.viewConsole')){
+        if(parent === document.querySelector('body')){
+            return
+        }      
+        
+        parent = parent.parentElement
+        let children = Array.from(parent.children)
+        children = children.filter(child => child.classList.contains('propertyTitle'))
+        if(children.length === 0){
+            return path
+        }
+        path.unshift(children[0].textContent)
+    }
+    return path
+}
+
+
+const _shipValueToUserElement = function(shipObj,val){
+    const parent = shipObj
+    if(Array.isArray(val)){
         let container = document.createElement('div')
         container.classList.add('container')
-        for(let elem of value){
+        for(let elem of val){
             let uiElement = document.createElement('span')
             uiElement.classList.add('element')
             uiElement.textContent = elem
@@ -86,36 +108,56 @@ const _shipValueToUserElement = function(shipObj,propArr){
         }
         parent.appendChild(container)
     }
-    else if(typeof value === 'string'){
+    else if(typeof val === 'string' || typeof val === 'number'){
         let uiElement = document.createElement('span')
         uiElement.classList.add('element')
-        uiElement.textContent = value
-        parent.appendChild()
+        uiElement.textContent = val
+        parent.appendChild(uiElement)
     }
-    let newPropArr = [parent]
-    return newPropArr
+    return parent
 }
 
 
 
-
-const _displayShipProperties = function(event,someGb,someGetCont){
+const _displayInitShipProperties = function(event,someGb,someGetCont){
     if(event.target.textContent === ''){
         return
     }
-    let console = _createConsole()
+    let viewConsole = _createViewConsole()
     let keys = Object.keys(someGb)
     for (let elem of keys){
         if(event.target.classList.contains(elem)){
             let ship = someGetCont(someGb,elem)
-            let shipKeys = _shipKeyToUserElement(ship)
+            let shipKeys = _shipKeyToUserElement(ship,someGb,someGetCont)
             for(let shipKey of shipKeys){
                 shipKey.classList.add(`${elem}`)
-                console.appendChild(shipKey)
+                viewConsole.id = `${elem}`
+                viewConsole.appendChild(shipKey)
             }
         }
     }
-    return console
+    return viewConsole
+}
+
+const _displayFurtherShipProperties = function(event, someGb, someGetCont){
+    let path = _chartShipObjPath(event)
+    let key = document.querySelector('.viewConsole').id
+    let finalTarget = someGetCont(someGb,key)
+    for(let elem of path){
+        finalTarget = finalTarget[elem]
+    }
+    if(Array.isArray(finalTarget) || typeof finalTarget === 'string' || typeof finalTarget === 'number'){
+        return _shipValueToUserElement(event.target.parentElement,finalTarget)
+    }
+    else if(typeof finalTarget === 'object'){
+        let shipKeys = _shipKeyToUserElement(finalTarget,someGb,someGetCont)
+        for(let shipKey of shipKeys){
+            event.target.parentElement.appendChild(shipKey)
+        }
+        return
+
+    }
+
 }
 
 export const renderState = function(someGb, someGetCont){
@@ -127,7 +169,9 @@ export const renderState = function(someGb, someGetCont){
     
     for (let elem of Object.keys(someGb)){
         if(document.querySelector(`.${elem}`) && someGetCont(someGb,elem)){
-            document.querySelector(`.${elem}`).textContent = 'S'
+            document.querySelector(`.${elem}`).textContent = 'S' //to modify later
+            document.querySelector(`.${elem}`).onclick = function(event) {_displayInitShipProperties(event, someGb, someGetCont);
+            document.querySelector(`.${elem}`).onclick = null} //to modify later in line with other events. 
         }
     }   
 }
