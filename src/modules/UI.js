@@ -45,6 +45,23 @@ export const actionParser = function(event,somePubFunc, someGb){
 
 }
 
+const createMainConsole = function(){
+
+}
+
+const optionsView = {
+    default : function(){
+
+    },
+    ship : function(){
+
+    }
+}
+
+const createOptionsConsole = function(){
+
+}
+
 const _createViewConsole = function(){
     if(document.querySelector('.viewConsole')){
         document.querySelector('.viewConsole').remove()

@@ -193,8 +193,6 @@ export const effectFarm = function(currentBoard, newGameBoard, shipLoc, currentG
 
 }
 
-
-
 export const effectClear = function(currentBoard, newGameBoard, shipLoc, currentGameState, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,gw=getW, sw=setW, gp=getP, gc=getSc, sc=setSc, gte=getEt, newS=setNs){
     newGameBoard = ngb()
     const ship = getCont(currentBoard, shipLoc)
