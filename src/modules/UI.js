@@ -1,3 +1,16 @@
+import * as ships from './ships.js'
+
+
+const standardShipStore = {
+    'Basic' : function(){return new ships.basicShip()},
+    'Basic (Legacy)' : function(){return new ships.basicLegacyShip()},
+    'Legacy' : ships.legacyShip,
+    'Planting' : ships.plantingShip,
+    'Defense' : ships.defenseShip,
+    'Relay' : ships.relayShip,
+    'Clearing' : ships.clearingShip
+}
+
 const _buildBoard = function(){
     const lets = ['A','B','C','D','E','F']
     const nums = ['1','2','3','4','5','6']
@@ -32,6 +45,8 @@ const _buildBoard = function(){
     return gameBoard
 }
 
+
+
 export const actionParser = function(event,somePubFunc, someGb){
     if(event.target.textContent === ''){
         return
@@ -46,20 +61,63 @@ export const actionParser = function(event,somePubFunc, someGb){
 }
 
 const createMainConsole = function(){
+    let mainConsole = document.createElement('div')
+    mainConsole.classList.add('mainConsole')
+    document.body.appendChild(mainConsole)
+    return mainConsole
 
 }
 
-const optionsView = {
-    default : function(){
-
-    },
-    ship : function(){
-
+const _optionsUISetup = function(){
+    if(document.querySelector('.options')){
+        document.querySelector('.options').remove()
     }
+    let options = document.createElement('div')
+    let title = document.createElement('span')
+    options.classList.add('options')
+    title.classList.add('optionTitle')
+    options.appendChild(title)
+    document.querySelector('mainConsole').appendChild(options)
+    return options
+
 }
 
-const createOptionsConsole = function(){
+const _shipStore = function(shipsObj=standardShipStore){
+    let store = document.createElement('div')
+    store.classList.add('shipStore')
+    let choices = Object.keys(shipsObj)
+    for (let elem of choices){
+        let ship = document.createElement('span')
+        ship.textContent = elem
+        ship.classList.add('shipOption')
+        //ship.onclick = when clicked, series of happenings: first initialises the object value associated with key chosen.
+        // Then prompts the user to click on an empty place in the grid to place the ship on. Then re-renders the gameboard
+        //and the console. Also: if user fails to click on an empty grid item, user is prompted with an error and the next
+        // click re renders everything. If user fails to click in the gameboard and click anywhere else: re-render everything. 
+        store.appendChild(ship) 
+    }
 
+}
+
+const _componentStore = function(componentsObj=ships.components){
+    //remember componentsObj still need to initialise. 
+    
+}
+
+
+const createOptionsConsole = function(optionsObj,params){
+    let options = _optionsUISetup()
+    let allOptions = Object.keys(optionsObj)
+    for(let elem of allOptions){
+        let opt = document.createElement('span')
+        opt.classList.add('option')
+        opt.textContent = elem
+        opt.onclick = function(){
+            optionsObj[elem](...params)
+            opt.onclick = null //to fix in line with other events. 
+        }
+        options.appendChild(opt)
+    }    
 }
 
 const _createViewConsole = function(){
@@ -80,7 +138,7 @@ const _shipKeyToUserElement = function(ship,someGb,someGetCont){
             let prop = document.createElement('div')
             let title = document.createElement('span')
             prop.classList.add('property')
-            title.classList.add('propertyTitle')
+            title.classList.add('propertyTitle')        
             title.textContent = elem
             title.onclick = function(event){
                 _displayFurtherShipProperties(event,someGb,someGetCont) //Note: modify to be in line with other events
