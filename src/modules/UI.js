@@ -1,3 +1,5 @@
+import { defaultConfig} from './gameboard.js'
+import { gameEvents } from './gamestate.js'
 import * as ships from './ships.js'
 
 
@@ -9,6 +11,12 @@ const standardShipStore = {
     'Defense' : ships.defenseShip,
     'Relay' : ships.relayShip,
     'Clearing' : ships.clearingShip
+}
+
+const intermediateStorage = {
+    modify : false,
+    extend : false,
+    path : null
 }
 
 const _buildBoard = function(){
@@ -131,7 +139,7 @@ const _createViewConsole = function(){
 
 }
 
-const _shipKeyToUserElement = function(ship,someGb,someGetCont){
+const _shipKeyToUserElement = function(ship,someGb,someGetCont=defaultConfig.getBoardContains,publish=gameEvents.publish){
     let shipProps = Object.keys(ship)
     let props = []
         for(let elem of shipProps){
@@ -141,7 +149,7 @@ const _shipKeyToUserElement = function(ship,someGb,someGetCont){
             title.classList.add('propertyTitle')        
             title.textContent = elem
             title.onclick = function(event){
-                _displayFurtherShipProperties(event,someGb,someGetCont) //Note: modify to be in line with other events
+                publish('viewShipProperty', event,someGb,someGetCont) 
                 title.onclick = null}   
             prop.appendChild(title)
             props.push(prop)
@@ -235,7 +243,32 @@ const _displayFurtherShipProperties = function(event, someGb, someGetCont){
 
 }
 
-export const renderState = function(someGb, someGetCont){
+const upgradeShipUI = {
+    modificationActive : function(event){
+        if(event.target.classList.contains('mod')){
+            event.target.classList.add('active')
+
+        }
+
+    },
+    highlightKeys  : function(event){
+        if(intermediateStorage.modification && event.target.classList.includes('propertyTitle')){
+            event.target.classList.add('highlight')
+        }
+    },
+    propertyToModifyIdentified : function(event){
+        if(event.target.classList.contains('mod') && event.target.classList.contains('active')){
+            event.target.classList.remove('active')
+            //still need to get highlighted keys as path
+            //transition screen to the components shop
+            //after component is chosen...
+        }
+    }
+
+
+}
+
+export const renderState = function(someGb, someGetCont=defaultConfig.getBoardContains, publish=gameEvents.publish){
     let newBoard = _buildBoard()
     if(document.querySelector('.gamezone')){
         document.querySelector('.gamezone').remove()
@@ -245,9 +278,16 @@ export const renderState = function(someGb, someGetCont){
     for (let elem of Object.keys(someGb)){
         if(document.querySelector(`.${elem}`) && someGetCont(someGb,elem)){
             document.querySelector(`.${elem}`).textContent = 'S' //to modify later
-            document.querySelector(`.${elem}`).onclick = function(event) {_displayInitShipProperties(event, someGb, someGetCont);
-            document.querySelector(`.${elem}`).onclick = null} //to modify later in line with other events. 
+            document.querySelector(`.${elem}`).onclick = function(event) {
+            publish('viewShip',event,someGb,someGetCont);
+            document.querySelector(`.${elem}`).onclick = null} 
         }
     }   
 }
 
+export const subscribeUIEvents = function(someSubFunc=gameEvents.subscribe){
+    someSubFunc('viewShip', _displayInitShipProperties)
+    someSubFunc('viewShipProperty',_displayFurtherShipProperties)
+
+
+}

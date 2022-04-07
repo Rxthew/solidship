@@ -1,5 +1,7 @@
 import { events } from './events.js';
 import { gameBoard } from './gameboard.js';
+import { subscribeAIEvts } from './AI.js';
+import { subscribeUIEvents } from './UI.js'
 
 
 
@@ -15,6 +17,10 @@ export const updateState = function(newState, receiver){
 }
 
 //see triggerAIEvts, before that publish updateState? 
+export const subscribeAllEvents = function(){
+    subscribeAIEvts(gameEvents.subscribe)
+    subscribeUIEvents(gameEvents.subscribe)
+}
 
 
 
