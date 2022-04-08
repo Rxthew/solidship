@@ -237,6 +237,7 @@ const revealShipProps = {
     },
     betterRecordPaths : function(event, someGb, someGetCont=defaultConfig.getBoardContains){
         let paths = []
+        let confirmedPaths = []
         let addNewPath = function(obj, currentPath, prop){
             let first = obj
             for(let elem of currentPath){
@@ -246,7 +247,21 @@ const revealShipProps = {
                 first = first[elem]
 //work on this.
             }
+        }
+        let finalisePath = function(obj,prop){
+            let first = obj
+            for(let elem of paths){
+                for(let e of elem){
+                    if(first === elem[elem.length - 1]){
+                        //check if it's an object. 
+                        //if yes - take all its key and add new path to the currentpath for each
+                        //if no pop elem(i.e the currentPath) from paths and put it in confirmedPaths
+                        //whatever the outcome, return first to obj again. 
+                    }
+                    first = first[e]
+                }
 
+            }
 
         }
 
