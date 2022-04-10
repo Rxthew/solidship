@@ -237,40 +237,57 @@ const revealShipProps = {
     },
     betterRecordPaths : function(event, someGb, someGetCont=defaultConfig.getBoardContains){
         let paths = []
+        let key = event.target.id //temporary
+        //let key = document.querySelector('.viewConsole').id
+        let obj = someGetCont(someGb,key)
         let confirmedPaths = []
         let addNewPath = function(obj, currentPath, prop){
             let first = obj
-            for(let elem of currentPath){
-                if(elem === currentPath[currentPath.length - 1]){
-                    paths.push([...currentPath, prop])
-                }
-                first = first[elem]
-//work on this.
-            }
-        }
-        let finalisePath = function(obj,prop){
-            let first = obj
-            for(let elem of paths){
-                for(let e of elem){
-                    if(first === elem[elem.length - 1]){
-                        //check if it's an object. 
-                        //if yes - take all its key and add new path to the currentpath for each
-                        //if no pop elem(i.e the currentPath) from paths and put it in confirmedPaths
-                        //whatever the outcome, return first to obj again. 
+            if(currentPath){
+                for(let elem of currentPath){
+                    if(elem === currentPath[currentPath.length - 1]){
+                        paths.push([...currentPath, prop])
                     }
-                    first = first[e]
-                }
+                    first = first[elem]
+                } 
+            }
+            else{
+                paths.push([prop])
 
             }
-
         }
+        let initialInjection = (function(){
+            for(let elem of Object.keys(obj)){
+                addNewPath(obj,null,elem)
+            }
+        })()
 
-        let key = document.querySelector('.viewConsole').id
+        let finalisePath = (function(obj){
+            let first = obj
+                for(let path of paths){
+                    for(let elem of path){
+                        if(elem === path[path.length - 1]){
+                            if(Array.isArray(first[elem]) || typeof first[elem] === 'string' || typeof first[elem] === 'number'){
+                                 confirmedPaths = [...confirmedPaths, path]
+                                 delete paths[paths.indexOf(path)]      
+                            }
+                            else if(typeof first[elem] === 'object'){
+                                let newCheckPoints = Object.keys(first[elem])
+                                for(let checkPoint of newCheckPoints){
+                                    addNewPath(obj,path,checkPoint)
+                                }
+                                delete paths[paths.indexOf(path)]
+                            }
+                        }
+                        first = first[elem]
+                    }
+                    first = obj
+                }
+                paths = paths.filter(path => path !== undefined)
+                return {paths, confirmedPaths} //temporary
+        })()
         
-        let target = someGetCont(someGb,key)
-        for (let elem of Object.keys()){
-
-        }
+        
     }
     //these two aren't good enough. 
     recordPaths : function(event,someGb,someGetCont=defaultConfig.getBoardContains){
