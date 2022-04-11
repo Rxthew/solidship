@@ -235,105 +235,6 @@ const revealShipProps = {
         }
     
     },
-    betterRecordPaths : function(event, someGb, someGetCont=defaultConfig.getBoardContains){
-        let paths = []
-        let key = event.target.id //temporary
-        //let key = document.querySelector('.viewConsole').id
-        let obj = someGetCont(someGb,key)
-        let confirmedPaths = []
-        let addNewPath = function(obj, currentPath, prop){
-            let first = obj
-            if(currentPath){
-                for(let elem of currentPath){
-                    if(elem === currentPath[currentPath.length - 1]){
-                        paths.push([...currentPath, prop])
-                    }
-                    first = first[elem]
-                } 
-            }
-            else{
-                paths.push([prop])
-
-            }
-        }
-        let initialInjection = (function(){
-            for(let elem of Object.keys(obj)){
-                addNewPath(obj,null,elem)
-            }
-        })()
-
-        let finalisePath = (function(obj){
-            let first = obj
-                for(let path of paths){
-                    for(let elem of path){
-                        if(elem === path[path.length - 1]){
-                            if(Array.isArray(first[elem]) || typeof first[elem] === 'string' || typeof first[elem] === 'number'){
-                                 confirmedPaths = [...confirmedPaths, path]
-                                 delete paths[paths.indexOf(path)]      
-                            }
-                            else if(typeof first[elem] === 'object'){
-                                let newCheckPoints = Object.keys(first[elem])
-                                for(let checkPoint of newCheckPoints){
-                                    addNewPath(obj,path,checkPoint)
-                                }
-                                delete paths[paths.indexOf(path)]
-                            }
-                        }
-                        first = first[elem]
-                    }
-                    first = obj
-                }
-                paths = paths.filter(path => path !== undefined)
-                return {paths, confirmedPaths} //temporary
-        })()
-        
-        
-    }
-    //these two aren't good enough. 
-    recordPaths : function(event,someGb,someGetCont=defaultConfig.getBoardContains){
-        for(let elem of Object.keys()){
-
-        }
-        let paths = []
-        let key = document.querySelector('.viewConsole').id
-        let firstTarget = someGetCont(someGb,key)
-        for(let elem of paths){
-            if(Array.isArray(firstTarget[elem]) || typeof firstTarget[elem] === 'string' || typeof firstTarget[elem] === 'number'){
-                continue
-            }
-            else if(typeof firstTarget[elem] === 'object'){
-                for(let e of Object.keys(firstTarget[elem])){
-                    paths.push([elem, e])
-                }
-            }
-
-        }
-        
-
-    },
-    displayAllProperties : function(event, someGb, someGetCont=defaultConfig.getBoardContains){//careful about use of 'this'.
-        let key = document.querySelector('.viewConsole').id
-        let firstTarget = someGetCont(someGb,key)
-        let toExplore = [...Object.keys(firstTarget)]
-        while(toExplore.length > 0){
-            for(let elem of toExplore){
-                let secondTarget = firstTarget[elem]
-                if(Array.isArray(secondTarget) || typeof secondTarget === 'string' || typeof secondTarget === 'number'){
-                     this.valueToUIelement(event.target.parentElement,secondTarget)
-                     toExplore = toExplore.filter(e => e !== elem)
-                }
-                else if(typeof secondTarget === 'object'){
-                    let shipKeys = this.keyToUIelement(secondTarget,someGb,someGetCont)
-                    for(let shipKey of shipKeys){
-                        event.target.parentElement.appendChild(shipKey)
-                    }
-                    
-                }
-            
-            }
-        }
-        
-    }
 
 }
 
@@ -342,6 +243,76 @@ const revealShipProps = {
 //const _shipValueToUserElement = 
 //const _displayInitShipProperties = 
 //const _displayFurtherShipProperties = 
+
+const recordPathHelpers = function(){
+
+    let addNewPath = function(obj, currentPath, prop, paths){
+        let first = obj
+        if(currentPath){
+            for(let elem of currentPath){
+                if(elem === currentPath[currentPath.length - 1]){
+                    paths.push([...currentPath, prop])
+                }
+                first = first[elem]
+            } 
+        }
+        else{
+            paths.push([prop])
+
+        }
+    }
+
+    let initialInjection = function(obj,paths){
+        for(let elem of Object.keys(obj)){
+            addNewPath(obj,null,elem,paths)
+        }
+    }
+
+    let finalisePath = function(obj,paths,confirmedPaths){
+        let first = obj
+            for(let path of paths){
+                for(let elem of path){
+                    if(elem === path[path.length - 1]){
+                        if(Array.isArray(first[elem]) || typeof first[elem] === 'string' || typeof first[elem] === 'number'){
+                             confirmedPaths = [...confirmedPaths, path]
+                             delete paths[paths.indexOf(path)]      
+                        }
+                        else if(typeof first[elem] === 'object'){
+                            let newCheckPoints = Object.keys(first[elem])
+                            for(let checkPoint of newCheckPoints){
+                                addNewPath(obj,path,checkPoint,paths)
+                            }
+                            delete paths[paths.indexOf(path)]
+                        }
+                    }
+                    first = first[elem]
+                }
+                first = obj
+            }
+            paths = paths.filter(path => path !== undefined)
+            return  confirmedPaths 
+    }
+    return {
+        addNewPath,
+        initialInjection,
+        finalisePath
+    }
+
+}
+
+
+const recordPaths = function(someGb, someGetCont=defaultConfig.getBoardContains){
+    let paths = []
+    let key = document.querySelector('.viewConsole').id
+    let obj = someGetCont(someGb,key)
+    let confirmedPaths = []
+    
+    let initialInjection = recordPathHelpers().initialInjection
+    initialInjection(obj,paths)
+
+    confirmedPaths = recordPathHelpers().finalisePath(obj,paths,confirmedPaths)
+    return confirmedPaths
+}
 
 const upgradeShipUI = {
     modificationActive : function(event){
