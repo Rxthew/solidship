@@ -46,7 +46,7 @@ const _buildBoard = function(){
         for(let letr of lets){
             let td = document.createElement('td')
             tr.appendChild(td)
-            td.classList.add(`${letr}${elem}`) 
+            td.id = `${letr}${elem}` 
         }
         gameBody.appendChild(tr)
     }
@@ -139,111 +139,6 @@ const _createViewConsole = function(){
 
 }
 
-const revealShipProps = {
-    keyToUIelement : function(ship,someGb,someGetCont=defaultConfig.getBoardContains,publish=gameEvents.publish){
-        let shipProps = Object.keys(ship)
-        let props = []
-            for(let elem of shipProps){
-                let prop = document.createElement('div')
-                let title = document.createElement('span')
-                prop.classList.add('property')
-                title.classList.add('propertyTitle')        
-                title.textContent = elem
-                title.onclick = function(event){
-                    publish('viewShipProperty', event,someGb,someGetCont) 
-                    title.onclick = null}   
-                prop.appendChild(title)
-                props.push(prop)
-            }
-            return props
-    },
-    chartPath : function(event){
-        let parent = event.target.parentElement
-        let path = [event.target.textContent]
-        while(parent !== document.querySelector('.viewConsole')){
-            if(parent === document.querySelector('body')){
-                return
-            }      
-            
-            parent = parent.parentElement
-            let children = Array.from(parent.children)
-            children = children.filter(child => child.classList.contains('propertyTitle'))
-            if(children.length === 0){
-                return path
-            }
-            path.unshift(children[0].textContent)
-        }
-        return path
-    },
-    valueToUIelement : function(shipObj,val){
-        const parent = shipObj
-        if(Array.isArray(val)){
-            let container = document.createElement('div')
-            container.classList.add('container')
-            for(let elem of val){
-                let uiElement = document.createElement('span')
-                uiElement.classList.add('element')
-                uiElement.textContent = elem
-                container.appendChild(uiElement)
-            }
-            parent.appendChild(container)
-        }
-        else if(typeof val === 'string' || typeof val === 'number'){
-            let uiElement = document.createElement('span')
-            uiElement.classList.add('element')
-            uiElement.textContent = val
-            parent.appendChild(uiElement)
-        }
-        return parent
-    },
-    displayInitProperties : function(event,someGb,someGetCont){
-        if(event.target.textContent === ''){
-            return
-        }
-        let viewConsole = _createViewConsole()
-        let keys = Object.keys(someGb)
-        for (let elem of keys){
-            if(event.target.classList.contains(elem)){
-                let ship = someGetCont(someGb,elem)
-                let shipKeys = _shipKeyToUserElement(ship,someGb,someGetCont)
-                for(let shipKey of shipKeys){
-                    shipKey.classList.add(`${elem}`)
-                    viewConsole.id = `${elem}`
-                    viewConsole.appendChild(shipKey)
-                }
-            }
-        }
-        return viewConsole
-    },
-    displayFurtherProperties : function(event, someGb, someGetCont){
-        let path = _chartShipObjPath(event)
-        let key = document.querySelector('.viewConsole').id
-        let finalTarget = someGetCont(someGb,key)
-        for(let elem of path){
-            finalTarget = finalTarget[elem]
-        }
-        if(Array.isArray(finalTarget) || typeof finalTarget === 'string' || typeof finalTarget === 'number'){
-            return _shipValueToUserElement(event.target.parentElement,finalTarget)
-        }
-        else if(typeof finalTarget === 'object'){
-            let shipKeys = _shipKeyToUserElement(finalTarget,someGb,someGetCont)
-            for(let shipKey of shipKeys){
-                event.target.parentElement.appendChild(shipKey)
-            }
-            return
-    
-        }
-    
-    },
-
-}
-
-//const _shipKeyToUserElement = 
-//const _chartShipObjPath = 
-//const _shipValueToUserElement = 
-//const _displayInitShipProperties = 
-//const _displayFurtherShipProperties = 
-
 const recordPathHelpers = function(){
 
     let addNewPath = function(obj, currentPath, prop, paths){
@@ -301,17 +196,88 @@ const recordPathHelpers = function(){
 }
 
 
-const recordPaths = function(someGb, someGetCont=defaultConfig.getBoardContains){
+const _recordPaths = function(someGb,key, someGetCont=defaultConfig.getBoardContains){
     let paths = []
-    let key = document.querySelector('.viewConsole').id
-    let obj = someGetCont(someGb,key)
     let confirmedPaths = []
+    let obj = someGetCont(someGb,key)
+    
     
     let initialInjection = recordPathHelpers().initialInjection
     initialInjection(obj,paths)
 
     confirmedPaths = recordPathHelpers().finalisePath(obj,paths,confirmedPaths)
     return confirmedPaths
+}
+
+const revealShipProps = {
+    determineUIKey : function(parent, key){
+        let children = Array.from(parent.children)
+        for(let child of children){
+            if(child.classList.contains(key)){
+                return child
+            }
+        }
+        return this.keyToUIelement(parent,key)
+
+
+    },
+    keyToUIelement : function(parent,key){
+        let prop = document.createElement('div')
+        let title = document.createElement('span')
+        prop.classList.add('property')
+        prop.classList.add(`${key}`)
+        title.classList.add('propertyTitle')        
+        title.textContent = key 
+        prop.appendChild(title)
+        parent.appendChild(prop)
+        return prop
+        },
+    valueToUIelement : function(par,val){
+        if(Array.isArray(val)){
+            let container = document.createElement('div')
+            container.classList.add('container')
+            for(let elem of val){
+                let uiElement = document.createElement('span')
+                uiElement.classList.add('element')
+                uiElement.textContent = elem
+                container.appendChild(uiElement)
+            }
+            par.appendChild(container)
+        }
+        else if(typeof val === 'string' || typeof val === 'number'){
+            let uiElement = document.createElement('span')
+            uiElement.classList.add('element')
+            uiElement.textContent = val
+            par.appendChild(uiElement)
+        }
+        return
+    },        
+}
+      
+
+const displayShip = function(event, someGb, someGetCont=defaultConfig.getBoardContains){
+    let key = event.target.id
+    let paths = _recordPaths(someGb, key,someGetCont)
+    let viewConsole = _createViewConsole()
+    let shipObj = someGetCont(someGb,key)
+    
+    for(let path of paths){
+        let finalTarget = shipObj
+        let parent = viewConsole
+        for (let elem of path){
+            if(elem === path[path.length - 1]){
+                parent = revealShipProps.determineUIKey(parent,elem)
+                let value = finalTarget[elem]
+                revealShipProps.valueToUIelement(parent,value)
+            }
+            else {
+                parent = revealShipProps.determineUIKey(parent,elem)
+            }
+            finalTarget = finalTarget[elem]
+        }
+    }
+    return viewConsole
+    
 }
 
 const upgradeShipUI = {
@@ -351,14 +317,13 @@ export const renderState = function(someGb, someGetCont=defaultConfig.getBoardCo
             document.querySelector(`.${elem}`).textContent = 'S' //to modify later
             document.querySelector(`.${elem}`).onclick = function(event) {
             publish('viewShip',event,someGb,someGetCont);
-            document.querySelector(`.${elem}`).onclick = null} 
+            } 
         }
     }   
 }
 
 export const subscribeUIEvents = function(someSubFunc=gameEvents.subscribe){
-    someSubFunc('viewShip', _displayInitShipProperties)
-    someSubFunc('viewShipProperty',_displayFurtherShipProperties)
+    someSubFunc('viewShip', displayShip)
 
 
 }
