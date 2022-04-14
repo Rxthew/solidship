@@ -13,11 +13,6 @@ const standardShipStore = {
     'Clearing' : ships.clearingShip
 }
 
-const intermediateStorage = {
-    modify : false,
-    extend : false,
-    path : null
-}
 
 const _buildBoard = function(){
     const lets = ['A','B','C','D','E','F']
@@ -76,19 +71,47 @@ const createMainConsole = function(){
 
 }
 
-const _optionsUISetup = function(){
-    if(document.querySelector('.options')){
-        document.querySelector('.options').remove()
+const optionsObject = {
+    ship : {
+        'Modify Ship' : function(){
+
+        },
+        'Extend Ship' : function(){
+
+        },
+        'Effect Ship Action' : function(){
+
+        },
+    },
+    default : {
+        'Build New Ship' : buildUI
     }
-    let options = document.createElement('div')
-    let title = document.createElement('span')
-    options.classList.add('options')
-    title.classList.add('optionTitle')
-    options.appendChild(title)
-    document.querySelector('mainConsole').appendChild(options)
-    return options
 
 }
+
+const createOptionsConsole = function(){
+    let view = document.querySelector('.viewConsole');
+    let keys = Object.keys(optionsObject)
+    if(view.children.length === 0){
+        keys = keys.filter(key => key !== 'ship')
+    }
+    for(let key of keys){
+        let options = Object.keys(optionsObject[key])
+        for (let option of options){
+            let opt = document.createElement('div')
+            opt.classList.add('option')
+            let title = document.createElement('span')
+            title.classList.add('optTitle')
+            title.textContent = option
+            title.onclick = function(){// to look @
+                optionsObject[key][option]()
+            }
+            view.appendChild(opt)
+        }
+    }
+
+}
+
 
 const _shipStore = function(shipsObj=standardShipStore){
     let store = document.createElement('div')
@@ -113,20 +136,6 @@ const _componentStore = function(componentsObj=ships.components){
 }
 
 
-const createOptionsConsole = function(optionsObj,params){
-    let options = _optionsUISetup()
-    let allOptions = Object.keys(optionsObj)
-    for(let elem of allOptions){
-        let opt = document.createElement('span')
-        opt.classList.add('option')
-        opt.textContent = elem
-        opt.onclick = function(){
-            optionsObj[elem](...params)
-            opt.onclick = null //to fix in line with other events. 
-        }
-        options.appendChild(opt)
-    }    
-}
 
 const _createViewConsole = function(){
     if(document.querySelector('.viewConsole')){
@@ -280,30 +289,6 @@ const displayShip = function(event, someGb, someGetCont=defaultConfig.getBoardCo
     
 }
 
-const upgradeShipUI = {
-    modificationActive : function(event){
-        if(event.target.classList.contains('mod')){
-            event.target.classList.add('active')
-
-        }
-
-    },
-    highlightKeys  : function(event){
-        if(intermediateStorage.modification && event.target.classList.includes('propertyTitle')){
-            event.target.classList.add('highlight')
-        }
-    },
-    propertyToModifyIdentified : function(event){
-        if(event.target.classList.contains('mod') && event.target.classList.contains('active')){
-            event.target.classList.remove('active')
-            //still need to get highlighted keys as path
-            //transition screen to the components shop
-            //after component is chosen...
-        }
-    }
-
-
-}
 
 export const renderState = function(someGb, someGetCont=defaultConfig.getBoardContains, publish=gameEvents.publish){
     let newBoard = _buildBoard()
@@ -324,6 +309,7 @@ export const renderState = function(someGb, someGetCont=defaultConfig.getBoardCo
 
 export const subscribeUIEvents = function(someSubFunc=gameEvents.subscribe){
     someSubFunc('viewShip', displayShip)
+    someSubFunc('viewShip', createOptionsConsole)
 
 
 }
