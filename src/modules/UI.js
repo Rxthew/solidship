@@ -74,25 +74,42 @@ const createMainConsole = function(){
 const optionsObject = {
     ship : {
         'Modify Ship' : function(){
+            const propTitles = document.querySelectorAll('.propertyTitle')
+            const props = Array.from(propTitles).map(elem => elem.textContent)
+            //now match these against components store options to get list of modifiable properties. 
+
+            
+            
 
         },
         'Extend Ship' : function(){
 
         },
-        'Effect Ship Action' : function(){
+        'Effect Ship Action' : function(event, someGb, someGetCont=defaultConfig.getBoardContains){
+            const key = event.target.id;
+            const ship = someGetCont(someGb,key)
 
         },
     },
     default : {
-        'Build New Ship' : buildUI
+        'Build New Ship' : function(){
+
+        }
     }
 
 }
 
-const createOptionsConsole = function(){
+const createOptionsConsole = function(...params){
+    if(document.querySelector('.optConsole')){
+        document.querySelector('.optConsole').remove()
+    }
     let view = document.querySelector('.viewConsole');
+    let main = document.querySelector('.mainConsole')
+    let optCons = document.createElement('div')
+    optCons.classList.add('optConsole')
+    main.appendChild(optCons)
     let keys = Object.keys(optionsObject)
-    if(view.children.length === 0){
+    if(!view){
         keys = keys.filter(key => key !== 'ship')
     }
     for(let key of keys){
@@ -103,10 +120,10 @@ const createOptionsConsole = function(){
             let title = document.createElement('span')
             title.classList.add('optTitle')
             title.textContent = option
-            title.onclick = function(){// to look @
-                optionsObject[key][option]()
+            title.onclick = function(){// to revise
+                optionsObject[key][option](...params)
             }
-            view.appendChild(opt)
+            optCons.appendChild(opt)
         }
     }
 
