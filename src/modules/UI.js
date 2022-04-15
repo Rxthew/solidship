@@ -71,16 +71,51 @@ const createMainConsole = function(){
 
 }
 
+
+const _shipStore = function(shipsObj=standardShipStore){
+    let store = document.createElement('div')
+    store.classList.add('shipStore')
+    let choices = Object.keys(shipsObj)
+    for (let elem of choices){
+        let ship = document.createElement('span')
+        ship.textContent = elem
+        ship.classList.add('shipOption')
+        //ship.onclick = when clicked, series of happenings: first initialises the object value associated with key chosen.
+        // Then prompts the user to click on an empty place in the grid to place the ship on. Then re-renders the gameboard
+        //and the console. Also: if user fails to click on an empty grid item, user is prompted with an error and the next
+        // click re renders everything. If user fails to click in the gameboard and click anywhere else: re-render everything. 
+        store.appendChild(ship) 
+    }
+
+}
+
+const _componentStore = function(componentsObj=ships.components){
+    let store = document.createElement('div')
+    store.classList.add('componentStore')
+    let choices = Object.keys(componentsObj())
+
+    //remember componentsObj still need to initialise. 
+    
+}
+
 const optionsObject = {
     ship : {
-        'Modify Ship' : function(){
+        'Move Ship' : function(){
+
+        },
+        'Modify Ship' : function(componentsObj=ships.components){
             const propTitles = document.querySelectorAll('.propertyTitle')
             const props = Array.from(propTitles).map(elem => elem.textContent)
-            //now match these against components store options to get list of modifiable properties. 
-
-            
-            
-
+            let compStore = componentsObj()
+            for(let prop of props){
+                for(let elem of Object.keys(compStore)){
+                    if(props.includes(elem)){
+                        let ind = props.indexOf(elem)
+                        propTitles[ind].classList.add('Mod')
+                    }
+                    compStore = compStore[prop]
+                }
+            }     
         },
         'Extend Ship' : function(){
 
@@ -127,29 +162,6 @@ const createOptionsConsole = function(...params){
         }
     }
 
-}
-
-
-const _shipStore = function(shipsObj=standardShipStore){
-    let store = document.createElement('div')
-    store.classList.add('shipStore')
-    let choices = Object.keys(shipsObj)
-    for (let elem of choices){
-        let ship = document.createElement('span')
-        ship.textContent = elem
-        ship.classList.add('shipOption')
-        //ship.onclick = when clicked, series of happenings: first initialises the object value associated with key chosen.
-        // Then prompts the user to click on an empty place in the grid to place the ship on. Then re-renders the gameboard
-        //and the console. Also: if user fails to click on an empty grid item, user is prompted with an error and the next
-        // click re renders everything. If user fails to click in the gameboard and click anywhere else: re-render everything. 
-        store.appendChild(ship) 
-    }
-
-}
-
-const _componentStore = function(componentsObj=ships.components){
-    //remember componentsObj still need to initialise. 
-    
 }
 
 
