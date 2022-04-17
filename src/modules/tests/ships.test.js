@@ -142,7 +142,7 @@ describe('testing getChangedShip and components to evaluate that they can be use
 
     test('customPlantingShip possesses same action as regular instance of planting ship', () => {
         customPlantingShip = Object.assign(customPlantingShip, {action : plantingAction})
-        expect(customPlantingShip.action).toEqual(new planting().action)
+        expect(customPlantingShip.action).toEqual(planting().action)
     })
     let plantingProperties = {properties : components().properties}
     Object.assign(plantingProperties['properties'].equipment,{type : components().properties.equipment.type.legacy}, {count : components().properties.equipment.count.planting})

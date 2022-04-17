@@ -49,20 +49,6 @@ const _buildBoard = function(){
 }
 
 
-
-export const actionParser = function(event,somePubFunc, someGb){
-    if(event.target.textContent === ''){
-        return
-    }
-    let keys = Object.keys(someGb)
-    for(let elem of keys){
-        if(event.target.classList.contains(elem)){
-            somePubFunc('filterAction', elem)
-        }
-    }
-
-}
-
 const createMainConsole = function(){
     let mainConsole = document.createElement('div')
     mainConsole.classList.add('mainConsole')
@@ -89,13 +75,108 @@ const _shipStore = function(shipsObj=standardShipStore){
 
 }
 
-const _componentStore = function(componentsObj=ships.components){
+
+const _componentStore = function(componentsObj=ships.components, path){
     let store = document.createElement('div')
     store.classList.add('componentStore')
     let choices = Object.keys(componentsObj())
 
     //remember componentsObj still need to initialise. 
     
+}
+
+const recordPathHelpers = function(){
+
+    let addNewPath = function(obj, currentPath, prop, paths){
+        let first = obj
+        if(currentPath){
+            for(let elem of currentPath){
+                if(elem === currentPath[currentPath.length - 1]){
+                    paths.push([...currentPath, prop])
+                }
+                first = first[elem]
+            } 
+        }
+        else{
+            paths.push([prop])
+
+        }
+    }
+
+    let initialInjection = function(obj,paths){
+        for(let elem of Object.keys(obj)){
+            addNewPath(obj,null,elem,paths)
+        }
+    }
+
+    let finalisePath = function(obj,paths,confirmedPaths){
+        let first = obj
+            for(let path of paths){
+                for(let elem of path){
+                    if(elem === path[path.length - 1]){
+                        if(Array.isArray(first[elem]) || typeof first[elem] === 'string' || typeof first[elem] === 'number'){
+                             confirmedPaths = [...confirmedPaths, path]
+                             delete paths[paths.indexOf(path)]      
+                        }
+                        else if(typeof first[elem] === 'object'){
+                            let newCheckPoints = Object.keys(first[elem])
+                            for(let checkPoint of newCheckPoints){
+                                addNewPath(obj,path,checkPoint,paths)
+                            }
+                            delete paths[paths.indexOf(path)]
+                        }
+                    }
+                    first = first[elem]
+                }
+                first = obj
+            }
+            paths = paths.filter(path => path !== undefined)
+            return  confirmedPaths 
+    }
+
+    let chartPath = function(event){
+        let parent = event.target.parentElement
+        let prop = event.target.textContent
+        let path = [prop]
+        while(parent !== document.querySelector('.viewConsole')){
+            if(parent === document.querySelector('body')){
+                return
+            }
+            parent = parent.parentElement
+            let children = Array.from(parent.children)
+            children = children.filter(child => child.classList.contains('propertyTitle'))
+            if(children.length === 0){
+                return path
+            } 
+            path.unshift(children[0].textContent)      
+        }
+        return path
+    }    
+    return {
+        addNewPath,
+        initialInjection,
+        finalisePath,
+        chartPath
+    }
+
+}
+
+
+
+
+
+const _finaliseModify = function(event){
+    let path = recordPathHelpers().chartPath(event)
+
+    
+}
+
+const _finaliseExtend = function(event){
+    
+}
+
+const _finaliseAddition = function(event){
+
 }
 
 const optionsObject = {
@@ -111,7 +192,11 @@ const optionsObject = {
                 for(let elem of Object.keys(compStore)){
                     if(props.includes(elem)){
                         let ind = props.indexOf(elem)
-                        propTitles[ind].classList.add('Mod')
+                        let propChildren = Array.from(propTitles[ind].parentElement.children).filter(key => key.classList.contains('property'))
+                        if(propChildren.length === 0){
+                            propTitles[ind].classList.add('Mod')
+                            propTitles[ind].onclick = _finaliseModify
+                        }                 
                     }
                     compStore = compStore[prop]
                 }
@@ -120,6 +205,9 @@ const optionsObject = {
         'Extend Ship' : function(){
 
         },
+        'Add to Ship' : function(){
+
+         },
         'Effect Ship Action' : function(event, someGb, someGetCont=defaultConfig.getBoardContains){
             const key = event.target.id;
             const ship = someGetCont(someGb,key)
@@ -174,62 +262,6 @@ const _createViewConsole = function(){
     viewConsole.classList.add('viewConsole')
     document.querySelector('.mainConsole').appendChild(viewConsole) 
     return document.querySelector('.viewConsole')
-
-}
-
-const recordPathHelpers = function(){
-
-    let addNewPath = function(obj, currentPath, prop, paths){
-        let first = obj
-        if(currentPath){
-            for(let elem of currentPath){
-                if(elem === currentPath[currentPath.length - 1]){
-                    paths.push([...currentPath, prop])
-                }
-                first = first[elem]
-            } 
-        }
-        else{
-            paths.push([prop])
-
-        }
-    }
-
-    let initialInjection = function(obj,paths){
-        for(let elem of Object.keys(obj)){
-            addNewPath(obj,null,elem,paths)
-        }
-    }
-
-    let finalisePath = function(obj,paths,confirmedPaths){
-        let first = obj
-            for(let path of paths){
-                for(let elem of path){
-                    if(elem === path[path.length - 1]){
-                        if(Array.isArray(first[elem]) || typeof first[elem] === 'string' || typeof first[elem] === 'number'){
-                             confirmedPaths = [...confirmedPaths, path]
-                             delete paths[paths.indexOf(path)]      
-                        }
-                        else if(typeof first[elem] === 'object'){
-                            let newCheckPoints = Object.keys(first[elem])
-                            for(let checkPoint of newCheckPoints){
-                                addNewPath(obj,path,checkPoint,paths)
-                            }
-                            delete paths[paths.indexOf(path)]
-                        }
-                    }
-                    first = first[elem]
-                }
-                first = obj
-            }
-            paths = paths.filter(path => path !== undefined)
-            return  confirmedPaths 
-    }
-    return {
-        addNewPath,
-        initialInjection,
-        finalisePath
-    }
 
 }
 
