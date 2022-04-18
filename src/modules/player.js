@@ -125,7 +125,7 @@ const _unwrapChanges = function(actualShip, mode, keys, change, getChangedShip){
     Object.assign(newShip,actualShip)
     let newerShip = getChangedShip(newShip, keys, change)
 
-    if(mode === 'extend'){
+    if(mode === 'extend component'){
         let targetKey = keys[keys.length - 1]
         let finalTarget = newShip;
         for(let elem of keys){

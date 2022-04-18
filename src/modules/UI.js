@@ -171,11 +171,11 @@ const _finaliseModify = function(event){
     
 }
 
-const _finaliseExtend = function(event){
+const _finaliseExtendComp = function(event){
     
 }
 
-const _finaliseAddition = function(event){
+const _finaliseExtend = function(event){
 
 }
 

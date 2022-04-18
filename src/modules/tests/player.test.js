@@ -120,6 +120,7 @@ describe('testing upgradeShip (both re modification & re extending', () => {
        let upgradeBoard = new gameBoard();
        upgradeBoard = placeShip(upgradeBoard.board,undefined,plantingShip(),'A6')
        upgradeBoard = placeShip(upgradeBoard.board,undefined,plantingShip(),'B2')
+       upgradeBoard = placeShip(upgradeBoard.board,undefined,new basicShip(),'C2')
        test('plantingShip action is modified to legacy',() => {
         upgradeBoard = upgradeShip(upgradeBoard.board,undefined,'A6',['modify',['action'],'legacy',getChangedShip])
         expect(upgradeBoard.state).toBe('upgrade ship action')
@@ -128,10 +129,15 @@ describe('testing upgradeShip (both re modification & re extending', () => {
         expect(upgradeBoard.board.A6.contains.action).toEqual(['legacy'])
 
        })
-       test('plantingShip action is extended to include legacy', () => {
-        upgradeBoard = upgradeShip(upgradeBoard.board,undefined,'B2',['extend',['action'],'legacy',getChangedShip])
+       test('plantingShip action comp is extended to include legacy', () => {
+        upgradeBoard = upgradeShip(upgradeBoard.board,undefined,'B2',['extend component',['action'],'legacy',getChangedShip])
         expect(upgradeBoard.state).toBe('upgrade ship action')
         expect(upgradeBoard.board.B2.contains.action).toEqual(['seagrass planting', 'legacy'])
+       })
+       test('basicShip can be extended with action property to legacy',() => {
+           upgradeBoard = upgradeShip(upgradeBoard.board,undefined,'C2',['extend ship',['action'],'legacy',getChangedShip])
+           expect(upgradeBoard.state).toBe('upgrade ship action')
+           expect(upgradeBoard.board.C2.contains.action).toEqual(['legacy'])
        })
        test('if there is an error the function generates it',() => {
          let upgradeBoard2 = placeShip(upgradeBoard.board,undefined,new basicShip(),'F2')
