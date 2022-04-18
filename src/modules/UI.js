@@ -258,9 +258,13 @@ const _recordComponentPaths = function(obj){
 
 }
 
+const _componentDependencyCheck = function(){
+    let view = document.querySelector('.viewConsole')
+    //check for action. 
+}
 
 
-const _componentStore = function(componentsObj=ships.components,path=_recordComponentPaths(componentsObj)){
+const _componentStore = function(componentsObj=ships.components(),path=_recordComponentPaths(componentsObj)){
     if(document.querySelector('.optConsole')){
         document.querySelector('.optConsole').remove()
     }
@@ -290,7 +294,14 @@ const _componentStore = function(componentsObj=ships.components,path=_recordComp
 
 
 const _finaliseModify = function(event){
-    let path = recordPathHelpers().chartPath(event)
+    let path = [recordPathHelpers().chartPath(event)]
+    _componentStore(ships.components,path)
+    let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
+    for(let opt of finalOptions){
+        //if the opt leads to a value then:
+        opt.onclick = null //edit this to reflect that upgradeShip takes place along with renderState.
+        //you have to publish the event with mode set to modify, the path and then event.target.textContent 
+    }
 
     
 }
@@ -299,17 +310,13 @@ const _finaliseExtendComp = function(event){
     
 }
 
-const _finaliseExtend = function(event){
-    
-
-}
 
 const optionsObject = {
     ship : {
         'Move Ship' : function(){
 
         },
-        'Modify Ship' : function(componentsObj=ships.components){
+        'Modify Ship' : function(componentsObj=ships.components()){
             const propTitles = document.querySelectorAll('.propertyTitle')
             const props = Array.from(propTitles).map(elem => elem.textContent)
             let compStore = componentsObj()
@@ -328,6 +335,17 @@ const optionsObject = {
             }     
         },
         'Extend Ship' : function(){
+            _componentStore()
+            let checkAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(elem => elem.textContent)
+            let toVet = Array.from(document.querySelectorAll('.compPropertyTitle')).map(elem => elem.textContent)
+            for(let elem of toVet){
+                if(checkAgainst.includes(elem)){
+                elem.classList.add('unavailable')
+            }
+        //else if(elem leads to a value){
+            //upgradeShip with mode set to etc etc. 
+        //}
+    }
 
         },
         'Extend Component' : function(){
