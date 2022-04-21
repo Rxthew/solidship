@@ -258,17 +258,28 @@ const _recordComponentPaths = function(obj){
 
 }
 
-const _componentDependencyCheck = function(){
-    let view = document.querySelector('.viewConsole')
-
-
-    //check for action re messagingProtocol 
-    //check for equipment
-    //check for count
+const _componentFilter = function(componentsObj=ships.components){
+    let allPropTitles = Array.from(document.querySelectorAll('propertyTitle')).map(title => title.textContent)
+    if(allPropTitles.includes('action')){
+        let allProps = Array.from(document.querySelectorAll('propertyTitle'))
+        let act = allProps[allPropTitles.indexOf('action')].parentElement
+        const firstAct = (function(){
+            for(let elem of Array.from(act.children)){
+                if(elem.classList.contains('container')){
+                    let action = Array.from(elem.children)[0]
+                    return action.textContent
+                }
+            }
+        })()
+        return componentsObj(firstAct) 
+    }
+    else{
+        //messProtocol can't be available right. 
+    }
 }
 
 
-const _componentStore = function(componentsObj=ships.components(),path=_recordComponentPaths(componentsObj)){
+const _componentStore = function(componentsObj=_componentFilter(ships.components),path=_recordComponentPaths(componentsObj)){
     if(document.querySelector('.optConsole')){
         document.querySelector('.optConsole').remove()
     }
@@ -299,7 +310,7 @@ const _componentStore = function(componentsObj=ships.components(),path=_recordCo
 
 const _finaliseModify = function(event){
     let path = [recordPathHelpers().chartPath(event)]
-    _componentStore(ships.components(),path)
+    _componentStore(_componentFilter(ships.components),path)
     let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
     for(let opt of finalOptions){
         //if the opt leads to a value then:
@@ -347,7 +358,13 @@ const optionsObject = {
                 elem.classList.add('unavailable')
             }
         //else if(elem leads to a value){
+            //onclick ->
             //upgradeShip with mode set to etc etc. 
+            //consume NO turns
+            //then reload the exact same page, the upgraded item should be unavailable. 
+            //Done/Cancel button ought to be availble
+            //prior to this reload, there should be a checking mechanism which applies to see if there are any properties available for the ship to extend.
+            //if there are none, it should not be available as an option. 
         //}
     }
 
