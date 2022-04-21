@@ -274,7 +274,13 @@ const _componentFilter = function(componentsObj=ships.components){
         return componentsObj(firstAct) 
     }
     else{
-        //messProtocol can't be available right. 
+        let comp = componentsObj()
+        for(let key of Object.keys(comp)){
+            if(key !== 'action'){
+                delete comp[key]
+            }
+        }
+        return comp
     }
 }
 
@@ -308,7 +314,7 @@ const _componentStore = function(componentsObj=_componentFilter(ships.components
 }
 
 
-const _finaliseModify = function(event){
+const activateModifyProperties = function(event){
     let path = [recordPathHelpers().chartPath(event)]
     _componentStore(_componentFilter(ships.components),path)
     let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
@@ -326,8 +332,43 @@ const _finaliseExtendComp = function(event){
 }
 
 
-const optionsObject = {
-    ship : {
+const _generateOptionsObject = function(){
+
+    const _doneButton = function(){
+        const Done = document.createElement('button')
+        Done.classList.add('done')
+        Done.textContent = 'Done'
+        Done.onclick = null//edit
+        return Done
+    }
+
+    const _availabilityGuard = function(){
+        let store = document.querySelector('.componentStore')
+        let main = document.querySelector('.mainConsole')
+        let titles = Array.from(document.querySelectorAll('.compPropertyTitle'))
+        for(let elem of titles){
+            if(!elem.classList.contains('unavailable')){
+                return
+            }
+        }
+        store.remove()
+        let deadEnd = document.createElement('div')
+        let noneAvail = document.createElement('span')
+        noneAvail.textContent = 'Ship has all available components. Please return to previous page.'
+        let ret = _doneButton()
+        ret.onclick = createOptionsConsole()//keep eye on this, you might need params. 
+        ret.textContent = 'Return'
+        deadEnd.appendChild(noneAvail)
+        main.appendChild(deadEnd)
+    }
+    
+    const defaultOpts = {
+        'Build New Ship' : function(){
+
+        }
+    }
+
+    const ship = {
         'Move Ship' : function(){
 
         },
@@ -342,7 +383,7 @@ const optionsObject = {
                         let propChildren = Array.from(propTitles[ind].parentElement.children).filter(key => key.classList.contains('property'))
                         if(propChildren.length === 0){
                             propTitles[ind].classList.add('Mod')
-                            propTitles[ind].onclick = _finaliseModify
+                            propTitles[ind].onclick = activateModifyProperties
                         }                 
                     }
                     compStore = compStore[prop]
@@ -351,21 +392,25 @@ const optionsObject = {
         },
         'Extend Ship' : function(){
             _componentStore()
+            let store = document.querySelector('.componentStore')
+            store.appendChild(_doneButton())
             let checkAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(elem => elem.textContent)
-            let toVet = Array.from(document.querySelectorAll('.compPropertyTitle')).map(elem => elem.textContent)
+            let compPropTitles = Array.from(document.querySelectorAll('.compPropertyTitle'))
+            let toVet = compPropTitles.map(elem => elem.textContent)
             for(let elem of toVet){
                 if(checkAgainst.includes(elem)){
-                elem.classList.add('unavailable')
+                compPropTitles[toVet.indexOf(elem)].classList.add('unavailable')
             }
-        //else if(elem leads to a value){
-            //onclick ->
-            //upgradeShip with mode set to etc etc. 
-            //consume NO turns
-            //then reload the exact same page, the upgraded item should be unavailable. 
-            //Done/Cancel button ought to be availble
-            //prior to this reload, there should be a checking mechanism which applies to see if there are any properties available for the ship to extend.
-            //if there are none, it should not be available as an option. 
-        //}
+            //else if(elem leads to a value){
+                //onclick ->
+                //upgradeShip with mode set to etc etc. 
+                //consume NO turns
+                //then reload the exact same page, the upgraded item should be unavailable. 
+                //Done/Cancel button ought to be availble
+                //prior to this reload, there should be a checking mechanism which applies to see if there are any properties available for the ship to extend.
+                //if there are none, it should not be available as an option. 
+            //}
+            _availabilityGuard() //revise when finishing. 
     }
 
         },
@@ -377,28 +422,38 @@ const optionsObject = {
             const ship = someGetCont(someGb,key)
 
         },
-    },
-    default : {
-        'Build New Ship' : function(){
 
+    }
+
+    const filterOptions = function(){
+        let view = document.querySelector('.viewConsole');
+        if(!view){
+            return {
+                defaultOpts
+            }
+        }
+        return {
+            defaultOpts,
+            ship
         }
     }
+    
+    return filterOptions()
 
 }
 
+
 const createOptionsConsole = function(...params){
+    let optionsObject = _generateOptionsObject()
     if(document.querySelector('.optConsole')){
         document.querySelector('.optConsole').remove()
     }
-    let view = document.querySelector('.viewConsole');
+    
     let main = document.querySelector('.mainConsole')
     let optCons = document.createElement('div')
     optCons.classList.add('optConsole')
     main.appendChild(optCons)
     let keys = Object.keys(optionsObject)
-    if(!view){
-        keys = keys.filter(key => key !== 'ship')
-    }
     for(let key of keys){
         let options = Object.keys(optionsObject[key])
         for (let option of options){
