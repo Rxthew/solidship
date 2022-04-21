@@ -121,8 +121,8 @@ export const components = function(act){
                 relay : [_actionToProtocol[act], 'relay'],
                 extendible : [_actionToProtocol[act]],
                 extensions : {
-                    reciever : 'trigger',
-                    relay : 'relay'                   
+                    reciever : ['trigger'],
+                    relay : ['relay']                   
                 }
             },
             equipment : {  
