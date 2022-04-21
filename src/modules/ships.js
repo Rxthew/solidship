@@ -116,9 +116,14 @@ export const components = function(act){
 
         properties : {
             messagingProtocol : {
-                single : _actionToProtocol[act],
+                integrated : _actionToProtocol[act],
                 receiver : [_actionToProtocol[act], 'trigger'],
-                relay : [_actionToProtocol[act], 'relay']
+                relay : [_actionToProtocol[act], 'relay'],
+                extendible : [_actionToProtocol[act]],
+                extensions : {
+                    reciever : 'trigger',
+                    relay : 'relay'                   
+                }
             },
             equipment : {  
                     type: {

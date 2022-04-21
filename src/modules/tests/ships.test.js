@@ -146,7 +146,7 @@ describe('testing getChangedShip and components to evaluate that they can be use
     })
     let plantingProperties = {properties : components().properties}
     Object.assign(plantingProperties['properties'].equipment,{type : components().properties.equipment.type.legacy}, {count : components().properties.equipment.count.planting})
-    Object.assign(plantingProperties['properties'],{messagingProtocol : components('seagrass planting').properties.messagingProtocol.single})
+    Object.assign(plantingProperties['properties'],{messagingProtocol : components('seagrass planting').properties.messagingProtocol.integrated})
 
     test('customPlantingShip possesses same properties as regular instance of planting ship', () => {
         customPlantingShip = Object.assign(customPlantingShip, plantingProperties)

@@ -141,7 +141,7 @@ describe('testing upgradeShip (both re modification & re extending', () => {
        })
        test('if there is an error the function generates it',() => {
          let upgradeBoard2 = placeShip(upgradeBoard.board,undefined,new basicShip(),'F2')
-         upgradeBoard2 = upgradeShip(upgradeBoard2.board,undefined,'F2',['modify',['properties','messagingProtocol'],'single',getChangedShip])  
+         upgradeBoard2 = upgradeShip(upgradeBoard2.board,undefined,'F2',['modify',['properties','messagingProtocol'],'integrated',getChangedShip])  
          expect(upgradeBoard2).toBe('Ship does not have a valid action property')
        })
        
