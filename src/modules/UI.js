@@ -260,7 +260,11 @@ const _recordComponentPaths = function(obj){
 
 const _componentDependencyCheck = function(){
     let view = document.querySelector('.viewConsole')
-    //check for action. 
+
+
+    //check for action re messagingProtocol 
+    //check for equipment
+    //check for count
 }
 
 
@@ -295,7 +299,7 @@ const _componentStore = function(componentsObj=ships.components(),path=_recordCo
 
 const _finaliseModify = function(event){
     let path = [recordPathHelpers().chartPath(event)]
-    _componentStore(ships.components,path)
+    _componentStore(ships.components(),path)
     let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
     for(let opt of finalOptions){
         //if the opt leads to a value then:
