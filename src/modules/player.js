@@ -1,4 +1,5 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
+import { gameEvents } from "./gamestate"
 import { getShipCount,setShipCount,getEquipmentType, setNewShip } from "./ships"
 
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
@@ -220,6 +221,11 @@ export const effectClear = function(currentBoard, newGameBoard, shipLoc, current
     let cont = createContainsObject(currentBoard, shipLoc, _incrementShip(),getCont)
     updateBoardContents(gb(newGameBoard),cont,setCont)
     return newGameBoard
+}
+
+export const subscribePlayerEvts = function(someSubFunc=gameEvents.subscribe){
+    someSubFunc('extendShip', upgradeShip)
+    //see note at extendShipPublisher over at UI.js. Make sure to add a function which updates the state of the gameboard either here or at gameState. 
 }
 
 

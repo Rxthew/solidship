@@ -326,25 +326,35 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
         let children = Array.from(par.children).filter(child => child.classList.contains('compContainer') || child.classList.contains('compElement'))
         if(children.length > 0){
             opt.onclick = function(){
-                publish('playerAction',gb, undefined, shipLoc, [...changeConfig, opt.textContent]) 
+                publish('playerAction',gb, undefined, shipLoc, [changeConfig, opt.textContent]) 
             } 
         }
          //remember to revise this if playerAction is not the right event name &/or other changes. 
     }
 }
 
-const _finaliseExtendComp = function(event){
-    
+const extendShipPublisher = function(event,params,publish=gameEvents.publish){
+    const shipLoc = params[0].target.id
+    const gb = params[1]
+    let path = recordPathHelpers().chartPath(event)
+    let changeConfig = ['extend ship', path]
+    publish('extendShip',gb,undefined,shipLoc, [changeConfig, event.target.textContent])
+    event.target.classList.add('unavailable')
+     return
+    //Note: in order for this to work, it is vimp that gb refers to an updated gameboard each time, even if it is not rendered yet.
+    //Otherwise it will keep referring to the same gameboard 
 }
+
+
 
 
 const _generateOptionsObject = function(componentsObj=ships.components){
 
-    const _doneButton = function(){
+    const _doneButton = function(someGb){
         const Done = document.createElement('button')
         Done.classList.add('done')
         Done.textContent = 'Done'
-        Done.onclick = null//edit
+        Done.onclick = renderState(someGb)
         return Done
     }
 
@@ -401,25 +411,24 @@ const _generateOptionsObject = function(componentsObj=ships.components){
         'Extend Ship' : function(...params){
             _componentStore()
             let store = document.querySelector('.componentStore')
-            store.appendChild(_doneButton())
+            store.appendChild(_doneButton(params[1]))
             let checkAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(elem => elem.textContent)
             let compPropTitles = Array.from(document.querySelectorAll('.compPropertyTitle'))
             let toVet = compPropTitles.map(elem => elem.textContent)
             for(let elem of toVet){
+                let compPropElem =  compPropTitles[toVet.indexOf(elem)]
+                let par = compPropElem.parentElement
+                let children = Array.from(par.children).filter(child => child.classList.contains('compContainer') || child.classList.contains('compElement'))
                 if(checkAgainst.includes(elem)){
-                compPropTitles[toVet.indexOf(elem)].classList.add('unavailable')
+                    compPropElem.classList.add('unavailable')
+                }
+                else if(children.length > 0){
+                    compPropElem.onclick = function(e){
+                        extendShipPublisher(e, params)
+                    }
+                }
             }
-            //else if(elem leads to a value){
-                //onclick ->
-                //upgradeShip with mode set to etc etc. 
-                //consume NO turns
-                //then reload the exact same page, the upgraded item should be unavailable. 
-                //Done/Cancel button ought to be availble
-                //prior to this reload, there should be a checking mechanism which applies to see if there are any properties available for the ship to extend.
-                //if there are none, it should not be available as an option. 
-            //}
-            _availabilityGuard(...params) //revise when finishing. 
-    }
+            _availabilityGuard(...params) //revise when finishing.
 
         },
         'Extend Component' : function(){
@@ -500,6 +509,5 @@ export const renderState = function(someGb, someGetCont=defaultConfig.getBoardCo
 export const subscribeUIEvents = function(someSubFunc=gameEvents.subscribe){
     someSubFunc('viewShip', displayShip)
     someSubFunc('viewShip', createOptionsConsole)
-
-
+    
 }
