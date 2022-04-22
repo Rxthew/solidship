@@ -314,7 +314,7 @@ const _componentStore = function(componentsObj=_componentFilter(ships.components
 }
 
 
-const activateModifyProperties = function(event){
+const activateModifyProperties = function(event, params){
     let path = [recordPathHelpers().chartPath(event)]
     _componentStore(_componentFilter(ships.components),path)
     let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
@@ -332,7 +332,7 @@ const _finaliseExtendComp = function(event){
 }
 
 
-const _generateOptionsObject = function(){
+const _generateOptionsObject = function(componentsObj=ships.components){
 
     const _doneButton = function(){
         const Done = document.createElement('button')
@@ -342,7 +342,7 @@ const _generateOptionsObject = function(){
         return Done
     }
 
-    const _availabilityGuard = function(){
+    const _availabilityGuard = function(...params){
         let store = document.querySelector('.componentStore')
         let main = document.querySelector('.mainConsole')
         let titles = Array.from(document.querySelectorAll('.compPropertyTitle'))
@@ -356,7 +356,7 @@ const _generateOptionsObject = function(){
         let noneAvail = document.createElement('span')
         noneAvail.textContent = 'Ship has all available components. Please return to previous page.'
         let ret = _doneButton()
-        ret.onclick = createOptionsConsole()//keep eye on this, you might need params. 
+        ret.onclick = createOptionsConsole(...params) 
         ret.textContent = 'Return'
         deadEnd.appendChild(noneAvail)
         main.appendChild(deadEnd)
@@ -372,7 +372,7 @@ const _generateOptionsObject = function(){
         'Move Ship' : function(){
 
         },
-        'Modify Ship' : function(componentsObj=ships.components()){
+        'Modify Ship' : function(...params){
             const propTitles = document.querySelectorAll('.propertyTitle')
             const props = Array.from(propTitles).map(elem => elem.textContent)
             let compStore = componentsObj()
@@ -383,14 +383,16 @@ const _generateOptionsObject = function(){
                         let propChildren = Array.from(propTitles[ind].parentElement.children).filter(key => key.classList.contains('property'))
                         if(propChildren.length === 0){
                             propTitles[ind].classList.add('Mod')
-                            propTitles[ind].onclick = activateModifyProperties
+                            propTitles[ind].onclick = function(e){
+                                activateModifyProperties(e, params)
+                            }
                         }                 
                     }
                     compStore = compStore[prop]
                 }
             }     
         },
-        'Extend Ship' : function(){
+        'Extend Ship' : function(...params){
             _componentStore()
             let store = document.querySelector('.componentStore')
             store.appendChild(_doneButton())
@@ -410,7 +412,7 @@ const _generateOptionsObject = function(){
                 //prior to this reload, there should be a checking mechanism which applies to see if there are any properties available for the ship to extend.
                 //if there are none, it should not be available as an option. 
             //}
-            _availabilityGuard() //revise when finishing. 
+            _availabilityGuard(...params) //revise when finishing. 
     }
 
         },
