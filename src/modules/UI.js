@@ -314,17 +314,23 @@ const _componentStore = function(componentsObj=_componentFilter(ships.components
 }
 
 
-const activateModifyProperties = function(event, params){
+const activateModifyProperties = function(event, params, publish=gameEvents.publish){
+    const shipLoc = params[0].target.id
+    const gb = params[1]
     let path = [recordPathHelpers().chartPath(event)]
+    let changeConfig = ['modify', path[0]]
     _componentStore(_componentFilter(ships.components),path)
     let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
     for(let opt of finalOptions){
-        //if the opt leads to a value then:
-        opt.onclick = null //edit this to reflect that upgradeShip takes place along with renderState.
-        //you have to publish the event with mode set to modify, the path and then event.target.textContent 
+        let par = opt.parentElement
+        let children = Array.from(par.children).filter(child => child.classList.contains('compContainer') || child.classList.contains('compElement'))
+        if(children.length > 0){
+            opt.onclick = function(){
+                publish('playerAction',gb, undefined, shipLoc, [...changeConfig, opt.textContent]) 
+            } 
+        }
+         //remember to revise this if playerAction is not the right event name &/or other changes. 
     }
-
-    
 }
 
 const _finaliseExtendComp = function(event){
