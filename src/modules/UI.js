@@ -359,6 +359,9 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
 }
 
 const activateActionChoice = function(event,params,publish=gameEvents.publish){
+    
+
+
 
 
 
@@ -525,9 +528,33 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             }
 
          },//cancelAction should remove toggleHide
-        'Effect Ship Action' : function(event, someGb, someGetCont=defaultConfig.getBoardContains){
-            const key = event.target.id;
-            const ship = someGetCont(someGb,key)
+        'Effect Ship Action' : function(...params){
+            let allPropTitles = Array.from(document.querySelectorAll('propertyTitle')).map(title => title.textContent)
+            let actions = []
+            let main = document.querySelector('.mainConsole')
+            if(allPropTitles.includes('action')){
+                let allProps = Array.from(document.querySelectorAll('propertyTitle'))
+                let actPar = allProps[allPropTitles.indexOf('action')].parentElement
+                let actChildren = Array.from(actPar.children)
+                for(let elem of Array.from(actChildren)){
+                    if(elem.classList.contains('container')){
+                        actions = [...Array.from(elem.children).map(elem => elem.textContent)]
+                    }
+                }
+            let choices = document.createElement('div')
+            choices.classList.add('choices')
+            for(let elem of actions){
+                let choice = document.createElement('span')
+                choice.textContent = elem
+                choice.classList.add('choice')
+                choice.onclick = function(e){
+                    activateActionChoice(e,params)
+                }
+                choices.appendChild(choice)
+            }
+            main.appendChild(choices)
+        }
+
 
         },//cancelAction should remove toggleHide.
 
