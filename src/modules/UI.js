@@ -38,6 +38,9 @@ const _buildBoard = function(){
 
 
 const createMainConsole = function(){
+    if(document.querySelector('.mainConsole')){
+        document.querySelector('.mainConsole').remove()
+    }
     let mainConsole = document.createElement('div')
     mainConsole.classList.add('mainConsole')
     document.body.appendChild(mainConsole)
@@ -338,6 +341,10 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
 
 }
 
+const activateActionChoice = function(event,params,publish=gameEvents.publish){
+
+}
+
 const extendShipPublisher = function(event,params,publish=gameEvents.publish){
     const shipLoc = params[0].target.id
     const gb = params[1]
@@ -364,6 +371,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     }
 
     const _missingProperties = function(event){
+        event.target.classList.remove('toggleHide')
         let children = Array.from(event.target.parentElement.children)
         const checkForNote = function(){
             return children.some(elem => elem.classList.contains('missPropNote'))
@@ -404,7 +412,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     const defaultOpts = {
         'Build New Ship' : function(){}
 
-        }
+        
     }//cancelAction should remove toggleHide.
 
     const ship = {
@@ -506,7 +514,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     }
     const toFilterList = [
         [document.querySelector('.viewConsole'), function(){
-            return defaultOpts
+            return {defaultOpts}
         }],
         [document.querySelector('.property'), function(){
             delete ship['Modify Ship']
