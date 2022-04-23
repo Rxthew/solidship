@@ -363,6 +363,24 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
         return Done
     }
 
+    const _missingProperties = function(event){
+        let children = Array.from(event.target.parentElement.children)
+        const checkForNote = function(){
+            return children.some(elem => elem.classList.contains('missPropNote'))
+        }
+        
+        if(event.target.classList.contains('unavailable') && checkForNote()){
+            let existingNote = children.filter(elem => elem.classList.contains('missPropNote'))[0]
+            existingNote.classList.toggle('toggleHide')
+        }
+        event.target.classList.add('unavailable')
+        let note = document.createElement('span')
+        note.classList.add('missPropNote')
+        note.textContent = 'This option cannot be exercised with the properties available.'        
+        event.target.parentElement.appendChild(note)
+        return note
+    }
+
     const _availabilityGuard = function(...params){
         let store = document.querySelector('.componentStore')
         let main = document.querySelector('.mainConsole')
@@ -510,7 +528,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
         }],
         [document.querySelector('.property'), function(){
             delete ship['Modify Ship']
-            delete ship['Effect Ship Action']
+            ship['Effect Ship Action'] = _missingProperties
             delete ship['Extend Component']
             return {
                 defaultOpts,
@@ -525,14 +543,14 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             }
         }],
         [Array.from(document.querySelectorAll('.propertyTitle')).filter(tit => tit.textContent === 'action')[0], function(){
-            delete ship['Effect Ship Action']
+            ship['Effect Ship Action'] = _missingProperties
             return {
                     defaultOpts,
                     ship
                 }
             
         }],
-        [Array.from(document.querySelectorAll('.propertyTitle')).filter(tit => tit.textContent=== 'messagingProtocol')[0],function(){
+        [Array.from(document.querySelectorAll('.propertyTitle')).filter(tit => tit.textContent === 'messagingProtocol')[0],function(){
             delete ship['Effect Ship Action']
             return {
                 defaultOpts,
