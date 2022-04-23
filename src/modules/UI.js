@@ -338,10 +338,30 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
 }
 
 const activateExtendComponent = function(event, params, publish=gameEvents.publish){
+    const shipLoc = params[0].target.id
+    const gb = params[1]
+    let path = [recordPathHelpers().chartPath(event)]
+    let changeConfig = ['extend component', path[0]]
+    _componentStore(_componentFilter(ships.components),path)
+    let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
+    for(let opt of finalOptions){
+        let par = opt.parentElement
+        let children = Array.from(par.children).filter(child => child.classList.contains('compContainer'))
+        if(children.length > 0){
+            opt.onclick = function(){
+                publish('playerAction',gb,undefined,shipLoc, [changeConfig, opt.textContent])
+            }
+        }
+        //remember to revise this if playerAction is not the right event name &/or other changes. 
+         //Also need to add a cancelAction event in body later.
+    }
 
 }
 
 const activateActionChoice = function(event,params,publish=gameEvents.publish){
+
+
+
 
 }
 
