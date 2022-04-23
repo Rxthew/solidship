@@ -359,13 +359,12 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
 }
 
 const activateActionChoice = function(event,params,publish=gameEvents.publish){
+    const shipLoc = params[0].target.id
+    const gb = params[1]
+    publish('playerAction', gb, undefined, shipLoc, event.target.textContent)
+    //Note the above was written before the all-encompassing function that parses actions was designed. So review once that is done esp. re: parameter order. 
+
     
-
-
-
-
-
-
 }
 
 const extendShipPublisher = function(event,params,publish=gameEvents.publish){
