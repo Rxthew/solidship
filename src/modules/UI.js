@@ -495,7 +495,8 @@ export const renderState = function(someGb, someGetCont=defaultConfig.getBoardCo
         document.querySelector('.gamezone').remove()
     }
     document.body.appendChild(newBoard)
-    
+    createMainConsole()
+    createOptionsConsole()
     for (let elem of Object.keys(someGb)){
         if(document.querySelector(`.${elem}`) && someGetCont(someGb,elem)){
             document.querySelector(`.${elem}`).textContent = 'S' //to modify later
