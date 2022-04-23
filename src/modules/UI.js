@@ -330,6 +330,7 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
             } 
         }
          //remember to revise this if playerAction is not the right event name &/or other changes. 
+         //Also need to add a cancelAction event in body later.
     }
 }
 
@@ -348,7 +349,7 @@ const extendShipPublisher = function(event,params,publish=gameEvents.publish){
 
 
 
-const _generateOptionsObject = function(componentsObj=ships.components){
+const _generateOptionsObject = function(componentsObj=ships.components, getLgl=defaultConfig.getBoardLegalMoves,publish=gameEvents.publish){
 
     const _doneButton = function(someGb){
         const Done = document.createElement('button')
@@ -385,7 +386,25 @@ const _generateOptionsObject = function(componentsObj=ships.components){
     }
 
     const ship = {
-        'Move Ship' : function(){
+        'Move Ship' : function(...params){
+            let gb = params[1]
+            let shipLoc = params[0].target.id
+            let legals = [...getLgl(gb,shipLoc)]
+            for(let elem of legals){
+                if(document.querySelector(`#${elem}`).classList.contains('ship')){
+                    continue
+                }
+                else{
+                    document.querySelector(`#${elem}`).classList.add('moveHighlight')
+                    document.querySelector(`#${elem}`).onclick = function(){
+                        publish('playerAction',gb, undefined, shipLoc, elem)
+                    }
+                    //remember to revise this if playerAction is not the right event name &/or other changes. 
+                    //Also need to add a cancelAction event in body later.
+                }
+            }
+
+
 
         },
         'Modify Ship' : function(...params){
@@ -425,6 +444,7 @@ const _generateOptionsObject = function(componentsObj=ships.components){
                 else if(children.length > 0){
                     compPropElem.onclick = function(e){
                         extendShipPublisher(e, params)
+                        //Remember need to add a cancelAction event in body later.
                     }
                 }
             }
@@ -498,9 +518,10 @@ export const renderState = function(someGb, someGetCont=defaultConfig.getBoardCo
     createMainConsole()
     createOptionsConsole()
     for (let elem of Object.keys(someGb)){
-        if(document.querySelector(`.${elem}`) && someGetCont(someGb,elem)){
-            document.querySelector(`.${elem}`).textContent = 'S' //to modify later
-            document.querySelector(`.${elem}`).onclick = function(event) {
+        if(document.querySelector(`#${elem}`) && someGetCont(someGb,elem)){
+            document.querySelector(`#${elem}`).classList.add('ship')
+            document.querySelector(`#${elem}`).textContent = 'S' //to modify later
+            document.querySelector(`#${elem}`).onclick = function(event) {
             publish('viewShip',event,someGb,someGetCont);
             } 
         }
