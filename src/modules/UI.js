@@ -402,19 +402,13 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     }
     
     const defaultOpts = {
-        'Build New Ship' : function(){
-            if(document.querySelector('.inst')){
-                return
-            }
+        'Build New Ship' : function(){}
 
         }
-    }//cancelAction should remove inst.
+    }//cancelAction should remove toggleHide.
 
     const ship = {
         'Move Ship' : function(...params){
-            if(document.querySelector('.inst')){
-                return
-            }
             let gb = params[1]
             let shipLoc = params[0].target.id
             let legals = [...getLgl(gb,shipLoc)]
@@ -429,7 +423,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                     }
                     //remember to revise this if playerAction is not the right event name &/or other changes. 
                     //Also need to add a cancelAction event in body later.
-                    //cancelAction should remove inst.
+                    //cancelAction should remove toggleHide.
                 }
             }
 
@@ -437,9 +431,6 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
         },
         'Modify Ship' : function(...params){
-            if(document.querySelector('.inst')){
-                return
-            }
             const propTitles = document.querySelectorAll('.propertyTitle')
             const props = Array.from(propTitles).map(elem => elem.textContent)
             let compStore = componentsObj()
@@ -460,9 +451,6 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             }     
         },
         'Extend Ship' : function(...params){
-            if(document.querySelector('.inst')){
-                return
-            }
             _componentStore()
             let store = document.querySelector('.componentStore')
             store.appendChild(_doneButton(params[1]))
@@ -480,7 +468,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                     compPropElem.onclick = function(e){
                         extendShipPublisher(e, params)
                         //Remember need to add a cancelAction event in body later.
-                        //cancelAction should remove inst.
+                        //cancelAction should remove toggleHide.
                     }
                 }
             }
@@ -488,9 +476,6 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
         },
         'Extend Component' : function(...params){
-            if(document.querySelector('.inst')){
-                return
-            }
             const propTitles = document.querySelectorAll('.propertyTitle')
             const props = Array.from(propTitles).map(elem => elem.textContent)
             let compStore = componentsObj()
@@ -503,7 +488,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                             propTitles[ind].classList.add('Ext')
                             propTitles[ind].onclick = function(e){
                                 activateExtendComponent(e, params)
-                                document.querySelector('.inst').classList.remove('inst')
+                                document.querySelector('.toggleHide').classList.remove('toggleHide')
                             }
                         }                 
                     }
@@ -511,15 +496,12 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                 }
             }
 
-         },//cancelAction should remove inst.
+         },//cancelAction should remove toggleHide
         'Effect Ship Action' : function(event, someGb, someGetCont=defaultConfig.getBoardContains){
-            if(document.querySelector('.inst')){
-                return
-            }
             const key = event.target.id;
             const ship = someGetCont(someGb,key)
 
-        },//cancelAction should remove inst.
+        },//cancelAction should remove toggleHide.
 
     }
     const toFilterList = [
@@ -597,7 +579,7 @@ const createOptionsConsole = function(...params){
             title.textContent = option
             title.onclick = function(){// to revise
                 optionsObject[key][option](...params)
-                title.classList.add('inst')
+                title.classList.add('toggleHide')
             }
             optCons.appendChild(opt)
         }
