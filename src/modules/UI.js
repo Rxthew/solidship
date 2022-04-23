@@ -334,6 +334,10 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
     }
 }
 
+const activateExtendComponent = function(event, params, publish=gameEvents.publish){
+
+}
+
 const extendShipPublisher = function(event,params,publish=gameEvents.publish){
     const shipLoc = params[0].target.id
     const gb = params[1]
@@ -381,12 +385,18 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     
     const defaultOpts = {
         'Build New Ship' : function(){
+            if(document.querySelector('.inst')){
+                return
+            }
 
         }
-    }
+    }//cancelAction should remove inst.
 
     const ship = {
         'Move Ship' : function(...params){
+            if(document.querySelector('.inst')){
+                return
+            }
             let gb = params[1]
             let shipLoc = params[0].target.id
             let legals = [...getLgl(gb,shipLoc)]
@@ -401,6 +411,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                     }
                     //remember to revise this if playerAction is not the right event name &/or other changes. 
                     //Also need to add a cancelAction event in body later.
+                    //cancelAction should remove inst.
                 }
             }
 
@@ -408,6 +419,9 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
         },
         'Modify Ship' : function(...params){
+            if(document.querySelector('.inst')){
+                return
+            }
             const propTitles = document.querySelectorAll('.propertyTitle')
             const props = Array.from(propTitles).map(elem => elem.textContent)
             let compStore = componentsObj()
@@ -428,6 +442,9 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             }     
         },
         'Extend Ship' : function(...params){
+            if(document.querySelector('.inst')){
+                return
+            }
             _componentStore()
             let store = document.querySelector('.componentStore')
             store.appendChild(_doneButton(params[1]))
@@ -445,28 +462,89 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                     compPropElem.onclick = function(e){
                         extendShipPublisher(e, params)
                         //Remember need to add a cancelAction event in body later.
+                        //cancelAction should remove inst.
                     }
                 }
             }
             _availabilityGuard(...params) //revise when finishing.
 
         },
-        'Extend Component' : function(){
+        'Extend Component' : function(...params){
+            if(document.querySelector('.inst')){
+                return
+            }
+            const propTitles = document.querySelectorAll('.propertyTitle')
+            const props = Array.from(propTitles).map(elem => elem.textContent)
+            let compStore = componentsObj()
+            for(let prop of props){
+                for(let elem of Object.keys(compStore)){
+                    if(props.includes(elem)){
+                        let ind = props.indexOf(elem)
+                        let propChildren = Array.from(propTitles[ind].parentElement.children).filter(key => key.classList.contains('container'))
+                        if(propChildren.length > 0){
+                            propTitles[ind].classList.add('Ext')
+                            propTitles[ind].onclick = function(e){
+                                activateExtendComponent(e, params)
+                                document.querySelector('.inst').classList.remove('inst')
+                            }
+                        }                 
+                    }
+                    compStore = compStore[prop]
+                }
+            }
 
-         },
+         },//cancelAction should remove inst.
         'Effect Ship Action' : function(event, someGb, someGetCont=defaultConfig.getBoardContains){
+            if(document.querySelector('.inst')){
+                return
+            }
             const key = event.target.id;
             const ship = someGetCont(someGb,key)
 
-        },
+        },//cancelAction should remove inst.
 
     }
-
-    const filterOptions = function(){
-        let view = document.querySelector('.viewConsole');
-        if(!view){
+    const toFilterList = [
+        [document.querySelector('.viewConsole'), function(){
+            return defaultOpts
+        }],
+        [document.querySelector('.property'), function(){
+            delete ship['Modify Ship']
+            delete ship['Effect Ship Action']
+            delete ship['Extend Component']
             return {
-                defaultOpts
+                defaultOpts,
+                ship
+            }
+        }],
+        [document.querySelector('.container'), function(){
+            delete ship['Extend Component']
+            return {
+                defaultOpts,
+                ship
+            }
+        }],
+        [Array.from(document.querySelectorAll('.propertyTitle')).filter(tit => tit.textContent === 'action')[0], function(){
+            delete ship['Effect Ship Action']
+            return {
+                    defaultOpts,
+                    ship
+                }
+            
+        }],
+        [Array.from(document.querySelectorAll('.propertyTitle')).filter(tit => tit.textContent=== 'messagingProtocol')[0],function(){
+            delete ship['Effect Ship Action']
+            return {
+                defaultOpts,
+                ship
+            }
+        }],
+    ]
+ 
+    const filterOptions = function(){
+        for(let elem of toFilterList){
+            if (!elem[0]){
+                return elem[1]
             }
         }
         return {
@@ -501,6 +579,7 @@ const createOptionsConsole = function(...params){
             title.textContent = option
             title.onclick = function(){// to revise
                 optionsObject[key][option](...params)
+                title.classList.add('inst')
             }
             optCons.appendChild(opt)
         }
