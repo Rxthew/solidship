@@ -37,6 +37,16 @@ const _buildBoard = function(){
     return gameBoard
 }
 
+const _skipTurn = function(){
+    let skip = document.createElement('button')
+    skip.textContent = 'Skip Turn'
+    skip.classList.add('skip')
+    skip.onclick = //still to fill in.
+    document.querySelector('.mainConsole').appendChild(skip)
+    return skip
+
+}
+
 
 const createMainConsole = function(){
     if(document.querySelector('.mainConsole')){
@@ -667,6 +677,7 @@ export const renderState = function(someGb, someGetCont=defaultConfig.getBoardCo
     document.body.appendChild(newBoard)
     createMainConsole()
     createOptionsConsole(null,someGb,someGetCont)
+    _skipTurn()
     for (let elem of Object.keys(someGb)){
         if(document.querySelector(`#${elem}`) && someGetCont(someGb,elem)){
             document.querySelector(`#${elem}`).classList.add('ship')
