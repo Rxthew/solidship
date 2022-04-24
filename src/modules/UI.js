@@ -29,7 +29,8 @@ const _buildBoard = function(){
         for(let letr of lets){
             let td = document.createElement('td')
             tr.appendChild(td)
-            td.id = `${letr}${elem}` 
+            td.id = `${letr}${elem}`
+            td.classList.add('zone') 
         }
         gameBody.appendChild(tr)
     }
@@ -240,10 +241,6 @@ const _shipStore = function(shipsObj=standardShipStore){
         let ship = document.createElement('span')
         ship.textContent = elem
         ship.classList.add('shipOption')
-        //ship.onclick = when clicked, series of happenings: first initialises the object value associated with key chosen.
-        // Then prompts the user to click on an empty place in the grid to place the ship on. Then re-renders the gameboard
-        //and the console. Also: if user fails to click on an empty grid item, user is prompted with an error and the next
-        // click re renders everything. If user fails to click in the gameboard and click anywhere else: re-render everything. 
         store.appendChild(ship) 
     }
 
@@ -432,9 +429,29 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     }
     
     const defaultOpts = {
-        'Build New Ship' : function(){}
+        'Build New Ship' : function(...params){
+            let gb = params[1]
+            _shipStore()
+            const ships = Array.from(document.querySelectorAll('.shipOption'))
+            const zones = Array.from(document.querySelectorAll('.zone'))
+            const _prepPlaceShip = function(chosenShip){
+                for (let zone of zones){
+                    if(zone.classList.contains('ship')){
+                        continue
+                    }
+                    zone.classList.add('moveHighlight')
+                    zone.onclick = function(){publish('playerAction',gb,undefined,standardShipStore[chosenShip],zone.id)}
+                }
+            }
+            for(let ship of ships){
+                ship.onclick = function(){
+                    _prepPlaceShip(ship.textContent)
+                }
+            }
+        }
 
-        
+    //remember to revise this if playerAction is not the right event name &/or other changes. 
+    //Also need to add a cancelAction event in body later.   
     }//cancelAction should remove toggleHide.
 
     const ship = {
@@ -649,7 +666,7 @@ export const renderState = function(someGb, someGetCont=defaultConfig.getBoardCo
     }
     document.body.appendChild(newBoard)
     createMainConsole()
-    createOptionsConsole()
+    createOptionsConsole(null,someGb,someGetCont)
     for (let elem of Object.keys(someGb)){
         if(document.querySelector(`#${elem}`) && someGetCont(someGb,elem)){
             document.querySelector(`#${elem}`).classList.add('ship')
