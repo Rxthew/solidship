@@ -427,7 +427,7 @@ describe('testing sendStatus function', () => {
     
     const checkArray = []
     const fakeEventPublisher = function(someStr){
-        if(someStr === 'updatePlayerState'){
+        if(someStr === 'updateState'){
             checkArray.push(1) 
         }
         else if(someStr === 'updateAIObject'){

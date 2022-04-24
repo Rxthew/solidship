@@ -2,7 +2,7 @@ import { gameBoard, createContainsObject, updateBoardContents, defaultConfig } f
 const [getLgalMovs, getSt, newBrd] = [defaultConfig.getBoardLegalMoves, defaultConfig.getState, defaultConfig.newBoard]
 const [getBrd, getBCont, setBCont] = [defaultConfig.getBoard, defaultConfig.getBoardContains, defaultConfig.setBoardContains]
 const [getW, setW, getP, setP] = [defaultConfig.getWreckCount, defaultConfig.setWreckCount, defaultConfig.getPlantCount, defaultConfig.setPlantCount]
-import {gameEvents} from "./gamestate"
+import {gameEvents, updateState} from "./gamestate"
 import {getShipCount} from "./ships"
 const getC = getShipCount
 
@@ -341,12 +341,13 @@ export const sendStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd
         publish('updateAIObject',gs,gbs,publish)
         return
     }
-    publish('updatePlayerState',currentGameState)
+    publish('updateState',currentGameState)
     //To include:
     //check if game over, and if so reset.
     //renderState
     return 
 }
+
 
 export let gameAI = {sessionAI : new AIObj()}
 
@@ -356,10 +357,12 @@ export const updateAIWrapper = function(someFunc,...params){
 }
 
 export const subscribeAIEvts = function(someSubFunc=gameEvents.subscribe){
+    someSubFunc('updateGameState',updateAIWrapper)
     someSubFunc('updateAIObj',updateAIWrapper)
     return    
 
 }
+
 
 export const triggerAIEvts = function(somePubFunc=gameEvents.publish, aiReactParams=[getSt, [newBrd,getBrd]],updateStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],getC], sendStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getLgalMovs],somePubFunc=gameEvents.publish]){
     somePubFunc('updateAIObj', AIReact, ...aiReactParams)

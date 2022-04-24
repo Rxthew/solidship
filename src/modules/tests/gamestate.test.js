@@ -11,11 +11,11 @@ const somePlayer = {
     gameState : {}
 }
 const newGame = new gameBoard('new game')
-let updatedPlayer = updateState(newGame, somePlayer)
+let updatedPlayer = updateState(somePlayer, newGame)
 expect(updatedPlayer.gameState).toEqual(newGame)
 
 const firstMove = new gameBoard('first move')
-let firstMovePlayer = updateState(firstMove,somePlayer)
+let firstMovePlayer = updateState(somePlayer,firstMove)
 expect(firstMovePlayer.gameState).toEqual(firstMove)
 })
 

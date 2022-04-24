@@ -229,6 +229,9 @@ export const subscribePlayerEvts = function(someSubFunc=gameEvents.subscribe){
 }
 
 
-
+//effectPlayerAction -> pass trigger, playerObj & updateState as params
+//involves following lines at the end:
+//publish('updateGameState', updateState, playerObj.gameState)
+//if smth -> triggerAIEvts()
 
 
