@@ -336,7 +336,7 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
         let children = Array.from(par.children).filter(child => child.classList.contains('compContainer') || child.classList.contains('compElement'))
         if(children.length > 0){
             opt.onclick = function(){
-                publish('playerAction',gb, undefined, shipLoc, [changeConfig, opt.textContent]) 
+                publish('playerAction','modify',gb, undefined, shipLoc, [changeConfig, opt.textContent]) 
             } 
         }
          //remember to revise this if playerAction is not the right event name &/or other changes. 
@@ -356,7 +356,7 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
         let children = Array.from(par.children).filter(child => child.classList.contains('compContainer'))
         if(children.length > 0){
             opt.onclick = function(){
-                publish('playerAction',gb,undefined,shipLoc, [changeConfig, opt.textContent])
+                publish('playerAction','extend component',gb,undefined,shipLoc, [changeConfig, opt.textContent])
             }
         }
         //remember to revise this if playerAction is not the right event name &/or other changes. 
@@ -368,7 +368,7 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
 const activateActionChoice = function(event,params,publish=gameEvents.publish){
     const shipLoc = params[0].target.id
     const gb = params[1]
-    publish('playerAction', gb, undefined, shipLoc, event.target.textContent)
+    publish('playerAction', 'action', gb, undefined, shipLoc, event.target.textContent)
     //Note the above was written before the all-encompassing function that parses actions was designed. So review once that is done esp. re: parameter order. 
 
     
@@ -450,7 +450,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                         continue
                     }
                     zone.classList.add('moveHighlight')
-                    zone.onclick = function(){publish('playerAction',gb,undefined,standardShipStore[chosenShip],zone.id)}
+                    zone.onclick = function(){publish('playerAction','build',gb,undefined,standardShipStore[chosenShip],zone.id)}
                 }
             }
             for(let ship of ships){
@@ -476,7 +476,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                 else{
                     document.querySelector(`#${elem}`).classList.add('moveHighlight')
                     document.querySelector(`#${elem}`).onclick = function(){
-                        publish('playerAction',gb, undefined, shipLoc, elem)
+                        publish('playerAction','move',gb, undefined, shipLoc, elem)
                     }
                     //remember to revise this if playerAction is not the right event name &/or other changes. 
                     //Also need to add a cancelAction event in body later.
