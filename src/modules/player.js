@@ -223,6 +223,10 @@ export const effectClear = function(currentBoard, newGameBoard, shipLoc, current
     return newGameBoard
 }
 
+export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish){
+    return
+}
+
 export const subscribePlayerEvts = function(someSubFunc=gameEvents.subscribe){
     someSubFunc('extendShip', upgradeShip)
     //see note at extendShipPublisher over at UI.js. Make sure to add a function which updates the state of the gameboard either here or at gameState. 
