@@ -333,7 +333,7 @@ export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getB
     
 }
 
-export const sendStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd,getBCont,setBCont,getLgalMovs],publish=gameEvents.publish){
+export const sendStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd,getBCont,setBCont,getLgalMovs],publish=gameEvents.publish, us=updateState){
     
     let currentGameState = currentAIObject.gameState
     let currentState = gs(currentGameState)
@@ -341,7 +341,7 @@ export const sendStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd
         publish('updateAIObject',gs,gbs,publish)
         return
     }
-    publish('updateState',currentGameState)
+    publish('updateGameState',us, currentGameState)
     //To include:
     //check if game over, and if so reset.
     //renderState
@@ -364,7 +364,7 @@ export const subscribeAIEvts = function(someSubFunc=gameEvents.subscribe){
 }
 
 
-export const triggerAIEvts = function(somePubFunc=gameEvents.publish, aiReactParams=[getSt, [newBrd,getBrd]],updateStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],getC], sendStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getLgalMovs],somePubFunc=gameEvents.publish]){
+export const triggerAIEvts = function(somePubFunc=gameEvents.publish, aiReactParams=[getSt, [newBrd,getBrd]],updateStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],getC], sendStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getLgalMovs],somePubFunc=gameEvents.publish, updateState]){
     somePubFunc('updateAIObj', AIReact, ...aiReactParams)
     somePubFunc('updateAIObj', updateStatus,...updateStatParams)
     somePubFunc('updateAIObj', sendStatus,...sendStatParams)

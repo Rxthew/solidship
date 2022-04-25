@@ -1,6 +1,6 @@
 import {test,expect,describe} from "@jest/globals";
 import { gameBoard } from "../gameboard";
-import {playerObj, placeShip, moveShip, blockMissileAction, upgradeShip, effectFarm,effectClear} from '../player';
+import {playerObj, placeShip, moveShip, blockMissileAction, upgradeShip, effectFarm,effectClear,effectPlayerAction} from '../player';
 import {basicShip,legacyShip,plantingShip,clearingShip,getChangedShip} from '../ships'
 
 
@@ -224,7 +224,20 @@ describe('testing effectFarm & effectClear', () => {
 })
 
 describe('testing effectPlayerAction', () => {
-    
+    const publisherDummy = function(str){
+        if(str === 'renderError'){
+            return false
+        }
+        else{
+            return true
+        }
+
+    }
+
+    test('',() => {
+        
+    })
+
 })
 
 
