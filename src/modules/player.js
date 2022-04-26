@@ -262,6 +262,7 @@ const _extendShipSequence = function(paramsArray, ups=updateState, pub=gameEvent
 }
 
 export const subscribePlayerEvts = function(someSubFunc=gameEvents.subscribe){
+    someSubFunc('initGame', function(name){player1.sessionPlayer = new playerObj(name)}),
     someSubFunc('extendShip', _extendShipSequence)
     someSubFunc('updateGameState', updatePlayerWrapper)
     

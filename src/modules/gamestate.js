@@ -12,10 +12,12 @@ export const updateState = function(receiver,newState){
     return receiver
 }
 
-export const gameLoop = function(name){ //this should be some input value from the intial screen. 
-    let player = new playerObj(name)
-    //publish('initGame', player.gameState) //Note: re this line , hop over to the UI.js and subscribe renderState to initGame                                                
+export const gameLoop = function(playerName){ //this should be some input value from the intial screen. 
     //subAllEvts()
+    //publish('initGame', playerName) //Note: re this line , hop over to the UI.js and subscribe renderState to initGame
+    //now you need to make a new initial gameState, update that state for player and ai and then ->
+    //publish(renderGameState, newgs)                                                
+    
     
 }
 
