@@ -1,5 +1,5 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
-import { gameEvents } from "./gamestate"
+import { gameEvents, updateState } from "./gamestate"
 import { getShipCount,setShipCount,getEquipmentType, setNewShip } from "./ships"
 
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
@@ -223,19 +223,58 @@ export const effectClear = function(currentBoard, newGameBoard, shipLoc, current
     return newGameBoard
 }
 
-export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish){
+
+let player1 = {sessionPlayer : null}
+
+const updatePlayerWrapper = function(someFunc, ...params){
+    player1.sessionPlayer = someFunc(player1.sessionPlayer,...params)
+    return player1
+}
+
+export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish, ups=updateState){
+//Note 1:
+//Functions placeShip,upgradeShip,blockmissileact and moveShip take gameboard.board
+//Functions effectClear and effectFarm take both board and gameboard
+
+//Note 2: (blurb of some of the latter parts of the func)
+
+//effectPlayerAction -> pass trigger & gameState
+//involves following lines at the end:
+//[
+//filterAction to see if the action results in an error. If yes:
+//publish('renderError', playerObj.gameState) Note: remember renderError needs Log, and then use triggerAIEvts.
+//]
+//publish('updateGameState', updateState, playerObj.gameState)
+//triggerAIEvts()
+
+
+//Note 3
+    //remember 'action' & 'extend ship' params need customisation. (extendship should just be render of gs) 
+    //pub('updateGameState', ups, <to fill in>)
+    //pub('renderGameState', player1.sessionPlayer.gameState)
     return
 }
 
+const _extendShipSequence = function(paramsArray, ups=updateState, pub=gameEvents.publish){
+    let newGb = upgradeShip(...paramsArray)
+    pub('updateGameState', ups,newGb)
+    return newGb
+}
+
 export const subscribePlayerEvts = function(someSubFunc=gameEvents.subscribe){
-    someSubFunc('extendShip', upgradeShip)
-    //see note at extendShipPublisher over at UI.js. Make sure to add a function which updates the state of the gameboard either here or at gameState. 
+    someSubFunc('extendShip', _extendShipSequence)
+    someSubFunc('updateGameState', updatePlayerWrapper)
+    
 }
 
 
-//effectPlayerAction -> pass trigger, playerObj & updateState as params
-//involves following lines at the end:
-//publish('updateGameState', updateState, playerObj.gameState)
-//if smth -> triggerAIEvts()
+
+
+ 
+
+
+
+
+
 
 

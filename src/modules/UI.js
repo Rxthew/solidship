@@ -208,7 +208,8 @@ const revealProps = {
 }
       
 
-const displayShip = function(event, someGb, someGetCont=defaultConfig.getBoardContains){
+const displayShip = function(event, someGameState, someGetCont=defaultConfig.getBoardContains, gb=defaultConfig.getBoard){
+    let someGb= gb(someGameState)
     let key = event.target.id
     let paths = _recordPaths(someGb, key,someGetCont)
     let viewConsole = _createViewConsole()
@@ -326,7 +327,9 @@ const _componentStore = function(componentsObj=_componentFilter(ships.components
 
 const activateModifyProperties = function(event, params, publish=gameEvents.publish){
     const shipLoc = params[0].target.id
-    const gb = params[1]
+    let gameState = params[1]
+    let getBoard = params[3]
+    let gb = getBoard(gameState)
     let path = [recordPathHelpers().chartPath(event)]
     let changeConfig = ['modify', path[0]]
     _componentStore(_componentFilter(ships.components),path)
@@ -346,7 +349,9 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
 
 const activateExtendComponent = function(event, params, publish=gameEvents.publish){
     const shipLoc = params[0].target.id
-    const gb = params[1]
+    let gameState = params[1]
+    let getBoard = params[3]
+    let gb = getBoard(gameState)
     let path = [recordPathHelpers().chartPath(event)]
     let changeConfig = ['extend component', path[0]]
     _componentStore(_componentFilter(ships.components),path)
@@ -367,8 +372,10 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
 
 const activateActionChoice = function(event,params,publish=gameEvents.publish){
     const shipLoc = params[0].target.id
-    const gb = params[1]
-    publish('playerAction', 'action', [gb, undefined, shipLoc, event.target.textContent])
+    const gs = params[1]
+    const getCont = params[2]
+    const getB = params[3]
+    publish('playerAction', 'action', [[gs,getCont,getB] , shipLoc, event.target.textContent])
     //Note the above was written before the all-encompassing function that parses actions was designed. So review once that is done esp. re: parameter order. 
 
     
@@ -376,7 +383,9 @@ const activateActionChoice = function(event,params,publish=gameEvents.publish){
 
 const extendShipPublisher = function(event,params,publish=gameEvents.publish){
     const shipLoc = params[0].target.id
-    const gb = params[1]
+    let gameState = params[1]
+    let getBoard = params[3]
+    let gb = getBoard(gameState)
     let path = recordPathHelpers().chartPath(event)
     let changeConfig = ['extend ship', path]
     publish('extendShip',[gb,undefined,shipLoc, [changeConfig, event.target.textContent]])
@@ -391,11 +400,10 @@ const extendShipPublisher = function(event,params,publish=gameEvents.publish){
 
 const _generateOptionsObject = function(componentsObj=ships.components, getLgl=defaultConfig.getBoardLegalMoves,publish=gameEvents.publish){
 
-    const _doneButton = function(someGb){
+    const _doneButton = function(){
         const Done = document.createElement('button')
         Done.classList.add('done')
         Done.textContent = 'Done'
-        Done.onclick = renderState(someGb)
         return Done
     }
 
@@ -440,7 +448,9 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     
     const defaultOpts = {
         'Build New Ship' : function(...params){
-            let gb = params[1]
+            let gameState = params[1]
+            let getB = params[3]
+            let gb = getB(gameState)
             _shipStore()
             const ships = Array.from(document.querySelectorAll('.shipOption'))
             const zones = Array.from(document.querySelectorAll('.zone'))
@@ -466,9 +476,11 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
     const ship = {
         'Move Ship' : function(...params){
-            let gb = params[1]
+            let gs = params[1]
+            let getB = params[3]
+            let gb = getB(gs)
             let shipLoc = params[0].target.id
-            let legals = [...getLgl(gb,shipLoc)]
+            let legals = [...getLgl(gb,shipLoc)] 
             for(let elem of legals){
                 if(document.querySelector(`#${elem}`).classList.contains('ship')){
                     continue
@@ -510,7 +522,11 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
         'Extend Ship' : function(...params){
             _componentStore()
             let store = document.querySelector('.componentStore')
-            store.appendChild(_doneButton(params[1]))
+            let Done = _doneButton()
+            let gs = params[1]
+            store.appendChild(Done)
+            Done.onclick = publish('playerAction','extend ship', [gs]) 
+            // review above : To be adapted by player action. All you have to do is render, I think, because upgrades done. 
             let checkAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(elem => elem.textContent)
             let compPropTitles = Array.from(document.querySelectorAll('.compPropertyTitle'))
             let toVet = compPropTitles.map(elem => elem.textContent)
@@ -658,8 +674,8 @@ const createOptionsConsole = function(...params){
             let title = document.createElement('span')
             title.classList.add('optTitle')
             title.textContent = option
-            title.onclick = function(){// to revise
-                optionsObject[key][option](...params)
+            title.onclick = function(event){// to revise
+                optionsObject[key][option](event,...params)
                 title.classList.add('toggleHide')
             }
             optCons.appendChild(opt)
@@ -669,28 +685,31 @@ const createOptionsConsole = function(...params){
 }
 
 
-export const renderState = function(someGb, someGetCont=defaultConfig.getBoardContains, publish=gameEvents.publish){
+export const renderState = function(someGameState, someGetCont=defaultConfig.getBoardContains, gb=defaultConfig.getBoard, publish=gameEvents.publish){
+    let someGb = gb(someGameState)
     let newBoard = _buildBoard()
     if(document.querySelector('.gamezone')){
         document.querySelector('.gamezone').remove()
     }
     document.body.appendChild(newBoard)
     createMainConsole()
-    createOptionsConsole(null,someGb,someGetCont)
+    createOptionsConsole(null,someGameState,someGetCont,gb)
     _skipTurn()
-    for (let elem of Object.keys(someGb)){
+    for (let elem of Object.keys(someGb)){ 
         if(document.querySelector(`#${elem}`) && someGetCont(someGb,elem)){
             document.querySelector(`#${elem}`).classList.add('ship')
             document.querySelector(`#${elem}`).textContent = 'S' //to modify later
             document.querySelector(`#${elem}`).onclick = function(event) {
-            publish('viewShip',event,someGb,someGetCont);
+            publish('viewShip',event,someGameState,someGetCont,gb);
             } 
         }
     }   
 }
 
 export const subscribeUIEvents = function(someSubFunc=gameEvents.subscribe){
+    someSubFunc('renderGameState', renderState)
     someSubFunc('viewShip', displayShip)
     someSubFunc('viewShip', createOptionsConsole)
+
     
 }

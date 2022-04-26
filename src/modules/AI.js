@@ -344,7 +344,7 @@ export const sendStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd
     publish('updateGameState',us, currentGameState)
     //To include:
     //check if game over, and if so reset.
-    //renderState
+    //renderState i.e publish('renderGameState', gameAI.sessionAI.gameState)
     return 
 }
 
