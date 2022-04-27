@@ -356,17 +356,20 @@ export const updateAIWrapper = function(someFunc,...params){
     return
 }
 
-export const subscribeAIEvts = function(someSubFunc=gameEvents.subscribe){
-    someSubFunc('updateGameState',updateAIWrapper)
-    someSubFunc('updateAIObj',updateAIWrapper)
-    return    
-
-}
-
-
 export const triggerAIEvts = function(somePubFunc=gameEvents.publish, aiReactParams=[getSt, [newBrd,getBrd]],updateStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],getC], sendStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getLgalMovs],somePubFunc=gameEvents.publish, updateState]){
     somePubFunc('updateAIObj', AIReact, ...aiReactParams)
     somePubFunc('updateAIObj', updateStatus,...updateStatParams)
     somePubFunc('updateAIObj', sendStatus,...sendStatParams)
     return
 }
+
+export const subscribeAIEvts = function(someSubFunc=gameEvents.subscribe){
+    someSubFunc('updateGameState',updateAIWrapper)
+    someSubFunc('updateAIObj',updateAIWrapper)
+    someSubFunc('triggerAI', triggerAIEvts)
+    return    
+
+}
+
+
+
