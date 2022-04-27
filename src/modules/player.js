@@ -226,7 +226,7 @@ export const effectClear = function(currentBoard, newGameBoard, shipLoc, current
 
 let player1 = {sessionPlayer : null}
 
-const updatePlayerWrapper = function(someFunc, ...params){
+export const updatePlayerWrapper = function(someFunc, ...params){
     player1.sessionPlayer = someFunc(player1.sessionPlayer,...params)
     return player1
 }
@@ -244,7 +244,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
 //filterAction to see if the action results in an error. If yes:
 //publish('renderError', playerObj.gameState) Note: remember renderError needs Log, and then use triggerAIEvts.
 //]
-//publish('updateGameState', updateState, playerObj.gameState)
+//publish('updateGameState', updateState, newGameState)
 //triggerAIEvts()
 
 
@@ -252,7 +252,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
     //remember 'action' & 'extend ship' params need customisation. (extendship should just be render of gs) 
     //pub('updateGameState', ups, <to fill in>)
     //pub('renderGameState', player1.sessionPlayer.gameState)
-    return
+//    return
 }
 
 const _extendShipSequence = function(paramsArray, ups=updateState, pub=gameEvents.publish){

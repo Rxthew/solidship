@@ -224,16 +224,13 @@ describe('testing effectFarm & effectClear', () => {
 })
 
 describe('testing effectPlayerAction', () => {
+    let num = 0
     const publisherDummy = function(str){
-        if(str === 'renderError'){
-            return false
-        }
-        else{
-            return true
-        }
+        let evts = ['renderError','updateGameState','renderGameState','triggerAI']
+        num += evts.indexOf(str)
+        return 
 
     }
-
     test('',() => {
         
     })
