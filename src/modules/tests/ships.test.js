@@ -21,7 +21,7 @@ test('Basic ship returns an object with a damage equalling 0, some new type, and
          {
              damage: 0,
              type: 'someNewType',
-             breakPoint: 3
+             breakpoint: 3
         } 
     )
 })
@@ -29,11 +29,11 @@ test('Basic ship returns an object with a damage equalling 0, some new type, and
 test('Basic ship isSunk returns true if damage is equal or greater than breakpoint', () => {
     let basic = new basicShip('someNewType',2);
     basic.damage += 2
-    expect(basic.isSunk(basic.damage,basic.breakPoint)).toBe(
+    expect(basic.isSunk(basic.damage,basic.breakpoint)).toBe(
          true
     )
     basic.damage += 1
-    expect(basic.isSunk(basic.damage,basic.breakPoint)).toBe(
+    expect(basic.isSunk(basic.damage,basic.breakpoint)).toBe(
         true
    )
 })
@@ -41,7 +41,7 @@ test('Basic ship isSunk returns true if damage is equal or greater than breakpoi
 test('Basic ship isSunk returns false if damage is less than breakpoint', () => {
     let basic2 = new basicShip('someNewType',2);
     basic2.damage += 1
-    expect(basic2.isSunk(basic2.damage,basic2.breakPoint)).toBe(
+    expect(basic2.isSunk(basic2.damage,basic2.breakpoint)).toBe(
          false
     )
 })
@@ -51,7 +51,7 @@ test('Other ship objects contain right properties', () => {
          {
              damage: 0,
              type: 'legacy',
-             breakPoint: 4,
+             breakpoint: 4,
              action: ['legacy'],
              properties : { messagingProtocol : 'legacy'},
              
@@ -62,7 +62,7 @@ test('Other ship objects contain right properties', () => {
          {
              damage: 0,
              type: 'relay',
-             breakPoint: 3,
+             breakpoint: 3,
              action: ['message'],
              properties : { messagingProtocol : ['message','relay']},
              
@@ -72,12 +72,12 @@ test('Other ship objects contain right properties', () => {
 test('Other ships isSunk method is available (and returns true/false depending on the relationship between damage and breakpoint)', () => {
     let plantingShip = planting();
     plantingShip.damage += 3
-    expect(plantingShip.isSunk(plantingShip.damage,plantingShip.breakPoint)).toBe(
+    expect(plantingShip.isSunk(plantingShip.damage,plantingShip.breakpoint)).toBe(
          true
     )
     let defenseShip = defense();
     defenseShip.damage += 1
-    expect(defenseShip.isSunk(defenseShip.damage,defenseShip.breakPoint)).toBe(
+    expect(defenseShip.isSunk(defenseShip.damage,defenseShip.breakpoint)).toBe(
         false
    )
 
@@ -85,7 +85,7 @@ test('Other ships isSunk method is available (and returns true/false depending o
 
 test('basicLegacyShip instance sinks instantly the first time isSunk is called',() => {
     let plantingLegacyShip = new basicLegacyShip('planting')
-    expect(plantingLegacyShip.isSunk(plantingLegacyShip.damage,plantingLegacyShip.breakPoint)).toBe(true)
+    expect(plantingLegacyShip.isSunk(plantingLegacyShip.damage,plantingLegacyShip.breakpoint)).toBe(true)
     
 })
 

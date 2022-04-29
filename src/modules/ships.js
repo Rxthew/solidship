@@ -1,8 +1,8 @@
 
 const _basicMethod = {
     basic : {
-        isSunk(damage, breakPoint){
-            if(damage >= breakPoint){
+        isSunk(damage, breakpoint){
+            if(damage >= breakpoint){
                 return true
             }
             return false
@@ -58,19 +58,19 @@ const _shipMethods = {
 export const basicShip = class {
     damage = 0
     
-    constructor(type='custom', breakPoint=3){
+    constructor(type='custom', breakpoint=3){
         this.type = type
-        this.breakPoint = breakPoint
+        this.breakpoint = breakpoint
     }
 }
 Object.assign(basicShip.prototype,_shipMethods.basic())
 
 export const basicLegacyShip = class extends basicShip {
-    damage = this.breakPoint
-    reinforcedBreakPoint = (this.breakPoint * 2) + 1
+    damage = this.breakpoint
+    reinforcedBreakpoint = (this.breakpoint * 2) + 1
 
-    constructor(type, breakPoint){
-        super(type, breakPoint)    
+    constructor(type, breakpoint){
+        super(type, breakpoint)    
     }
 }
 

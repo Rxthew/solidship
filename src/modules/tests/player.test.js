@@ -58,7 +58,7 @@ describe('testing placeShip function', () => {
 
     test('expect error when passing a ship object with missing properties', () => {
         expect(newFirst3).toEqual({error: 'Ship has missing properties'})
-        let newFirst4 = placeShip(new gameBoard().board, new gameBoard().board,{damage: 44, type: 'non-existing', breakPoint: 'someBreakPoint'},target1)
+        let newFirst4 = placeShip(new gameBoard().board, new gameBoard().board,{damage: 44, type: 'non-existing', breakpoint: 'someBreakPoint'},target1)
         expect(newFirst4).toEqual({error: 'Ship has missing properties'})
     })
 

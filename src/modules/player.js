@@ -19,7 +19,7 @@ const _checkShipObject = function(ship){
         return {error: 'Ship has missing properties'}
         }
     
-    const properties = ['isSunk', 'damage', 'breakPoint','type']
+    const properties = ['isSunk', 'damage', 'breakpoint','type']
     for (let property of properties){
         if(property in ship === false){
             return {error: 'Ship has missing properties'}

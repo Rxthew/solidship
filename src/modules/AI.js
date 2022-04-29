@@ -190,7 +190,7 @@ const _sunkVesselCheckUpdate = function(vesselSunk, vessel){
 
 const _generateDamage = function(hitShip,hitValue=1){
      hitShip.damage += hitValue
-     return _sunkVesselCheckUpdate(hitShip.isSunk(hitShip.damage, hitShip.breakPoint), hitShip)
+     return _sunkVesselCheckUpdate(hitShip.isSunk(hitShip.damage, hitShip.breakpoint), hitShip)
 }
 
 const _missileBlockingCheck = function(board, target, getCont=getBCont, setCont=setBCont){

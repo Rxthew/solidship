@@ -308,7 +308,7 @@ describe('testing updateStatus function',() => {
         let AI3 = new AIObj()
         let aiGameBoard3 = new gameBoard('B3')
         let plant = plantingShip()
-        plant.damage = plant.breakPoint - 1
+        plant.damage = plant.breakpoint - 1
         aiGameBoard3.board['B3'].contains = plant
         AI3.gameState = aiGameBoard3
         
@@ -321,7 +321,7 @@ describe('testing updateStatus function',() => {
         let sunkAI = new AIObj()
         let sunkGb = new gameBoard('B3')
         let l = legacyShip()
-        l.damage = l.breakPoint - 1
+        l.damage = l.breakpoint - 1
         sunkGb.board['B3'].contains = l
         sunkGb.wreckage = 3
         sunkAI.gameState = sunkGb
@@ -332,7 +332,7 @@ describe('testing updateStatus function',() => {
     test('updateStatus w/missile sinking planting ship decreases plant count by amount held by ship, if any, (& no negaive numbers)', () => {
         let hugePlants = plantingShip()
         hugePlants.properties.equipment.count.plants = 50
-        hugePlants.damage = hugePlants.breakPoint - 1
+        hugePlants.damage = hugePlants.breakpoint - 1
 
         let sunkAI2 = new AIObj()
         let sunkGb2 = new gameBoard('B3')
@@ -360,8 +360,8 @@ describe('testing updateStatus function',() => {
         let clearer2 = clearingShip();
         clearer2.properties.equipment.count.wreckage = 4
 
-        clearer.damage = clearer.breakPoint - 1
-        clearer2.damage = clearer2.breakPoint - 1
+        clearer.damage = clearer.breakpoint - 1
+        clearer2.damage = clearer2.breakpoint - 1
 
 
         let sunkAI3 = new AIObj()
