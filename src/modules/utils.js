@@ -1,21 +1,44 @@
-
-
-let camelMatcher = '/[a-z]+((([A-Z][a-z]+))*[A-Z]?/g'
-let phraseMatcher = '/[A-Z][a-z]+(\\s)[A-Z][a-z]+/g' //make it so that it's more than 1
-
+let camelMatcher = /[a-z]+([A-Z][a-z]+)*[A-Z]?/g
 
 const fromCamelToNorm = function(str){
     let newStrArr = str.split('')
     let first = newStrArr[0]
-    newStrArr = [first.toUpperCase(), ...newStrArr.filter(lett => newStrArr.indexOf(lett) !== 0)] //incomplete...fix
-
+    newStrArr = [...newStrArr]
+    newStrArr.splice(0,1)
+    let currInd = 0
+    for(let elem of newStrArr){
+        currInd += 1
+        if(currInd === newStrArr.length - 1){
+            break
+        }
+        if(elem === elem.toUpperCase()){
+            newStrArr = [...newStrArr]
+            newStrArr.splice(currInd-1,0,' ')
+            currInd += 1 
+        }
+    }
+    let newStr = [first.toUpperCase(), ...newStrArr].join('')
+    return newStr        
 }
 
 const fromNormToCamel = function(str){
     let newStrArr = str.split('')
     let first = newStrArr[0]
-    newStrArr = [first.toLowerCase(), ...newStrArr.filter(lett => newStrArr.indexOf(lett) !== 0 && lett !== ' ')]
+    newStrArr = [...newStrArr]
+    newStrArr.splice(0,1)
+    newStrArr = [...newStrArr.filter(lett => lett !== ' ')]
+    newStrArr = [first.toLowerCase(), ...newStrArr]
     let newStr = newStrArr.join('')
     return newStr
 
+}
+
+export const camelPhraseParser = function(str){
+    if(str.match(camelMatcher)){
+        return fromCamelToNorm(str)
+    }
+    else if(str.match(/(\s)/g)){
+        return fromNormToCamel(str)
+    }
+    return str   
 }
