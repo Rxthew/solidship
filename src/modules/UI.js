@@ -1,6 +1,7 @@
 import { defaultConfig} from './gameboard.js'
 import { gameEvents } from './gamestate.js'
 import * as ships from './ships.js'
+import { camelPhraseParser } from './utils.js'
 
 const _buildBoard = function(){
     const lets = ['A','B','C','D','E','F']
@@ -41,7 +42,7 @@ const _skipTurn = function(){
     let skip = document.createElement('button')
     skip.textContent = 'Skip Turn'
     skip.classList.add('skip')
-    skip.onclick = //still to fill in.
+    skip.onclick = //still to fill in. incroporate in context of effectAction
     document.querySelector('.mainConsole').appendChild(skip)
     return skip
 
@@ -111,7 +112,7 @@ const recordPathHelpers = function(){
 
     let chartPath = function(event, initParent='viewConsole', propTitle='propertyTitle'){
         let parent = event.target.parentElement
-        let prop = event.target.textContent
+        let prop = event.target.id
         let path = [prop]
         while(parent !== document.querySelector(`.${initParent}`)){
             if(parent === document.querySelector('body')){
@@ -123,7 +124,7 @@ const recordPathHelpers = function(){
             if(children.length === 0){
                 return path
             } 
-            path.unshift(children[0].textContent)      
+            path.unshift(children[0].id)      
         }
         return path
     }    
@@ -179,8 +180,9 @@ const revealProps = {
         let title = document.createElement('span')
         prop.classList.add(`${propName}`)
         prop.classList.add(`${key}`)
-        title.classList.add(`${propTitleName}`)        
-        title.textContent = key 
+        title.classList.add(`${propTitleName}`)
+        title.id = key        
+        title.textContent = camelPhraseParser(key) 
         prop.appendChild(title)
         parent.appendChild(prop)
         return prop
@@ -192,7 +194,8 @@ const revealProps = {
             for(let elem of val){
                 let uiElement = document.createElement('span')
                 uiElement.classList.add(`${valName}`)
-                uiElement.textContent = elem
+                uiElement.id = elem
+                uiElement.textContent = camelPhraseParser(elem)
                 container.appendChild(uiElement)
             }
             par.appendChild(container)
@@ -200,7 +203,8 @@ const revealProps = {
         else if(typeof val === 'string' || typeof val === 'number'){
             let uiElement = document.createElement('span')
             uiElement.classList.add(`${valName}`)
-            uiElement.textContent = val
+            uiElement.id = val
+            uiElement.textContent = camelPhraseParser(val)
             par.appendChild(uiElement)
         }
         return
@@ -270,9 +274,9 @@ const _recordComponentPaths = function(obj){
 }
 
 const _componentFilter = function(componentsObj=ships.components){
-    let allPropTitles = Array.from(document.querySelectorAll('propertyTitle')).map(title => title.textContent)
+    let allPropTitles = Array.from(document.querySelectorAll('.propertyTitle')).map(title => title.id)
     if(allPropTitles.includes('action')){
-        let allProps = Array.from(document.querySelectorAll('propertyTitle'))
+        let allProps = Array.from(document.querySelectorAll('.propertyTitle'))
         let act = allProps[allPropTitles.indexOf('action')].parentElement
         const firstAct = (function(){
             for(let elem of Array.from(act.children)){
@@ -339,7 +343,7 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
         let children = Array.from(par.children).filter(child => child.classList.contains('compContainer') || child.classList.contains('compElement'))
         if(children.length > 0){
             opt.onclick = function(){
-                publish('playerAction','modify',[gb, undefined, shipLoc, [changeConfig, opt.textContent]]) 
+                publish('playerAction','modify',[gb, undefined, shipLoc, [changeConfig, opt.id]]) 
             } 
         }
          //remember to revise this if playerAction is not the right event name &/or other changes. 
@@ -361,7 +365,7 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
         let children = Array.from(par.children).filter(child => child.classList.contains('compContainer'))
         if(children.length > 0){
             opt.onclick = function(){
-                publish('playerAction','extend component',[gb,undefined,shipLoc, [changeConfig, opt.textContent]])
+                publish('playerAction','extend component',[gb,undefined,shipLoc, [changeConfig, opt.id]])
             }
         }
         //remember to revise this if playerAction is not the right event name &/or other changes. 
@@ -375,7 +379,7 @@ const activateActionChoice = function(event,params,publish=gameEvents.publish){
     const gs = params[1]
     const getCont = params[2]
     const getB = params[3]
-    publish('playerAction', 'action', [[gs,getCont,getB] , shipLoc, event.target.textContent])
+    publish('playerAction', 'action', [[gs,getCont,getB] , shipLoc, event.target.id])
     //Note the above was written before the all-encompassing function that parses actions was designed. So review once that is done esp. re: parameter order. 
 
     
@@ -388,7 +392,7 @@ const extendShipPublisher = function(event,params,publish=gameEvents.publish){
     let gb = getBoard(gameState)
     let path = recordPathHelpers().chartPath(event)
     let changeConfig = ['extend ship', path]
-    publish('extendShip',[gb,undefined,shipLoc, [changeConfig, event.target.textContent]])
+    publish('extendShip',[gb,undefined,shipLoc, [changeConfig, event.target.id]])
     event.target.classList.add('unavailable')
      return
     //Note: in order for this to work, it is vimp that gb refers to an updated gameboard each time, even if it is not rendered yet.
@@ -501,22 +505,22 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
         },
         'Modify Ship' : function(...params){
             const propTitles = document.querySelectorAll('.propertyTitle')
-            const props = Array.from(propTitles).map(elem => elem.textContent)
+            const props = Array.from(propTitles).map(elem => elem.id)
             let compStore = componentsObj()
+            let compStoreKeys = Object.keys(compStore)
+            let ind = 0
             for(let prop of props){
-                for(let elem of Object.keys(compStore)){
-                    if(props.includes(elem)){
-                        let ind = props.indexOf(elem)
-                        let propChildren = Array.from(propTitles[ind].parentElement.children).filter(key => key.classList.contains('property'))
-                        if(propChildren.length === 0){
-                            propTitles[ind].classList.add('Mod')
-                            propTitles[ind].onclick = function(e){
-                                activateModifyProperties(e, params)
-                            }
-                        }                 
-                    }
-                    compStore = compStore[prop]
+                if(compStoreKeys.includes(prop)){
+                    let propChildren = Array.from(propTitles[ind].parentElement.children).filter(key => key.classList.contains('property'))
+                    if(propChildren.length === 0){
+                        propTitles[ind].classList.add('Mod')
+                        propTitles[ind].onclick = function(e){
+                            activateModifyProperties(e, params)
+                        }
+                    } 
                 }
+                ind++
+                compStore = compStore[prop]
             }     
         },
         'Extend Ship' : function(...params){

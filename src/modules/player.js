@@ -1,6 +1,7 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
 import { gameEvents, updateState } from "./gamestate"
 import { getShipCount,setShipCount,getEquipmentType, setNewShip } from "./ships"
+import { camelPhraseParser } from "./utils"
 
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
 const [legal,getP,setP,getW,setW] = [defaultConfig.getBoardLegalMoves, defaultConfig.getPlantCount, defaultConfig.setPlantCount, defaultConfig.getWreckCount, defaultConfig.setWreckCount]
@@ -232,6 +233,7 @@ export const updatePlayerWrapper = function(someFunc, ...params){
 }
 
 export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish, ups=updateState){
+ //use camelPhraseParser   
 //Note 1:
 //Functions placeShip,upgradeShip,blockmissileact and moveShip take gameboard.board
 //Functions effectClear and effectFarm take both board and gameboard
