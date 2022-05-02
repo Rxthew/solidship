@@ -223,15 +223,17 @@ describe('testing effectFarm & effectClear', () => {
     })
 })
 
-describe('testing effectPlayerAction', () => {
+describe('testing effectPlayerAction("ePA")', () => {
     let num = 0
     const publisherDummy = function(str){
         let evts = ['renderError','updateGameState','renderGameState','triggerAI']
         num += evts.indexOf(str)
         return 
-
     }
-    test('',() => {
+    test('ePA with right params re: modify should publish updateGameState and renderGameState',() => {
+        let gb = new gameBoard.board()
+        gb.A4.contains = plantingShip()
+        effectPlayerAction('modify',[new gameBoard.board(),'A4',['modify', ['action']])
         
     })
 
