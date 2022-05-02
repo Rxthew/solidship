@@ -40,7 +40,7 @@ const _checkTargetLoc = function(board,ship,key,getBoardContents = defaultConfig
 }
 
 
-const _removeShip = function(currentBoard, newGameBoard=new gameBoard().board, sourceKey, getShip=getBrdCont, setCont = setBrdCont){
+const _removeShip = function(currentBoard, newGameBoard=new gameBoard().board, sourceKey, getShip=getBrdCont, setCont=setBrdCont){
     if(Object.is(null,_checkShipObject(getShip(currentBoard,sourceKey)))){
         return currentBoard
     }
@@ -62,7 +62,7 @@ const _checkMoveLegality = function(currentBoard, sourceKey,targetKey, getSource
 }
 
 
-export const moveShip = function(currentBoard, newGameBoard=new gameBoard().board, sourceKey, targetKey, getShip=getBrdCont, ngb=newBrd, gb=getBrd){
+export const moveShip = function(currentBoard, sourceKey, targetKey, getShip=getBrdCont, ngb=newBrd, gb=getBrd){
     
     if(Object.prototype.hasOwnProperty.call(currentBoard, 'error')){
         return currentBoard
@@ -74,7 +74,7 @@ export const moveShip = function(currentBoard, newGameBoard=new gameBoard().boar
     }
     
     let ship = getShip(currentBoard, sourceKey) 
-    newGameBoard = gb(placeShip(currentBoard,newGameBoard,ship,targetKey))
+     let newGameBoard = gb(placeShip(currentBoard,ship,targetKey))
 
     if(Object.prototype.hasOwnProperty.call(newGameBoard, 'error')){
         return newGameBoard
@@ -87,7 +87,7 @@ export const moveShip = function(currentBoard, newGameBoard=new gameBoard().boar
      
 }
 
-export const placeShip = function(currentBoard, newGameBoard, ship, targetKey, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont){
+export const placeShip = function(currentBoard, ship, targetKey, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont){
     ship = _checkShipObject(ship)
     if(Object.prototype.hasOwnProperty.call(ship, 'error')){
         return ship
@@ -98,7 +98,7 @@ export const placeShip = function(currentBoard, newGameBoard, ship, targetKey, g
     }
     
     let containsObject = createContainsObject(currentBoard, targetKey, updateValue, getCont)
-    newGameBoard = ngb('ship place action');
+    let newGameBoard = ngb('ship place action');
     let board = gb(newGameBoard)
     Object.assign(board, updateBoardContents(board, containsObject, setCont)) 
 
@@ -106,8 +106,8 @@ export const placeShip = function(currentBoard, newGameBoard, ship, targetKey, g
 
 }
 
-export const blockMissileAction = function(currentBoard, newGameBoard, shipLocation, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont, lgl=legal){
-    newGameBoard = ngb('missile block action');
+export const blockMissileAction = function(currentBoard, shipLocation, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont, lgl=legal){
+    let newGameBoard = ngb('missile block action');
     let board = gb(newGameBoard);
     let blocked = {missileBlocked : [shipLocation, ...lgl(board,shipLocation)]}
     let cont = createContainsObject(currentBoard,null,null,getCont)
@@ -143,13 +143,13 @@ const _unwrapChanges = function(actualShip, mode, keys, change, getChangedShip){
     
 }
 
-export const upgradeShip =  function(currentBoard, newGameBoard, shipLocation, changeConfig, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont){
+export const upgradeShip =  function(currentBoard, shipLocation, changeConfig, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont){
     const shipToChange = getCont(currentBoard,shipLocation)
     const changedShip = _unwrapChanges(shipToChange, ...changeConfig)
     if(changedShip.error){
         return changedShip.error
     }
-    newGameBoard = ngb('upgrade ship action')
+    let newGameBoard = ngb('upgrade ship action')
     let cont = createContainsObject(currentBoard,shipLocation,changedShip, getCont)
     updateBoardContents(gb(newGameBoard),cont,setCont)
     return newGameBoard
@@ -163,9 +163,9 @@ const _countIncrementByType = {
 }
 
 
-export const effectFarm = function(currentBoard, newGameBoard, shipLoc, currentGameState, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,gp=getP,sp=setP, gw=getW, gc=getSc, sc=setSc, gte=getEt, newS=setNs){
+export const effectFarm = function(currentBoard, shipLoc, currentGameState, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,gp=getP,sp=setP, gw=getW, gc=getSc, sc=setSc, gte=getEt, newS=setNs){
     
-    newGameBoard = ngb()
+    let newGameBoard = ngb()
     const ship = getCont(currentBoard,shipLoc)
     let type = gte(ship)
 
@@ -195,8 +195,8 @@ export const effectFarm = function(currentBoard, newGameBoard, shipLoc, currentG
 
 }
 
-export const effectClear = function(currentBoard, newGameBoard, shipLoc, currentGameState, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,gw=getW, sw=setW, gp=getP, gc=getSc, sc=setSc, gte=getEt, newS=setNs){
-    newGameBoard = ngb()
+export const effectClear = function(currentBoard, shipLoc, currentGameState, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,gw=getW, sw=setW, gp=getP, gc=getSc, sc=setSc, gte=getEt, newS=setNs){
+    let newGameBoard = ngb()
     const ship = getCont(currentBoard, shipLoc)
     let type = gte(ship)
     const wreckCount = gw(currentGameState)

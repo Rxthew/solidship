@@ -1,5 +1,5 @@
 import { events } from './events.js';
-import {subscribePlayerEvts} from '.player.js'
+import {subscribePlayerEvts} from './player.js'
 import { subscribeAIEvts } from './AI.js';
 import { subscribeUIEvents } from './UI.js'
 

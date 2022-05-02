@@ -30,10 +30,10 @@ test('Able to update player gameState', () => {
 
 describe('testing placeShip function', () => {
 
-    let first = new gameBoard('ship placed')
+    let first = new gameBoard().board
     let legacy = legacyShip()
     let target = 'A3'
-    let newFirst = placeShip(new gameBoard().board,first.board,legacy,target)
+    let newFirst = placeShip(first,legacy,target)
     
 
     test('return a new gameBoard with a correctly placed ship',() => {
@@ -41,24 +41,24 @@ describe('testing placeShip function', () => {
     })
     
     let planting = plantingShip()
-    let anotherBoard = placeShip(newFirst.board,new gameBoard('ship placed').board,planting,target)
+    let anotherBoard = placeShip(newFirst.board,planting,target)
 
     test('return occupied zone error', () => {
         expect(anotherBoard).toEqual({error: 'This zone is occupied'})
     })
 
     let target1 = 'A4'
-    let newFirst2 = placeShip(first.board, new gameBoard('ship placed').board,null,target1)
+    let newFirst2 = placeShip(first,null,target1)
 
     test('expect error when passing a \'null\' ship to an empty object', () => {
         expect(newFirst2).toEqual({error: 'Ship has missing properties'})
     })
 
-    let newFirst3 = placeShip(new gameBoard().board, new gameBoard('ship placed').board,{isSunk: 'not sunk', damage: 44, type:'non-existing' },target1)
+    let newFirst3 = placeShip(new gameBoard().board,{isSunk: 'not sunk', damage: 44, type:'non-existing' },target1)
 
     test('expect error when passing a ship object with missing properties', () => {
         expect(newFirst3).toEqual({error: 'Ship has missing properties'})
-        let newFirst4 = placeShip(new gameBoard().board, new gameBoard().board,{damage: 44, type: 'non-existing', breakpoint: 'someBreakPoint'},target1)
+        let newFirst4 = placeShip(new gameBoard().board, {damage: 44, type: 'non-existing', breakpoint: 'someBreakPoint'},target1)
         expect(newFirst4).toEqual({error: 'Ship has missing properties'})
     })
 
@@ -70,23 +70,23 @@ describe('testing moveShip function', () => {
     let source = 'A5'
 
    
-    let second = placeShip(first,new gameBoard().board,legacy,source).board
+    let second = placeShip(first,legacy,source).board
     
 
     test('Move illegal should return error', () => {
-        expect(moveShip(second,new gameBoard().board,source,'F6')).toEqual({error: 'This move is illegal'})
+        expect(moveShip(second,source,'F6')).toEqual({error: 'This move is illegal'})
         expect(second['F6'].contains).toEqual(null)
         expect(second[source].contains).toEqual(legacy)
 
     })
 
     
-    let third = moveShip(placeShip(new gameBoard().board,new gameBoard().board,legacy,source).board,new gameBoard().board,source,'A6')
+    let third = moveShip(placeShip(new gameBoard().board,legacy,source).board,source,'A6')
     test('Legal move should return a new gameBoard', () => {
         expect(third.board['A6'].contains).toEqual(legacy)
         expect(third.board[source].contains).toEqual(null)
     })
-    let fourth = moveShip(third.board,new gameBoard().board,'A6','A5')
+    let fourth = moveShip(third.board,'A6','A5')
     test('move back returns previous results',() => {
         expect(fourth.board['A6'].contains).toEqual(null)
         expect(fourth.board['A5'].contains).toEqual(legacy)
@@ -97,8 +97,8 @@ describe('testing moveShip function', () => {
 
 describe('testing missile block action',() => {
     const missileFree = new gameBoard()
-    const blocked1 = blockMissileAction(missileFree.board,new gameBoard().board,'A5')
-    const blocked2 = blockMissileAction(missileFree.board,new gameBoard().board, 'F6')
+    const blocked1 = blockMissileAction(missileFree.board,'A5')
+    const blocked2 = blockMissileAction(missileFree.board,'F6')
     test('expect board to identify which zones are blocked, based on ship location', () => {
         expect(blocked1.board.missileBlocked).toEqual(['A5', ...blocked1.board['A5'].legalMoves])
         expect(blocked2.board.missileBlocked).toEqual(['F6', ...blocked2.board['F6'].legalMoves])
@@ -110,7 +110,7 @@ describe('testing missile block action',() => {
     })
 
     test('if blocked zones exist already on current board, then adds to them',() => {
-        let blocked3 = blockMissileAction(blocked1.board,new gameBoard().board, 'C3')
+        let blocked3 = blockMissileAction(blocked1.board, 'C3')
         expect(blocked3.board.missileBlocked).toEqual([...blocked1.board.missileBlocked, 'C3', ...blocked1.board['C3'].legalMoves])
     })
 
@@ -118,11 +118,11 @@ describe('testing missile block action',() => {
 
 describe('testing upgradeShip (both re modification & re extending', () => {
        let upgradeBoard = new gameBoard();
-       upgradeBoard = placeShip(upgradeBoard.board,undefined,plantingShip(),'A6')
-       upgradeBoard = placeShip(upgradeBoard.board,undefined,plantingShip(),'B2')
-       upgradeBoard = placeShip(upgradeBoard.board,undefined,new basicShip(),'C2')
+       upgradeBoard = placeShip(upgradeBoard.board,plantingShip(),'A6')
+       upgradeBoard = placeShip(upgradeBoard.board,plantingShip(),'B2')
+       upgradeBoard = placeShip(upgradeBoard.board,new basicShip(),'C2')
        test('plantingShip action is modified to legacy',() => {
-        upgradeBoard = upgradeShip(upgradeBoard.board,undefined,'A6',['modify',['action'],'legacy',getChangedShip])
+        upgradeBoard = upgradeShip(upgradeBoard.board,'A6',['modify',['action'],'legacy',getChangedShip])
         expect(upgradeBoard.state).toBe('upgrade ship action')
         expect(upgradeBoard.board.B2.contains).toEqual(plantingShip())
         expect(upgradeBoard.board.A6.contains.type).toBe('planting')
@@ -130,18 +130,18 @@ describe('testing upgradeShip (both re modification & re extending', () => {
 
        })
        test('plantingShip action comp is extended to include legacy', () => {
-        upgradeBoard = upgradeShip(upgradeBoard.board,undefined,'B2',['extend component',['action'],'legacy',getChangedShip])
+        upgradeBoard = upgradeShip(upgradeBoard.board,'B2',['extend component',['action'],'legacy',getChangedShip])
         expect(upgradeBoard.state).toBe('upgrade ship action')
         expect(upgradeBoard.board.B2.contains.action).toEqual(['seagrass planting', 'legacy'])
        })
        test('basicShip can be extended with action property to legacy',() => {
-           upgradeBoard = upgradeShip(upgradeBoard.board,undefined,'C2',['extend ship',['action'],'legacy',getChangedShip])
+           upgradeBoard = upgradeShip(upgradeBoard.board,'C2',['extend ship',['action'],'legacy',getChangedShip])
            expect(upgradeBoard.state).toBe('upgrade ship action')
            expect(upgradeBoard.board.C2.contains.action).toEqual(['legacy'])
        })
        test('if there is an error the function generates it',() => {
-         let upgradeBoard2 = placeShip(upgradeBoard.board,undefined,new basicShip(),'F2')
-         upgradeBoard2 = upgradeShip(upgradeBoard2.board,undefined,'F2',['modify',['properties','messagingProtocol'],'integrated',getChangedShip])  
+         let upgradeBoard2 = placeShip(upgradeBoard.board,new basicShip(),'F2')
+         upgradeBoard2 = upgradeShip(upgradeBoard2.board,'F2',['modify',['properties','messagingProtocol'],'integrated',getChangedShip])  
          expect(upgradeBoard2).toBe('Ship does not have a valid action property')
        })
        
@@ -163,15 +163,15 @@ describe('testing effectFarm & effectClear', () => {
     greatBigGB.board.B5.contains = aWreck
     greatBigGB.board.C5.contains = anothWreck
 
-    const firstIter = effectFarm(greatBigGB.board, undefined, 'B1', greatBigGB)
+    const firstIter = effectFarm(greatBigGB.board, 'B1', greatBigGB)
     
-    const secondIter = effectFarm(firstIter.board, undefined, 'C4', firstIter )
+    const secondIter = effectFarm(firstIter.board, 'C4', firstIter )
 
     
 
-    const thirdIter = effectClear(secondIter.board, undefined, 'B5', secondIter)
-    const fourthIter = effectClear(thirdIter.board, undefined, 'C5', thirdIter)
-    const fifthIter = effectClear(fourthIter.board, undefined, 'C4', fourthIter)
+    const thirdIter = effectClear(secondIter.board, 'B5', secondIter)
+    const fourthIter = effectClear(thirdIter.board, 'C5', thirdIter)
+    const fifthIter = effectClear(fourthIter.board, 'C4', fourthIter)
     
 
     test('effectFarm returns a new gameBoard, if equipment type is legacy, adds to plant count by 1',() => {
