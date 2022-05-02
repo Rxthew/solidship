@@ -233,8 +233,10 @@ describe('testing effectPlayerAction("ePA")', () => {
     test('ePA with right params re: modify should publish updateGameState and renderGameState',() => {
         let gb = new gameBoard.board()
         gb.A4.contains = plantingShip()
-        effectPlayerAction('modify',[new gameBoard.board(),'A4',['modify', ['action']])
-        
+        effectPlayerAction('modify',[gb,'A4',['modify', ['action'],'defense']],publisherDummy)
+        expect(num).toBe(3)
+        effectPlayerAction('modify',[gb,'A4',['modify', ['properties','equipment','type'],'modern']],publisherDummy)
+
     })
 
 })
