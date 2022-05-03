@@ -233,21 +233,49 @@ describe('testing effectPlayerAction("ePA")', () => {
     test('ePA with right params re: upgrade should publish right evts (i.e mod & ext comp = upgamestate, rendergamestate, triggerai & ext ship just render & trig. + error)',() => {
         let gb = new gameBoard.board()
         gb.A4.contains = plantingShip()
+
         effectPlayerAction('modify',[gb,'A4',['modify', ['action'],'defense']],publisherDummy)
         expect(num).toBe(6)
+
         effectPlayerAction('modify',[gb,'A4',['modify', ['properties','equipment','type'],'modern']],publisherDummy) 
         expect(num).toBe(12)
+
         delete gb.A4.contains.action 
+
         effectPlayerAction('modify',[gb,'A4',['modify', ['properties','messagingProtocol'],'integrated']],publisherDummy)
         expect(num).toBe(12)
+
         gb.A4.contains = plantingShip()
+
         effectPlayerAction('extend component', [gb,'A4',['extend component',['action'],'legacy']],publisherDummy)
         expect(num).toBe(18)
+
         effectPlayerAction('extend ship', null ,publisherDummy)
         expect(num).toBe(23)
 
     })
     test('ePA with right params re: build/placeship & moveship should publish upgamestate + render + trigger',() => {
+        let gb = new gameBoard().board;
+
+        effectPlayerAction('build',[gb,legacyShip(),'B5'],publisherDummy)
+        expect(num).toBe(6)
+
+        gb.B6.contains = legacyShip()
+
+        effectPlayerAction('build',[gb,legacyShip(),'B6'],publisherDummy)
+        expect(num).toBe(6)
+
+        effectPlayerAction('build',[gb, null,'F2'],publisherDummy)
+        expect(num).toBe(6)
+
+        effectPlayerAction('move',[gb,legacyShip(),'B6','C6'],publisherDummy)
+        expect(num).toBe(12)
+
+        gb.A1.contains = clearingShip()
+
+        effectPlayerAction('move',[gb,clearingShip(),'A1','B1'],publisherDummy)
+        expect(num).toBe(12)
+
 
     })
 
