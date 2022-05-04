@@ -95,15 +95,15 @@ export const clearingShip = function(){
     return Object.assign(_shipMethods.clear(), new basicShip('clear',3))
 }
 
-export const components = function(act){
+const _actionToProtocol = {
+    'legacy' : 'legacy',
+    'seagrass planting': 'planting',
+    'launch decoys' : 'defense',
+    'message' : 'message',
+    'clear debris' : 'clear'
+}
 
-    const _actionToProtocol = {
-        'legacy' : 'legacy',
-        'seagrass planting': 'planting',
-        'launch decoys' : 'defense',
-        'message' : 'message',
-        'clear debris' : 'clear'
-    }
+export const components = function(act){
 
     return {
         action : {
@@ -216,7 +216,7 @@ const _checkForProps = function(someShip, someProps){
     }
        if(targetKey === 'messagingProtocol'){
            if(ship.action){
-            let ref = components(ship.action[0],key)
+            let ref = components(ship.action[0])
             _iterateThroughProperties(ref)
             return ship
            }
@@ -262,5 +262,28 @@ export const getEquipmentType = function(ship){
     }
     return ship.properties.equipment.type
 }
+
+export const getMessagingProtocol = function(ship){
+
+}
+
+export const getAction = function(ship){
+    
+}
+
+
+export const checkMessagingProtocol = function(ship){
+    let messageProt = getMessagingProtocol(ship)
+    let acts = getAction(ship)
+    let firstParam = Array.isArray(messageProt) ? messageProt[0] : messageProt
+    if(_actionToProtocol[acts[0]] === firstParam){
+        return ship
+    }
+    return {error : 'Primary ship action is incompatible with messaging protocol.'}
+
+}
+
+
+
 
 
