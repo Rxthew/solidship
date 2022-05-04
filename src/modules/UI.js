@@ -210,6 +210,21 @@ const revealProps = {
         return
     },        
 }
+
+const _primaryActionDesignator = function(par){
+    if(document.querySelector('.primaryAction')){
+        return
+    }
+    let container = Array.from(par.children).filter(child => child.classList.contains('container'))[0]
+    let children = Array.from(container.children).filter(child => child.classList.contains('element'))
+    if(children.length > 0){
+        let primary = children[0]
+        primary.classList.add('primaryAction')
+    }
+    return
+}
+        
+      
       
 
 const displayShip = function(event, someGameState, someGetCont=defaultConfig.getBoardContains, gb=defaultConfig.getBoard){
@@ -227,6 +242,9 @@ const displayShip = function(event, someGameState, someGetCont=defaultConfig.get
                 parent = revealProps.determineUIKey(parent,elem)
                 let value = finalTarget[elem]
                 revealProps.valueToUIelement(parent,value)
+                if(elem === 'action'){
+                    _primaryActionDesignator(parent)
+                }
             }
             else {
                 parent = revealProps.determineUIKey(parent,elem)
