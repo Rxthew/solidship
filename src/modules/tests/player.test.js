@@ -236,23 +236,23 @@ describe('testing effectPlayerAction("ePA")', () => {
         gb.A4.contains = plantingShip()
 
         effectPlayerAction('modify',[gb,'A4',['modify', ['action'],'defense']],publisherDummy)
-        expect(num).toBe(6)
+        expect(num).toBe(9)
 
         effectPlayerAction('modify',[gb,'A4',['modify', ['properties','equipment','type'],'modern']],publisherDummy) 
-        expect(num).toBe(12)
+        expect(num).toBe(18)
 
         delete gb.A4.contains.action 
 
         effectPlayerAction('modify',[gb,'A4',['modify', ['properties','messagingProtocol'],'integrated']],publisherDummy)
-        expect(num).toBe(15)
+        expect(num).toBe(21)
 
         gb.A4.contains = plantingShip()
 
         effectPlayerAction('extend component', [gb,'A4',['extend component',['action'],'legacy']],publisherDummy)
-        expect(num).toBe(24)
+        expect(num).toBe(27)
 
         effectPlayerAction('extend ship', null ,publisherDummy)
-        expect(num).toBe(29)
+        expect(num).toBe(32)
 
         num = 0
 
