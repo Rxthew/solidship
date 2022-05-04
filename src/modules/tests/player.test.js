@@ -249,10 +249,10 @@ describe('testing effectPlayerAction("ePA")', () => {
         gb.A4.contains = plantingShip()
 
         effectPlayerAction('extend component', [gb,'A4',['extend component',['action'],'legacy']],publisherDummy)
-        expect(num).toBe(21)
+        expect(num).toBe(24)
 
         effectPlayerAction('extend ship', null ,publisherDummy)
-        expect(num).toBe(26)
+        expect(num).toBe(29)
 
         num = 0
 
