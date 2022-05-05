@@ -264,10 +264,12 @@ export const getEquipmentType = function(ship){
 }
 
 export const getMessagingProtocol = function(ship){
+    return ship.properties.messagingProtocol
 
 }
 
 export const getAction = function(ship){
+    return ship.action
     
 }
 

@@ -14,6 +14,9 @@ const getShipCount = ships.getShipCount
 const setShipCount = ships.setShipCount
 const getEquipmentType = ships.getEquipmentType
 const setNewShip = ships.setNewShip
+const getMessagingProtocol = ships.getMessagingProtocol
+const getAction = ships.getAction
+const checkMessagingProtocol = ships.checkMessagingProtocol
 
 
 test('Basic ship returns an object with a damage equalling 0, some new type, and a breakpoint', () => {
@@ -89,7 +92,7 @@ test('basicLegacyShip instance sinks instantly the first time isSunk is called',
     
 })
 
-test('getShipCount returns an object with the plant/wreckage count, or error if property was not present', () => {
+test('getShipCount returns an object with the plant/wreckage count, or error if equipment property was not present', () => {
     let plantingShip2 = planting();
     plantingShip2.properties.equipment.count.plants = 20;
     expect(getShipCount(plantingShip2)).toEqual({plants : 20})
@@ -115,13 +118,16 @@ test('setShipCount sets the count of an object to a new object passed in as the 
 
 })
 
-test('getEquipmentType returns object with the equipment type, or error if property was not present', () => {
+test('getEquipmentType returns object with the equipment type, or error if equipment property was not present', () => {
     let plantingShip4 = planting()
     expect(getEquipmentType(plantingShip4)).toEqual(['legacy'])
     let clearingShip3 = clear()
     expect(getEquipmentType(clearingShip3)).toEqual(['legacy'])
     let clear4 = getChangedShip(clearingShip3,['properties','equipment','type'],'modern')
     expect(getEquipmentType(clear4)).toEqual(['modern'])
+    let clear5 = clear()
+    delete clear5.properties.equipment 
+    expect(getEquipmentType(clear5)).toEqual({error : 'Ship does not have a valid equipment property'})
     
 })
 
@@ -134,6 +140,42 @@ test('setNewShip takes a ship and some properties and copies them. Properties me
     newerShip.properties.equipment.type = 'no equipment here'
     expect(newerShip.properties.equipment.type).toBe('no equipment here')
     expect(newShip.properties.equipment.type).toBe('no equipment here')
+})
+
+test('getMessagingProtocol returns object with the messaging protocol',() => {
+    let plantingShip5 = planting()
+    expect(getMessagingProtocol(plantingShip5)).toBe('planting')
+    let clearingShip6 = clear()
+    expect(getMessagingProtocol(clearingShip6)).toBe('clear')
+
+
+})
+
+test('getAction returns object with the ship action',() => {
+    let plantingShip6 = planting()
+    expect(getAction(plantingShip6)).toEqual(['seagrass planting'])
+    let legacy2 = legacy()
+    expect(getAction(legacy2)).toEqual(['legacy'])
+    
+})
+
+test('checkMessagingProtocol checks that the primary action of the ship matches with the messaging protocol and returns ship, or else error if not the case', () =>{
+    let defense01 = defense()
+    expect(checkMessagingProtocol(defense01)).toEqual(defense01)
+    let defense02 = defense()
+    defense02.action = ['seagrass planting']
+    expect(checkMessagingProtocol(defense02)).toEqual({error : 'Primary ship action is incompatible with messaging protocol.'})
+    defense02.action.unshift('launch decoys')
+    expect(checkMessagingProtocol(defense02)).toEqual(defense02)
+    let defense03 = defense()
+    defense03.properties.messagingProtocol = ['defense']
+    expect(checkMessagingProtocol(defense03)).toEqual(defense03)
+    defense03.properties.messagingProtocol.unshift('clear')
+    expect(checkMessagingProtocol(defense03)).toEqual({error : 'Primary ship action is incompatible with messaging protocol.'})
+    let defense04 = defense()
+    defense04.properties.messagingProtocol = ['defense','clear']
+    expect(checkMessagingProtocol(defense04)).toEqual(defense04)
+
 })
 
 describe('testing getChangedShip and components to evaluate that they can be used to customise ships',() => {
