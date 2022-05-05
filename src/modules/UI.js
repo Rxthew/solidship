@@ -211,15 +211,15 @@ const revealProps = {
     },        
 }
 
-const _primaryActionDesignator = function(par){
-    if(document.querySelector('.primaryAction')){
-        return
-    }
-    let container = Array.from(par.children).filter(child => child.classList.contains('container'))[0]
-    let children = Array.from(container.children).filter(child => child.classList.contains('element'))
+const _primaryMarker = function(par){
+    let container = Array.from(par.children).filter(child => child.classList.contains('container'))
+    let referencePoint = container.length > 0 ? container : Array.from(par.children) 
+    let children = Array.from(referencePoint.children).filter(child => child.classList.contains('element'))
     if(children.length > 0){
         let primary = children[0]
-        primary.classList.add('primaryAction')
+        if(!primary.classList.contains('primary')){
+            primary.classList.add('primary')
+        }   
     }
     return
 }
@@ -242,8 +242,8 @@ const displayShip = function(event, someGameState, someGetCont=defaultConfig.get
                 parent = revealProps.determineUIKey(parent,elem)
                 let value = finalTarget[elem]
                 revealProps.valueToUIelement(parent,value)
-                if(elem === 'action'){
-                    _primaryActionDesignator(parent)
+                if(elem === 'action' || elem === 'messagingProtocol'){
+                    _primaryMarker(parent)
                 }
             }
             else {
