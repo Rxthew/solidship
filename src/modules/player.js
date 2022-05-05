@@ -1,6 +1,6 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
 import { gameEvents, updateState } from "./gamestate"
-import { getShipCount,setShipCount,getEquipmentType, setNewShip } from "./ships"
+import { getShipCount,setShipCount,getEquipmentType, setNewShip, checkMessagingProtocol, checkEquipment} from "./ships"
 import { camelPhraseParser } from "./utils"
 
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
@@ -232,7 +232,65 @@ export const updatePlayerWrapper = function(someFunc, ...params){
     return player1
 }
 
-export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish, ups=updateState){
+export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish, ups=updateState, checkMess=checkMessagingProtocol,checkEq=checkEquipment){
+    
+
+    const _effectAction = {
+        action : function(paramArray){
+            const [tools,loc,actionChoice] = paramArray
+            const filterAction = function(){
+                let [currState,getContains,getBoard] = tools
+                let board = getBoard(currState)
+                let ship = getContains(board,loc)
+                if(Object.prototype.hasOwnProperty.call(checkMess(ship),'error')){
+                    pub('renderError',checkMess(ship))
+                    pub('triggerAI')
+                }
+                if(Object.prototype.hasOwnProperty.call(checkEq(ship),'error')){
+                    pub('renderError',checkEq(ship))
+                    pub('triggerAI')
+                }
+
+                
+
+                
+
+                //checkProtocol
+               
+
+                actObj = {
+                    
+
+                }
+                if(Object.prototype.hasOwnProperty.call(actObj[actionChoice],'error'){
+                    pub('renderError',checkMessagingProtocol(ship))
+                    pub('triggerAI')
+                }
+                return actObj[actionChoice]
+
+            }
+            filterAction()
+
+        },
+        build : function(paramArray){
+
+        },
+        move : function(paramArray){
+
+        },
+        modify : function(paramArray){
+
+        },
+        'extend component' : function(){
+
+        },
+        'extend ship' : function(){
+
+        }
+    }    
+    
+    _effectAction[instruction](params)
+
  //use camelPhraseParser   
 //Note 1:
 //Functions placeShip,upgradeShip,blockmissileact and moveShip take gameboard.board
@@ -251,7 +309,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
 
 
 //Note 3
-    //remember 'action' & 'extend ship' params need customisation. (extendship should just be render of gs) 
+    //remember 'action' & 'extend ship' params need customisation. (extendship should just be render of gs) & (modify triggeraievts 2x)
     //pub('updateGameState', ups, <to fill in>)
     //pub('renderGameState', player1.sessionPlayer.gameState)
 //    return
