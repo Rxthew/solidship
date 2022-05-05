@@ -17,6 +17,7 @@ const setNewShip = ships.setNewShip
 const getMessagingProtocol = ships.getMessagingProtocol
 const getAction = ships.getAction
 const checkMessagingProtocol = ships.checkMessagingProtocol
+const checkEquipment = ships.checkEquipment
 
 
 test('Basic ship returns an object with a damage equalling 0, some new type, and a breakpoint', () => {
@@ -175,6 +176,31 @@ test('checkMessagingProtocol checks that the primary action of the ship matches 
     let defense04 = defense()
     defense04.properties.messagingProtocol = ['defense','clear']
     expect(checkMessagingProtocol(defense04)).toEqual(defense04)
+
+})
+
+test('checkEquipment checks that choice of action has the necessary equipment(type/count) to back the ship up. If affirmative, returns ship else returns error', () =>{
+    let plant01 = planting()
+    expect(checkEquipment(plant01)).toEqual(plant01)
+    let clear01 = clear()
+    expect(checkEquipment(clear01)).toEqual(clear01)
+
+    let plant02 = planting()
+    delete plant02.properties.equipment
+    expect(plant02).toEqual({error : 'Ship does not have a valid equipment property'})
+
+    let clear02 = clear()
+    delete clear02.properties.equipment
+    expect(clear02).toEqual({error : 'Ship does not have a valid equipment property'})
+
+    let plant03 = planting()
+    plant03.properties.equipment.count = {wreckage : 0}
+    expect(plant03).toEqual({error : 'Ship equipment is not configured for this type of action'})
+
+    let clear04 = clear()
+    clear04.properties.equipment.count = {plants : 0}
+    expect(clear04).toEqual({error : 'Ship equipment is not configured for this type of action'})
+
 
 })
 

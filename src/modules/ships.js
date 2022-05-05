@@ -285,6 +285,26 @@ export const checkMessagingProtocol = function(ship){
 
 }
 
+export  const checkEquipment = function(ship, choice){
+    if(choice === 'seagrass planting' || choice === 'clear debris'){
+        let compatiblityObj = {
+            'seagrass planting' : 'plants',
+            'clear debris' : 'wreckage'
+        }
+        let type = getEquipmentType(ship)
+        let count = getShipCount(ship)
+        if(Object.prototype.hasOwnProperty.call(type,'error')){
+            return type
+        }
+        if(Object.prototype.hasOwnProperty.call(count,compatiblityObj[choice])){
+            return ship
+        }
+        else {
+            return {error : 'Ship equipment is not configured for this type of action'}
+        }
+    }
+    return ship
+}
 
 
 
