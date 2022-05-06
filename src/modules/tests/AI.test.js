@@ -430,7 +430,7 @@ describe('testing sendStatus function', () => {
         if(someStr === 'updateGameState'){
             checkArray.push(1) 
         }
-        else if(someStr === 'updateAIObject'){
+        else if(someStr === 'updateAIObj'){
             checkArray.push(2)
         } 
     }

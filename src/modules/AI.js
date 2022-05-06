@@ -338,7 +338,7 @@ export const sendStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd
     let currentGameState = currentAIObject.gameState
     let currentState = gs(currentGameState)
     if(Object.keys(_stateOptions).includes(currentState)){
-        publish('updateAIObject',gs,gbs,publish)
+        publish('updateAIObj',gs,gbs,publish)
         return
     }
     publish('updateGameState',us, currentGameState)
