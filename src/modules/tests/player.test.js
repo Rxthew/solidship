@@ -226,33 +226,33 @@ describe('testing effectFarm & effectClear', () => {
 describe('testing effectPlayerAction("ePA")', () => {
     let num = 0
     const publisherDummy = function(str){
-        let evts = ['renderError','updateGameState','renderGameState','triggerAI'] 
+        let evts = ['', 'renderError','updateGameState','triggerAI'] 
         num += evts.indexOf(str)
         return 
     }
     //Note: Be mindful when adding tests if different combinations produce same sum (e.g indexes of upgamestate + rendergamestate === rendererror + trigger )
-    test('ePA with right params re: upgrade should publish right evts (i.e mod & ext comp = upgamestate, rendergamestate, triggerai & ext ship just render & trig. (+ errors))',() => {
+    test('ePA with right params re: upgrade should publish right evts (i.e mod & ext comp = upgamestate, triggerai & ext ship just  trig. (+ errors))',() => {
         let gb = new gameBoard().board
         gb.A4.contains = plantingShip()
 
         effectPlayerAction('modify',[gb,'A4',['modify', ['action'],'defense']],publisherDummy)
-        expect(num).toBe(9)
+        expect(num).toBe(8)
 
         effectPlayerAction('modify',[gb,'A4',['modify', ['properties','equipment','type'],'modern']],publisherDummy) 
-        expect(num).toBe(18)
+        expect(num).toBe(16)
 
         delete gb.A4.contains.action 
 
         effectPlayerAction('modify',[gb,'A4',['modify', ['properties','messagingProtocol'],'integrated']],publisherDummy)
-        expect(num).toBe(21)
+        expect(num).toBe(20)
 
         gb.A4.contains = plantingShip()
 
         effectPlayerAction('extend component', [gb,'A4',['extend component',['action'],'legacy']],publisherDummy)
-        expect(num).toBe(27)
+        expect(num).toBe(25)
 
         effectPlayerAction('extend ship', null ,publisherDummy)
-        expect(num).toBe(32)
+        expect(num).toBe(29)
 
         num = 0
 
@@ -261,23 +261,23 @@ describe('testing effectPlayerAction("ePA")', () => {
         let gb = new gameBoard().board;
         
         effectPlayerAction('build',[gb,legacyShip(),'B5'],publisherDummy)
-        expect(num).toBe(6)
+        expect(num).toBe(5)
 
         gb.B6.contains = legacyShip()
 
         effectPlayerAction('build',[gb,legacyShip(),'B6'],publisherDummy)
-        expect(num).toBe(6)
-
-        effectPlayerAction('build',[gb, null,'F2'],publisherDummy)
         expect(num).toBe(9)
 
+        effectPlayerAction('build',[gb, null,'F2'],publisherDummy)
+        expect(num).toBe(13)
+
         effectPlayerAction('move',[gb,legacyShip(),'B6','C6'],publisherDummy)
-        expect(num).toBe(15)
+        expect(num).toBe(18)
 
         gb.A1.contains = clearingShip()
 
         effectPlayerAction('move',[gb,clearingShip(),'A1','E1'],publisherDummy)
-        expect(num).toBe(18)
+        expect(num).toBe(22)
         
         num = 0
     })
@@ -292,9 +292,9 @@ describe('testing effectPlayerAction("ePA")', () => {
         gs.board.A1.contains = plantNoEquip
         gs.board.A2.contains = clearNoEquip
         effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'A1','seagrass planting'],publisherDummy)
-        expect(num).toBe(3)
+        expect(num).toBe(4)
         effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'A2','clear debris'],publisherDummy)
-        expect(num).toBe(6)
+        expect(num).toBe(8)
 
         let plantWrongCount = plantingShip()
         let clearWrongCount = clearingShip()
@@ -304,9 +304,9 @@ describe('testing effectPlayerAction("ePA")', () => {
         gs.board.B2.contains = clearWrongCount
 
         effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'B1','seagrass planting'],publisherDummy)
-        expect(num).toBe(9)
-        effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'B2','clear debris'],publisherDummy)
         expect(num).toBe(12)
+        effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'B2','clear debris'],publisherDummy)
+        expect(num).toBe(16)
 
         let plantNoProblem = plantingShip()
         let clearNoProblem = clearingShip()
@@ -314,9 +314,9 @@ describe('testing effectPlayerAction("ePA")', () => {
         gs.board.B4.contains = clearNoProblem
 
         effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'B3','seagrass planting'],publisherDummy)
-        expect(num).toBe(18)
+        expect(num).toBe(21)
         effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'B4','clear debris'],publisherDummy)
-        expect(num).toBe(24)
+        expect(num).toBe(26)
 
         let legacyDiffFirstAct = legacyShip()
         legacyDiffFirstAct.action = ['seagrass planting', 'legacy']
@@ -326,15 +326,15 @@ describe('testing effectPlayerAction("ePA")', () => {
         gs.board.B6.contains = defenseDiffProt
 
         effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'B5','seagrass planting'],publisherDummy)
-        expect(num).toBe(27)
-        effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'B6','clear debris'],publisherDummy)
         expect(num).toBe(30)
+        effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'B6','clear debris'],publisherDummy)
+        expect(num).toBe(34)
 
         let oddPlantButStillWorks = plantingShip()
         oddPlantButStillWorks.properties.messagingProtocol = ['planting','defense','relay','trigger']
         gs.board.C1.contains = oddPlantButStillWorks
         effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'C1','seagrass planting'],publisherDummy)
-        expect(num).toBe(36)
+        expect(num).toBe(39)
 
 
     })
