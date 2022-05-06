@@ -705,6 +705,14 @@ const createOptionsConsole = function(...params){
 
 }
 
+const renderAIEffect = function(){
+    return
+}
+
+const renderPlayerEffect = function(){
+    return
+}
+
 
 export const renderState = function(someGameState, someGetCont=defaultConfig.getBoardContains, gb=defaultConfig.getBoard, publish=gameEvents.publish){
     let someGb = gb(someGameState)

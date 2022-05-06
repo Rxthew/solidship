@@ -142,7 +142,7 @@ describe('testing upgradeShip (both re modification & re extending', () => {
        test('if there is an error the function generates it',() => {
          let upgradeBoard2 = placeShip(upgradeBoard.board,new basicShip(),'F2')
          upgradeBoard2 = upgradeShip(upgradeBoard2.board,'F2',['modify',['properties','messagingProtocol'],'integrated',getChangedShip])  
-         expect(upgradeBoard2).toBe('Ship does not have a valid action property')
+         expect(upgradeBoard2.error).toBe('Ship does not have a valid action property')
        })
        
 
@@ -252,13 +252,14 @@ describe('testing effectPlayerAction("ePA")', () => {
         expect(num).toBe(25)
 
         effectPlayerAction('extend ship', null ,publisherDummy)
-        expect(num).toBe(29)
+        expect(num).toBe(28)
 
-        num = 0
+        
 
     })
     test('ePA with right params re: build/placeship & moveship should publish upgamestate + render + trigger',() => {
         let gb = new gameBoard().board;
+        num = 0
         
         effectPlayerAction('build',[gb,legacyShip(),'B5'],publisherDummy)
         expect(num).toBe(5)
@@ -271,19 +272,20 @@ describe('testing effectPlayerAction("ePA")', () => {
         effectPlayerAction('build',[gb, null,'F2'],publisherDummy)
         expect(num).toBe(13)
 
-        effectPlayerAction('move',[gb,legacyShip(),'B6','C6'],publisherDummy)
+        effectPlayerAction('move',[gb,'B6','C6'],publisherDummy)
         expect(num).toBe(18)
 
         gb.A1.contains = clearingShip()
 
-        effectPlayerAction('move',[gb,clearingShip(),'A1','E1'],publisherDummy)
+        effectPlayerAction('move',[gb,'A1','E1'],publisherDummy)
         expect(num).toBe(22)
         
-        num = 0
+        
     })
 
     test('ePA with right params effectAction should update,render,&trigger. Wrong params or missing/wrong props should rendererror & trigger',() =>{
         let gs = new gameBoard()
+        num = 0
 
         let plantNoEquip = plantingShip()
         let clearNoEquip = clearingShip()

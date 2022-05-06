@@ -1,6 +1,6 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
 import { gameEvents, updateState } from "./gamestate"
-import { getShipCount,setShipCount,getEquipmentType, setNewShip, checkMessagingProtocol, checkEquipment} from "./ships"
+import { getShipCount,setShipCount,getEquipmentType, setNewShip, checkMessagingProtocol, checkEquipment, getChangedShip} from "./ships"
 
 
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
@@ -122,10 +122,10 @@ export const blockMissileAction = function(currentBoard, shipLocation, getCont=g
 
 
 
-const _unwrapChanges = function(actualShip, mode, keys, change, getChangedShip){
+const _unwrapChanges = function(actualShip, mode, keys, change, changedShip=getChangedShip){
     let newShip = Object.create(Object.getPrototypeOf(actualShip))
     Object.assign(newShip,actualShip)
-    let newerShip = getChangedShip(newShip, keys, change)
+    let newerShip = changedShip(newShip, keys, change)
 
     if(mode === 'extend component'){
         let targetKey = keys[keys.length - 1]
@@ -147,7 +147,7 @@ export const upgradeShip =  function(currentBoard, shipLocation, changeConfig, g
     const shipToChange = getCont(currentBoard,shipLocation)
     const changedShip = _unwrapChanges(shipToChange, ...changeConfig)
     if(changedShip.error){
-        return changedShip.error
+        return changedShip
     }
     let newGameBoard = ngb('upgrade ship action')
     let cont = createContainsObject(currentBoard,shipLocation,changedShip, getCont)
@@ -242,13 +242,16 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                 let [currState,getContains,getBoard] = tools
                 let board = getBoard(currState)
                 let ship = getContains(board,loc)
+                
                 if(Object.prototype.hasOwnProperty.call(checkMess(ship),'error')){
                     pub('renderError',checkMess(ship))
                     pub('triggerAI')
+                    return
                 }
-                if(Object.prototype.hasOwnProperty.call(checkEq(ship),'error')){
-                    pub('renderError',checkEq(ship))
+                if(Object.prototype.hasOwnProperty.call(checkEq(ship,actionChoice),'error')){
+                    pub('renderError',checkEq(ship, actionChoice))
                     pub('triggerAI')
+                    return
                 }               
 
                 const actObj = {
@@ -257,6 +260,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                         if(Object.prototype.hasOwnProperty.call(newGs1,'error')){
                             pub('renderError',newGs1)
                             pub('triggerAI')
+                            return
                         }
                         pub('updateGameState',ups,newGs1)
                         pub('triggerAI')
@@ -267,6 +271,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                         if(Object.prototype.hasOwnProperty.call(newGs2,'error')){
                             pub('renderError',newGs2)
                             pub('triggerAI')
+                            return
                         }
                         pub('updateGameState',ups,newGs2)
                         pub('triggerAI')
@@ -277,6 +282,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                         if(Object.prototype.hasOwnProperty.call(newGs3,'error')){
                             pub('renderError',newGs3)
                             pub('triggerAI')
+                            return
                         }
                         pub('updateGameState',ups,newGs3)
                         pub('triggerAI')
@@ -304,6 +310,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
             if(Object.prototype.hasOwnProperty.call(newGs4,'error')){
                 pub('renderError',newGs4)
                 pub('triggerAI')
+                return
             }
             pub('updateGameState',ups,newGs4)
             pub('triggerAI')
@@ -316,6 +323,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
             if(Object.prototype.hasOwnProperty.call(newGs5,'error')){
                 pub('renderError',newGs5)
                 pub('triggerAI')
+                return
             }
             pub('updateGameState',ups,newGs5)
             pub('triggerAI')
@@ -327,8 +335,10 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
             if(Object.prototype.hasOwnProperty.call(newGs6,'error')){
                 pub('renderError',newGs6)
                 pub('triggerAI')
+                return
             }
             pub('updateGameState',ups,newGs6)
+            pub('triggerAI')
             pub('triggerAI')
 
 
@@ -339,6 +349,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
             if(Object.prototype.hasOwnProperty.call(newGs7,'error')){
                 pub('renderError',newGs7)
                 pub('triggerAI')
+                return
             }
             pub('updateGameState',ups,newGs7)
             pub('triggerAI')
