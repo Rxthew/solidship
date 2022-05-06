@@ -350,7 +350,6 @@ describe('testing updateStatus function',() => {
         sunkAI2.gameState.plants = 5;
         expect(updateStatus(sunkAI2).gameState.plants).toBe(5)
 
-
         
     })
 
@@ -427,12 +426,9 @@ describe('testing sendStatus function', () => {
     
     const checkArray = []
     const fakeEventPublisher = function(someStr){
-        if(someStr === 'updateGameState'){
-            checkArray.push(1) 
-        }
-        else if(someStr === 'updateAIObj'){
-            checkArray.push(2)
-        } 
+        let targets = ['updateAIObj','updateGameState','renderGameState','renderImpact']
+        checkArray.push(targets.indexOf(someStr))
+        return
     }
 
     let getState = defaultConfig.getState
@@ -449,18 +445,17 @@ describe('testing sendStatus function', () => {
     const aiObjWithMissile2 = new AIObj()
     aiObjWithMissile2.gameState.state = 'missile hit ship'
 
-    test('expect sendStatus to publish player state if the AI Object gameboard state is a target key', () => {
-        sendStatus(aiObjWithTargetKey, getState, undefined, fakeEventPublisher)
-        expect(checkArray[checkArray.length - 1]).toBe(1) 
-        sendStatus(aiObjWithTargetKey2,getState, undefined, fakeEventPublisher) 
-        expect(checkArray[checkArray.length - 1]).toBe(1)                                                                            
-    })
 
-    test('expect sendStatus to re-publish AI Object state if the AI Object gameboard state is about missile status', () => {
-        sendStatus(aiObjWithMissile, getState, undefined, fakeEventPublisher)
-        expect(checkArray[checkArray.length - 1]).toBe(2)
-        sendStatus(aiObjWithMissile2, getState, undefined, fakeEventPublisher)
-        expect(checkArray[checkArray.length - 1]).toBe(2)
+
+    test('expect sendStatus to publish specific events, but only if the AI Object gameboard state is about missile status', () => {
+        sendStatus(aiObjWithMissile, getState, fakeEventPublisher)
+        expect(checkArray).toEqual([0,1,2,3])
+        sendStatus(aiObjWithMissile2, getState, fakeEventPublisher)
+        expect(checkArray).toEqual([0,1,2,3,0,1,2,3])
+        sendStatus(aiObjWithTargetKey,getState,fakeEventPublisher)
+        expect(checkArray).toEqual([0,1,2,3,0,1,2,3])
+        sendStatus(aiObjWithTargetKey2,getState,fakeEventPublisher)
+        expect(checkArray).toEqual([0,1,2,3,0,1,2,3])
 
     })
 
