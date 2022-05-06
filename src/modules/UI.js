@@ -548,7 +548,6 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             let gs = params[1]
             store.appendChild(Done)
             Done.onclick = publish('playerAction','extend ship', [gs]) 
-            // review above : To be adapted by player action. All you have to do is render, I think, because upgrades done. 
             let checkAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(elem => elem.id)
             let compPropTitles = Array.from(document.querySelectorAll('.compPropertyTitle'))
             let toVet = compPropTitles.map(elem => elem.id)

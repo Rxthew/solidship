@@ -1,7 +1,7 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
 import { gameEvents, updateState } from "./gamestate"
 import { getShipCount,setShipCount,getEquipmentType, setNewShip, checkMessagingProtocol, checkEquipment} from "./ships"
-import { camelPhraseParser } from "./utils"
+
 
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
 const [legal,getP,setP,getW,setW] = [defaultConfig.getBoardLegalMoves, defaultConfig.getPlantCount, defaultConfig.setPlantCount, defaultConfig.getWreckCount, defaultConfig.setWreckCount]
@@ -249,70 +249,108 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                 if(Object.prototype.hasOwnProperty.call(checkEq(ship),'error')){
                     pub('renderError',checkEq(ship))
                     pub('triggerAI')
-                }
+                }               
 
+                const actObj = {
+                    'seagrass planting' : function(){
+                        let newGs1 = effectFarm(board,loc,currState)
+                        if(Object.prototype.hasOwnProperty.call(newGs1,'error')){
+                            pub('renderError',newGs1)
+                            pub('triggerAI')
+                        }
+                        pub('updateGameState',ups,newGs1)
+                        pub('triggerAI')
+
+                    },
+                    'clear debris' : function(){
+                        let newGs2 = effectClear(board,loc,currState)
+                        if(Object.prototype.hasOwnProperty.call(newGs2,'error')){
+                            pub('renderError',newGs2)
+                            pub('triggerAI')
+                        }
+                        pub('updateGameState',ups,newGs2)
+                        pub('triggerAI')
+
+                    },
+                    'launch decoys' : function(){
+                        let newGs3 = blockMissileAction(board,loc)
+                        if(Object.prototype.hasOwnProperty.call(newGs3,'error')){
+                            pub('renderError',newGs3)
+                            pub('triggerAI')
+                        }
+                        pub('updateGameState',ups,newGs3)
+                        pub('triggerAI')
+
+                    },
+                    'message' : function(){
+
+                    },
+                    'legacy' : function(){
+                        pub('triggerAI')
+
+                    }
+
+                }
                 
-
-                
-
-                //checkProtocol
-               
-
-                actObj = {
-                    
-
-                }
-                if(Object.prototype.hasOwnProperty.call(actObj[actionChoice],'error'){
-                    pub('renderError',checkMessagingProtocol(ship))
-                    pub('triggerAI')
-                }
-                return actObj[actionChoice]
+                return actObj[actionChoice]()
 
             }
             filterAction()
 
         },
         build : function(paramArray){
+            const [board,ship,targetLoc] = paramArray
+            let newGs4 = placeShip(board,ship,targetLoc)
+            if(Object.prototype.hasOwnProperty.call(newGs4,'error')){
+                pub('renderError',newGs4)
+                pub('triggerAI')
+            }
+            pub('updateGameState',ups,newGs4)
+            pub('triggerAI')
+            
 
         },
         move : function(paramArray){
+            const [board,loc,target] = paramArray
+            let newGs5 = moveShip(board,loc,target) 
+            if(Object.prototype.hasOwnProperty.call(newGs5,'error')){
+                pub('renderError',newGs5)
+                pub('triggerAI')
+            }
+            pub('updateGameState',ups,newGs5)
+            pub('triggerAI')
 
         },
         modify : function(paramArray){
+            const [board,loc,changeConf] = paramArray
+            let newGs6 = upgradeShip(board,loc,changeConf)
+            if(Object.prototype.hasOwnProperty.call(newGs6,'error')){
+                pub('renderError',newGs6)
+                pub('triggerAI')
+            }
+            pub('updateGameState',ups,newGs6)
+            pub('triggerAI')
+
 
         },
-        'extend component' : function(){
+        'extend component' : function(paramArray){
+            const [board,loc,changeConf] = paramArray
+            let newGs7 = upgradeShip(board,loc,changeConf)
+            if(Object.prototype.hasOwnProperty.call(newGs7,'error')){
+                pub('renderError',newGs7)
+                pub('triggerAI')
+            }
+            pub('updateGameState',ups,newGs7)
+            pub('triggerAI')
 
         },
         'extend ship' : function(){
+            pub('triggerAI')
 
         }
     }    
     
-    _effectAction[instruction](params)
-
- //use camelPhraseParser   
-//Note 1:
-//Functions placeShip,upgradeShip,blockmissileact and moveShip take gameboard.board
-//Functions effectClear and effectFarm take both board and gameboard
-
-//Note 2: (blurb of some of the latter parts of the func)
-
-//effectPlayerAction -> pass trigger & gameState
-//involves following lines at the end:
-//[
-//filterAction to see if the action results in an error. If yes:
-//publish('renderError', playerObj.gameState) Note: remember renderError needs Log, and then use triggerAIEvts.
-//]
-//publish('updateGameState', updateState, newGameState)
-//triggerAIEvts()
-
-
-//Note 3
-    //remember 'action' & 'extend ship' params need customisation. (extendship should just be render of gs) & (modify triggeraievts 2x)
-    //pub('updateGameState', ups, <to fill in>)
-    //pub('renderGameState', player1.sessionPlayer.gameState)
-//    return
+    return _effectAction[instruction](params)
 }
 
 const _extendShipSequence = function(paramsArray, ups=updateState, pub=gameEvents.publish){
