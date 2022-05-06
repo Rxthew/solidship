@@ -181,25 +181,25 @@ test('checkMessagingProtocol checks that the primary action of the ship matches 
 
 test('checkEquipment checks that choice of action has the necessary equipment(type/count) to back the ship up. If affirmative, returns ship else returns error', () =>{
     let plant01 = planting()
-    expect(checkEquipment(plant01)).toEqual(plant01)
+    expect(checkEquipment(plant01, 'seagrass planting')).toEqual(plant01)
     let clear01 = clear()
-    expect(checkEquipment(clear01)).toEqual(clear01)
+    expect(checkEquipment(clear01, 'clear debris')).toEqual(clear01)
 
     let plant02 = planting()
     delete plant02.properties.equipment
-    expect(plant02).toEqual({error : 'Ship does not have a valid equipment property'})
+    expect(checkEquipment(plant02, 'seagrass planting')).toEqual({error : 'Ship does not have a valid equipment property'})
 
     let clear02 = clear()
     delete clear02.properties.equipment
-    expect(clear02).toEqual({error : 'Ship does not have a valid equipment property'})
+    expect(checkEquipment(clear02, 'clear debris')).toEqual({error : 'Ship does not have a valid equipment property'})
 
     let plant03 = planting()
     plant03.properties.equipment.count = {wreckage : 0}
-    expect(plant03).toEqual({error : 'Ship equipment is not configured for this type of action'})
+    expect(checkEquipment(plant03, 'seagrass planting')).toEqual({error : 'Ship equipment is not configured for this type of action'})
 
-    let clear04 = clear()
-    clear04.properties.equipment.count = {plants : 0}
-    expect(clear04).toEqual({error : 'Ship equipment is not configured for this type of action'})
+    let clear03 = clear()
+    clear03.properties.equipment.count = {plants : 0}
+    expect(checkEquipment(clear03, 'clear debris')).toEqual({error : 'Ship equipment is not configured for this type of action'})
 
 
 })
