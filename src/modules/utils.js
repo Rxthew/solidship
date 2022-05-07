@@ -34,6 +34,7 @@ const fromNormToCamel = function(str){
 }
 
 export const camelPhraseParser = function(str){
+    str = (str).toString()
     if(str.match(camelMatcher)){
         return fromCamelToNorm(str)
     }

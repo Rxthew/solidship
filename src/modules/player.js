@@ -101,7 +101,7 @@ export const placeShip = function(currentBoard, ship, targetKey, getCont=getBrdC
     let newGameBoard = ngb('ship place action');
     let board = gb(newGameBoard)
     Object.assign(board, updateBoardContents(board, containsObject, setCont)) 
-
+    
     return newGameBoard 
 
 }
@@ -308,10 +308,12 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
             const [board,ship,targetLoc] = paramArray
             let newGs4 = placeShip(board,ship,targetLoc)
             if(Object.prototype.hasOwnProperty.call(newGs4,'error')){
+                console.log(ship)
                 pub('renderError',newGs4)
                 pub('triggerAI')
                 return
             }
+            
             pub('updateGameState',ups,newGs4)
             pub('triggerAI')
             
@@ -372,7 +374,8 @@ const _extendShipSequence = function(paramsArray, ups=updateState, pub=gameEvent
 
 export const subscribePlayerEvts = function(someSubFunc=gameEvents.subscribe){
     someSubFunc('initGame', function(name){player1.sessionPlayer = new playerObj(name)}),
-    someSubFunc('extendShip', _extendShipSequence)
+    someSubFunc('playerAction',effectPlayerAction)
+    someSubFunc('extendShip', _extendShipSequence),
     someSubFunc('updateGameState', updatePlayerWrapper)
     
 }

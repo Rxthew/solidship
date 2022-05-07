@@ -213,7 +213,7 @@ const revealProps = {
 
 const _primaryMarker = function(par){
     let container = Array.from(par.children).filter(child => child.classList.contains('container'))
-    let referencePoint = container.length > 0 ? container : Array.from(par.children) 
+    let referencePoint = container.length > 0 ? container[0] : par
     let children = Array.from(referencePoint.children).filter(child => child.classList.contains('element'))
     if(children.length > 0){
         let primary = children[0]
@@ -276,6 +276,7 @@ const _shipStore = function(shipsObj=standardShipStore){
         ship.classList.add('shipOption')
         store.appendChild(ship) 
     }
+    return store
 
 }
 
@@ -473,7 +474,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             let gameState = params[1]
             let getB = params[3]
             let gb = getB(gameState)
-            _shipStore()
+            document.querySelector('.mainConsole').appendChild(_shipStore())
             const ships = Array.from(document.querySelectorAll('.shipOption'))
             const zones = Array.from(document.querySelectorAll('.zone'))
             const _prepPlaceShip = function(chosenShip){
@@ -482,12 +483,14 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                         continue
                     }
                     zone.classList.add('moveHighlight')
-                    zone.onclick = function(){publish('playerAction','build',[gb,standardShipStore[chosenShip],zone.id])}
+                    
+                    zone.onclick = function(){publish('playerAction','build',[gb,standardShipStore[chosenShip](),zone.id])}
                 }
             }
             for(let ship of ships){
                 ship.onclick = function(){
                     _prepPlaceShip(ship.textContent)
+                    
                 }
             }
         }
@@ -662,7 +665,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     const filterOptions = function(){
         for(let elem of toFilterList){
             if (!elem[0]){
-                return elem[1]
+                return elem[1]()
             }
         }
         return {
@@ -699,6 +702,7 @@ const createOptionsConsole = function(...params){
                 optionsObject[key][option](event,...params)
                 title.classList.add('toggleHide')
             }
+            opt.appendChild(title)
             optCons.appendChild(opt)
         }
     }
@@ -722,7 +726,7 @@ export const renderState = function(someGameState, someGetCont=defaultConfig.get
     }
     document.body.appendChild(newBoard)
     createMainConsole()
-    createOptionsConsole(null,someGameState,someGetCont,gb)
+    createOptionsConsole(someGameState,someGetCont,gb)
     _skipTurn()
     for (let elem of Object.keys(someGb)){ 
         if(document.querySelector(`#${elem}`) && someGetCont(someGb,elem)){
