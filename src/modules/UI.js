@@ -349,9 +349,9 @@ const _componentStore = function(componentsObj=_componentFilter(ships.components
 
 
 const activateModifyProperties = function(event, params, publish=gameEvents.publish){
-    const shipLoc = params[0].target.id
-    let gameState = params[1]
-    let getBoard = params[3]
+    const shipLoc = params[1].target.id
+    let gameState = params[2]
+    let getBoard = params[4]
     let gb = getBoard(gameState)
     let path = [recordPathHelpers().chartPath(event)]
     let changeConfig = ['modify', path[0]]
@@ -471,6 +471,8 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     
     const defaultOpts = {
         'Build New Ship' : function(...params){
+            console.log(params[0].target.textContent)
+            console.log(params[1].target.textContent)//problem testing becasue obj
             let gameState = params[1]
             let getB = params[3]
             let gb = getB(gameState)
@@ -501,10 +503,10 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
     const ship = {
         'Move Ship' : function(...params){
-            let gs = params[1]
-            let getB = params[3]
+            let gs = params[2]
+            let getB = params[4]
             let gb = getB(gs)
-            let shipLoc = params[0].target.id
+            let shipLoc = params[1].target.id
             let legals = [...getLgl(gb,shipLoc)] 
             for(let elem of legals){
                 if(document.querySelector(`#${elem}`).classList.contains('ship')){
@@ -538,11 +540,13 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                         propTitles[ind].onclick = function(e){
                             activateModifyProperties(e, params)
                         }
-                    } 
+                    }
+                    compStore = compStore[prop] 
                 }
                 ind++
-                compStore = compStore[prop]
-            }     
+               
+            }
+
         },
         'Extend Ship' : function(...params){
             _componentStore()
@@ -699,7 +703,7 @@ const createOptionsConsole = function(...params){
             title.classList.add('optTitle')
             title.textContent = option
             title.onclick = function(event){// to revise
-                optionsObject[key][option](event,...params)
+                optionsObject[key][option](event,...params) //...[...params,event] try
                 title.classList.add('toggleHide')
             }
             opt.appendChild(title)
@@ -726,7 +730,7 @@ export const renderState = function(someGameState, someGetCont=defaultConfig.get
     }
     document.body.appendChild(newBoard)
     createMainConsole()
-    createOptionsConsole(someGameState,someGetCont,gb)
+    createOptionsConsole(null,someGameState,someGetCont,gb)
     _skipTurn()
     for (let elem of Object.keys(someGb)){ 
         if(document.querySelector(`#${elem}`) && someGetCont(someGb,elem)){
