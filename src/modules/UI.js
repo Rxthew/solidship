@@ -267,6 +267,9 @@ const standardShipStore = {
 }
 
 const _shipStore = function(shipsObj=standardShipStore){
+    if(document.querySelector('.shipStore')){
+        document.querySelector('.shipStore').remove()
+    }
     let store = document.createElement('div')
     store.classList.add('shipStore')
     let choices = Object.keys(shipsObj)
@@ -471,8 +474,6 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     
     const defaultOpts = {
         'Build New Ship' : function(...params){
-            console.log(params[0].target.textContent)
-            console.log(params[1].target.textContent)//problem testing becasue obj
             let gameState = params[1]
             let getB = params[3]
             let gb = getB(gameState)
@@ -486,7 +487,10 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                     }
                     zone.classList.add('moveHighlight')
                     
-                    zone.onclick = function(){publish('playerAction','build',[gb,standardShipStore[chosenShip](),zone.id])}
+                    zone.onclick = function(){
+                        publish('playerAction','build',[gb,standardShipStore[chosenShip](),zone.id])
+                        
+                    }
                 }
             }
             for(let ship of ships){
@@ -702,8 +706,8 @@ const createOptionsConsole = function(...params){
             let title = document.createElement('span')
             title.classList.add('optTitle')
             title.textContent = option
-            title.onclick = function(event){// to revise
-                optionsObject[key][option](event,...params) //...[...params,event] try
+            title.onclick = function(){// to revise
+                optionsObject[key][option](...params) 
                 title.classList.add('toggleHide')
             }
             opt.appendChild(title)
