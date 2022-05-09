@@ -195,7 +195,7 @@ const revealProps = {
                 let uiElement = document.createElement('span')
                 uiElement.classList.add(`${valName}`)
                 uiElement.id = elem
-                uiElement.textContent = camelPhraseParser(elem)
+                uiElement.textContent = elem
                 container.appendChild(uiElement)
             }
             par.appendChild(container)
@@ -620,6 +620,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             for(let elem of actions){
                 let choice = document.createElement('span')
                 choice.textContent = elem
+                choice.id = elem
                 choice.classList.add('choice')
                 choice.onclick = function(e){
                     activateActionChoice(e,params)

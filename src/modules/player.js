@@ -1,6 +1,7 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
 import { gameEvents, updateState } from "./gamestate"
 import { getShipCount,setShipCount,getEquipmentType, setNewShip, checkMessagingProtocol, checkEquipment, getChangedShip} from "./ships"
+import { camelPhraseParser } from "./utils"
 
 
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
@@ -297,7 +298,6 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                     }
 
                 }
-                
                 return actObj[actionChoice]()
 
             }
