@@ -1,7 +1,7 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
 import { gameEvents, updateState } from "./gamestate"
 import { getShipCount,setShipCount,getEquipmentType, setNewShip, checkMessagingProtocol, checkEquipment, getChangedShip} from "./ships"
-import { camelPhraseParser } from "./utils"
+
 
 
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
@@ -144,13 +144,14 @@ const _unwrapChanges = function(actualShip, mode, keys, change, changedShip=getC
     
 }
 
-export const upgradeShip =  function(currentBoard, shipLocation, changeConfig, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont){
+export const upgradeShip =  function(currentBoard, shipLocation, changeConfig, currState, getCont=getBrdCont, ngb=newBrd, gb=getBrd, setCont=setBrdCont,getWr=getW,getPl=getP){
     const shipToChange = getCont(currentBoard,shipLocation)
     const changedShip = _unwrapChanges(shipToChange, ...changeConfig)
     if(changedShip.error){
         return changedShip
     }
     let newGameBoard = ngb('upgrade ship action')
+    Object.assign(newGameBoard, {wreckage : getWr(currState)}, {plants : getPl(currState)})
     let cont = createContainsObject(currentBoard,shipLocation,changedShip, getCont)
     updateBoardContents(gb(newGameBoard),cont,setCont)
     return newGameBoard
@@ -233,7 +234,7 @@ export const updatePlayerWrapper = function(someFunc, ...params){
     return player1
 }
 
-export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish, ups=updateState, checkMess=checkMessagingProtocol,checkEq=checkEquipment){
+export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish, ups=updateState, checkMess=checkMessagingProtocol,checkEq=checkEquipment,getWr=getW,getPl=getP){
     
 
     const _effectAction = {
@@ -243,6 +244,8 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                 let [currState,getContains,getBoard] = tools
                 let board = getBoard(currState)
                 let ship = getContains(board,loc)
+                let currWreck = getWr(currState)
+                let currPl = getPl(currState)
                 
                 if(Object.prototype.hasOwnProperty.call(checkMess(ship),'error')){
                     pub('renderError',checkMess(ship))
@@ -285,6 +288,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                             pub('triggerAI')
                             return
                         }
+                        Object.assign(newGs3, {wreckage: currWreck}, {plants : currPl})
                         pub('updateGameState',ups,newGs3)
                         pub('triggerAI')
 
@@ -305,35 +309,39 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
 
         },
         build : function(paramArray){
-            const [board,ship,targetLoc] = paramArray
+            const [board,ship,targetLoc,currState] = paramArray
             let newGs4 = placeShip(board,ship,targetLoc)
+            let currWreck = getWr(currState)
+            let currPl = getPl(currState)
             if(Object.prototype.hasOwnProperty.call(newGs4,'error')){
-                console.log(ship)
                 pub('renderError',newGs4)
                 pub('triggerAI')
                 return
             }
-            
+            Object.assign(newGs4, {wreckage: currWreck}, {plants : currPl})
             pub('updateGameState',ups,newGs4)
             pub('triggerAI')
             
 
         },
         move : function(paramArray){
-            const [board,loc,target] = paramArray
+            const [board,loc,target,currState] = paramArray
             let newGs5 = moveShip(board,loc,target) 
+            let currWreck = getWr(currState)
+            let currPl = getPl(currState)
             if(Object.prototype.hasOwnProperty.call(newGs5,'error')){
                 pub('renderError',newGs5)
                 pub('triggerAI')
                 return
             }
+            Object.assign(newGs5, {wreckage: currWreck}, {plants : currPl})
             pub('updateGameState',ups,newGs5)
             pub('triggerAI')
 
         },
         modify : function(paramArray){
-            const [board,loc,changeConf] = paramArray
-            let newGs6 = upgradeShip(board,loc,changeConf)
+            const [board,loc,changeConf,currState] = paramArray
+            let newGs6 = upgradeShip(board,loc,changeConf,currState)
             if(Object.prototype.hasOwnProperty.call(newGs6,'error')){
                 pub('renderError',newGs6)
                 pub('triggerAI')
@@ -346,8 +354,8 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
 
         },
         'extend component' : function(paramArray){
-            const [board,loc,changeConf] = paramArray
-            let newGs7 = upgradeShip(board,loc,changeConf)
+            const [board,loc,changeConf,currState] = paramArray
+            let newGs7 = upgradeShip(board,loc,changeConf,currState)
             if(Object.prototype.hasOwnProperty.call(newGs7,'error')){
                 pub('renderError',newGs7)
                 pub('triggerAI')

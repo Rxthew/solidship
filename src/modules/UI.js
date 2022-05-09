@@ -365,7 +365,7 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
         let children = Array.from(par.children).filter(child => child.classList.contains('compContainer') || child.classList.contains('compElement'))
         if(children.length > 0){
             opt.onclick = function(){
-                publish('playerAction','modify',[gb, shipLoc, [...changeConfig, opt.id]]) 
+                publish('playerAction','modify',[gb, shipLoc, [...changeConfig, opt.id],gameState]) 
             } 
         }
          //remember to revise this if playerAction is not the right event name &/or other changes. 
@@ -387,7 +387,7 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
         let children = Array.from(par.children).filter(child => child.classList.contains('compContainer'))
         if(children.length > 0){
             opt.onclick = function(){
-                publish('playerAction','extend component',[gb,shipLoc, [...changeConfig, opt.id]])
+                publish('playerAction','extend component',[gb,shipLoc, [...changeConfig, opt.id],gameState])
             }
         }
         //remember to revise this if playerAction is not the right event name &/or other changes. 
@@ -414,7 +414,7 @@ const extendShipPublisher = function(event,params,publish=gameEvents.publish){
     let gb = getBoard(gameState)
     let path = recordPathHelpers().chartPath(event)
     let changeConfig = ['extend ship', path]
-    publish('extendShip',[gb,shipLoc, [...changeConfig, event.target.id]])
+    publish('extendShip',[gb,shipLoc, [...changeConfig, event.target.id],gameState])
     event.target.classList.add('unavailable')
      return
     //Note: in order for this to work, it is vimp that gb refers to an updated gameboard each time, even if it is not rendered yet.
@@ -488,7 +488,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                     zone.classList.add('moveHighlight')
                     
                     zone.onclick = function(){
-                        publish('playerAction','build',[gb,standardShipStore[chosenShip](),zone.id])
+                        publish('playerAction','build',[gb,standardShipStore[chosenShip](),zone.id,gameState])
                         
                     }
                 }
@@ -519,7 +519,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                 else{
                     document.querySelector(`#${elem}`).classList.add('moveHighlight')
                     document.querySelector(`#${elem}`).onclick = function(){
-                        publish('playerAction','move',[gb, shipLoc, elem])
+                        publish('playerAction','move',[gb, shipLoc, elem,gs])
                     }
                     //remember to revise this if playerAction is not the right event name &/or other changes. 
                     //Also need to add a cancelAction event in body later.

@@ -151,7 +151,8 @@ const _configureMode = function(someState, phase, hit, target){
 }
 
 
-export const AIReact = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd]){
+export const AIReact = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd,getW,getP]){
+    
     let currentGameState = currentAIObject.gameState
     let currentState = gs(currentGameState)
     const [ngb,gb] = gbs;
@@ -167,6 +168,7 @@ export const AIReact = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd]){
         let key = _triangulateKeyGenerator(currentAIObject.hit, currentAIObject.phase)
         let newGameState = { gameState: ngb(`${key}`)}
         Object.assign(gb(newGameState.gameState), gb(currentGameState))
+        Object.assign(newGameState.gameState, {wreckage : getW(currentGameState)}, {plants : getP(currentGameState)})
         let newTarget = {target : `${key}`}
         let newObject = new AIObj()
         newObject = Object.assign(newObject, currentAIObject, newGameState, newTarget )
@@ -175,6 +177,7 @@ export const AIReact = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd]){
     let key = _generatePseudoRandomKey() 
     let newGameState = { gameState: ngb(`${key}`)}
     Object.assign(gb(newGameState.gameState), gb(currentGameState))
+    Object.assign(newGameState.gameState, {wreckage : getW(currentGameState)}, {plants : getP(currentGameState)})
     let newTarget = {target : `${key}`}
     let newObject = new AIObj()
     newObject = Object.assign(newObject, currentAIObject, newGameState, newTarget )
@@ -342,7 +345,8 @@ export const sendStatus = function(currentAIObject, gs=getSt,publish=gameEvents.
         publish('updateGameState',us, currentGameState)
         publish('renderGameState',currentGameState)
         publish('renderImpact', currentGameState, gameAI.sessionAI.target)
-        return
+        let updatedStateAIObj = us(AIReact(currentAIObject),currentGameState) 
+        return updatedStateAIObj
     }
     //To include: 
     //check if game over, and if so reset.
@@ -355,10 +359,12 @@ export let gameAI = {sessionAI : new AIObj()}
 
 export const updateAIWrapper = function(someFunc,...params){
     gameAI.sessionAI = someFunc(gameAI.sessionAI, ...params)
+    console.log(gameAI.sessionAI)
+    
     return
 }
 
-export const triggerAIEvts = function(somePubFunc=gameEvents.publish, aiReactParams=[getSt, [newBrd,getBrd]],updateStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],getC], sendStatParams=[getSt,somePubFunc=gameEvents.publish, updateState]){
+export const triggerAIEvts = function(somePubFunc=gameEvents.publish, aiReactParams=[getSt, [newBrd,getBrd,getW,getP]],updateStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],getC], sendStatParams=[getSt,somePubFunc=gameEvents.publish, updateState]){
     somePubFunc('updateAIObj', AIReact, ...aiReactParams)
     somePubFunc('updateAIObj', updateStatus,...updateStatParams)
     somePubFunc('updateAIObj', sendStatus,...sendStatParams)
