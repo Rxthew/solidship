@@ -245,7 +245,7 @@ const displayShip = function(event, someGameState, someGetCont=defaultConfig.get
                 if(elem === 'action' || elem === 'messagingProtocol'){
                     _primaryMarker(parent)
                 }
-            }
+            }  
             else {
                 parent = revealProps.determineUIKey(parent,elem)
             }
@@ -322,15 +322,18 @@ const _componentFilter = function(componentsObj=ships.components){
 }
 
 
+
+
 const _componentStore = function(componentsObj=_componentFilter(ships.components),path=_recordComponentPaths(componentsObj)){
     if(document.querySelector('.optConsole')){
         document.querySelector('.optConsole').remove()
     }
+    
     let store = document.createElement('div')
     store.classList.add('componentStore')
     let main = document.querySelector('.mainConsole')
     for(let iteration of path){
-        let finalTarget = componentsObj()
+        let finalTarget = componentsObj
         let parent = store
         for (let elem of iteration){
             if(elem === iteration[iteration.length - 1]){
@@ -350,13 +353,33 @@ const _componentStore = function(componentsObj=_componentFilter(ships.components
      
 }
 
+const _filterComponentPaths = function(event,componentsObj=_componentFilter(ships.components)){
+    let initPath = recordPathHelpers().chartPath(event)
+    let allPaths = _recordComponentPaths(componentsObj)
+    console.log(allPaths)
+    let allCopy = [...allPaths]
+    let ind = 0
+    for(let arr of allCopy){
+        for(let elem of initPath){
+                if(arr[initPath.indexOf(elem)] !== elem){
+                    delete allPaths[ind]
+                }
+            }
+            ind++
+        }
+        allPaths = allPaths.filter(arr => arr !== undefined)
+        return allPaths
+}
+
 
 const activateModifyProperties = function(event, params, publish=gameEvents.publish){
-    const shipLoc = params[1].target.id
-    let gameState = params[2]
-    let getBoard = params[4]
+    
+    const shipLoc = params[0].target.id
+    let gameState = params[1]
+    let getBoard = params[3]
     let gb = getBoard(gameState)
-    let path = [recordPathHelpers().chartPath(event)]
+    const path = _filterComponentPaths(event)
+    //console.log(path)
     let changeConfig = ['modify', path[0]]
     _componentStore(_componentFilter(ships.components),path)
     let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
@@ -539,13 +562,17 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             for(let prop of props){
                 if(compStoreKeys.includes(prop)){
                     let propChildren = Array.from(propTitles[ind].parentElement.children).filter(key => key.classList.contains('property'))
-                    if(propChildren.length === 0){
+                    if(propChildren.length === 0 || prop === 'count'){
                         propTitles[ind].classList.add('Mod')
                         propTitles[ind].onclick = function(e){
                             activateModifyProperties(e, params)
                         }
                     }
-                    compStore = compStore[prop] 
+                    else {
+                        compStore = compStore[prop]
+                        compStoreKeys = Object.keys(compStore)
+                    }
+                     
                 }
                 ind++
                

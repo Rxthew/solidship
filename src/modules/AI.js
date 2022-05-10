@@ -359,8 +359,6 @@ export let gameAI = {sessionAI : new AIObj()}
 
 export const updateAIWrapper = function(someFunc,...params){
     gameAI.sessionAI = someFunc(gameAI.sessionAI, ...params)
-    console.log(gameAI.sessionAI)
-    
     return
 }
 
