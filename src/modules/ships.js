@@ -120,10 +120,8 @@ export const components = function(act){
                 receiver : [_actionToProtocol[act], 'trigger'],
                 relay : [_actionToProtocol[act], 'relay'],
                 extendible : [_actionToProtocol[act]],
-                extensions : {
-                    reciever : ['trigger'],
-                    relay : ['relay']                   
-                }
+                receiverExtension : ['trigger'],
+                relayExtension : ['relay']                   
             },
             equipment : {  
                     type: {
@@ -183,8 +181,6 @@ const _checkForProps = function(someShip, someProps){
         inside = inside[elem]
     }
     return result
-
-
 }
 
 
@@ -214,7 +210,7 @@ const _checkForProps = function(someShip, someProps){
             someRef = someRef[elem]    
         }
     }
-       if(targetKey === 'messagingProtocol'){
+       if(targetKey === 'messagingProtocol'){ 
            if(ship.action){
             let ref = components(ship.action[0])
             _iterateThroughProperties(ref)
