@@ -400,16 +400,17 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
     let gameState = params[1]
     let getBoard = params[3]
     let gb = getBoard(gameState)
-    let path = [recordPathHelpers().chartPath(event)]
-    let changeConfig = ['extend component', path[0]]
-    _componentStore(_componentFilter(ships.components),path)
+    const paths = _filterComponentPaths(event)
+    _componentStore(_componentFilter(ships.components),paths)
     let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
     for(let opt of finalOptions){
         let par = opt.parentElement
         let children = Array.from(par.children).filter(child => child.classList.contains('compContainer'))
         if(children.length > 0){
-            opt.onclick = function(){
-                publish('playerAction','extend component',[gb,shipLoc, [...changeConfig, opt.id],gameState])
+            opt.onclick = function(ev){
+                const path = recordPathHelpers().chartPath(ev,'componentStore','compPropertyTitle').filter(option => option !== opt.id)
+                const changeConfig = ['extend component',path,opt.id]
+                publish('playerAction','extend component',[gb,shipLoc, changeConfig,gameState])
             }
         }
         //remember to revise this if playerAction is not the right event name &/or other changes. 
@@ -607,27 +608,23 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
         },
         'Extend Component' : function(...params){
-            const propTitles = document.querySelectorAll('.propertyTitle')
-            const props = Array.from(propTitles).map(elem => elem.id)
-            let compStore = componentsObj()
-            for(let prop of props){
-                for(let elem of Object.keys(compStore)){
-                    if(props.includes(elem)){
-                        let ind = props.indexOf(elem)
-                        let propChildren = Array.from(propTitles[ind].parentElement.children).filter(key => key.classList.contains('container'))
-                        if(propChildren.length > 0){
-                            propTitles[ind].classList.add('Ext')
-                            propTitles[ind].onclick = function(e){
-                                activateExtendComponent(e, params)
-                                document.querySelector('.toggleHide').classList.remove('toggleHide')
-                            }
-                        }                 
-                    }
-                    compStore = compStore[prop]
+            let propTitles = []
+            const allContainerParents = Array.from(document.querySelectorAll('.container')).map(cont => cont.parentElement)
+            const propParents = allContainerParents.filter(par => par.classList.contains('property'))
+            const propChildren = propParents.map(parent => Array.from(parent.children))
+            for(let arr of propChildren){
+                arr = arr.filter(child => child.classList.contains('propertyTitle'))
+                propTitles = [...propTitles,...arr]
+            }
+            for(let title of propTitles){
+                title.classList.add('Ext')
+                title.onclick = function(e){
+                    activateExtendComponent(e,params)
+                    //document.querySelector('.toggleHide').classList.remove('toggleHide') review.
                 }
             }
-
-         },//cancelAction should remove toggleHide
+                    //cancelAction should remove toggleHide
+         },
         'Effect Ship Action' : function(...params){
             let allPropTitles = Array.from(document.querySelectorAll('.propertyTitle')).map(title => title.id)
             let actions = []
