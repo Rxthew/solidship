@@ -122,7 +122,7 @@ describe('testing upgradeShip (both re modification & re extending', () => {
        upgradeBoard = placeShip(upgradeBoard.board,plantingShip(),'B2')
        upgradeBoard = placeShip(upgradeBoard.board,new basicShip(),'C2')
        test('plantingShip action is modified to legacy',() => {
-        upgradeBoard = upgradeShip(upgradeBoard.board,'A6',['modify',['action'],'legacy',getChangedShip])
+        upgradeBoard = upgradeShip(upgradeBoard.board,'A6',['modify',['action'],'legacy',getChangedShip],upgradeBoard)
         expect(upgradeBoard.state).toBe('upgrade ship action')
         expect(upgradeBoard.board.B2.contains).toEqual(plantingShip())
         expect(upgradeBoard.board.A6.contains.type).toBe('planting')
@@ -130,12 +130,12 @@ describe('testing upgradeShip (both re modification & re extending', () => {
 
        })
        test('plantingShip action comp is extended to include legacy', () => {
-        upgradeBoard = upgradeShip(upgradeBoard.board,'B2',['extend component',['action'],'legacy',getChangedShip])
+        upgradeBoard = upgradeShip(upgradeBoard.board,'B2',['extend component',['action'],'legacy',getChangedShip],upgradeBoard)
         expect(upgradeBoard.state).toBe('upgrade ship action')
         expect(upgradeBoard.board.B2.contains.action).toEqual(['seagrass planting', 'legacy'])
        })
        test('basicShip can be extended with action property to legacy',() => {
-           upgradeBoard = upgradeShip(upgradeBoard.board,'C2',['extend ship',['action'],'legacy',getChangedShip])
+           upgradeBoard = upgradeShip(upgradeBoard.board,'C2',['extend ship',['action'],'legacy',getChangedShip],upgradeBoard)
            expect(upgradeBoard.state).toBe('upgrade ship action')
            expect(upgradeBoard.board.C2.contains.action).toEqual(['legacy'])
        })
@@ -235,20 +235,20 @@ describe('testing effectPlayerAction("ePA")', () => {
         let gb = new gameBoard().board
         gb.A4.contains = plantingShip()
 
-        effectPlayerAction('modify',[gb,'A4',['modify', ['action'],'defense']],publisherDummy)
+        effectPlayerAction('modify',[gb,'A4',['modify', ['action'],'defense'],new gameBoard()],publisherDummy)
         expect(num).toBe(8)
 
-        effectPlayerAction('modify',[gb,'A4',['modify', ['properties','equipment','type'],'modern']],publisherDummy) 
+        effectPlayerAction('modify',[gb,'A4',['modify', ['properties','equipment','type'],'modern'],new gameBoard()],publisherDummy) 
         expect(num).toBe(16)
 
         delete gb.A4.contains.action 
 
-        effectPlayerAction('modify',[gb,'A4',['modify', ['properties','messagingProtocol'],'integrated']],publisherDummy)
+        effectPlayerAction('modify',[gb,'A4',['modify', ['properties','messagingProtocol'],'integrated'],new gameBoard()],publisherDummy)
         expect(num).toBe(20)
 
         gb.A4.contains = plantingShip()
 
-        effectPlayerAction('extend component', [gb,'A4',['extend component',['action'],'legacy']],publisherDummy)
+        effectPlayerAction('extend component', [gb,'A4',['extend component',['action'],'legacy'], new gameBoard()],publisherDummy)
         expect(num).toBe(25)
 
         effectPlayerAction('extend ship', null ,publisherDummy)
@@ -261,23 +261,23 @@ describe('testing effectPlayerAction("ePA")', () => {
         let gb = new gameBoard().board;
         num = 0
         
-        effectPlayerAction('build',[gb,legacyShip(),'B5'],publisherDummy)
+        effectPlayerAction('build',[gb,legacyShip(),'B5',new gameBoard()],publisherDummy)
         expect(num).toBe(5)
 
         gb.B6.contains = legacyShip()
 
-        effectPlayerAction('build',[gb,legacyShip(),'B6'],publisherDummy)
+        effectPlayerAction('build',[gb,legacyShip(),'B6',new gameBoard()],publisherDummy)
         expect(num).toBe(9)
 
-        effectPlayerAction('build',[gb, null,'F2'],publisherDummy)
+        effectPlayerAction('build',[gb, null,'F2', new gameBoard()],publisherDummy)
         expect(num).toBe(13)
 
-        effectPlayerAction('move',[gb,'B6','C6'],publisherDummy)
+        effectPlayerAction('move',[gb,'B6','C6', new gameBoard()],publisherDummy)
         expect(num).toBe(18)
 
         gb.A1.contains = clearingShip()
 
-        effectPlayerAction('move',[gb,'A1','E1'],publisherDummy)
+        effectPlayerAction('move',[gb,'A1','E1', new gameBoard()],publisherDummy)
         expect(num).toBe(22)
         
         
