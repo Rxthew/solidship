@@ -356,7 +356,6 @@ const _componentStore = function(componentsObj=_componentFilter(ships.components
 const _filterComponentPaths = function(event,componentsObj=_componentFilter(ships.components)){
     let initPath = recordPathHelpers().chartPath(event)
     let allPaths = _recordComponentPaths(componentsObj)
-    console.log(allPaths)
     let allCopy = [...allPaths]
     let ind = 0
     for(let arr of allCopy){
@@ -378,17 +377,17 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
     let gameState = params[1]
     let getBoard = params[3]
     let gb = getBoard(gameState)
-    const path = _filterComponentPaths(event)
-    //console.log(path)
-    let changeConfig = ['modify', path[0]]
-    _componentStore(_componentFilter(ships.components),path)
+    const paths = _filterComponentPaths(event)
+    _componentStore(_componentFilter(ships.components),paths)
     let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
     for(let opt of finalOptions){
         let par = opt.parentElement
         let children = Array.from(par.children).filter(child => child.classList.contains('compContainer') || child.classList.contains('compElement'))
         if(children.length > 0){
-            opt.onclick = function(){
-                publish('playerAction','modify',[gb, shipLoc, [...changeConfig, opt.id],gameState]) 
+            opt.onclick = function(ev){
+                const path = recordPathHelpers().chartPath(ev,'componentStore','compPropertyTitle').filter(option => option !== opt.id)
+                const changeConfig = ['modify',path,opt.id]
+                publish('playerAction','modify',[gb, shipLoc, changeConfig, gameState]) 
             } 
         }
          //remember to revise this if playerAction is not the right event name &/or other changes. 
