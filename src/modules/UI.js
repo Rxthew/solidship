@@ -478,6 +478,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     const _availabilityGuard = function(...params){
         let store = document.querySelector('.componentStore')
         let main = document.querySelector('.mainConsole')
+        
         let titles = Array.from(document.querySelectorAll('.compPropertyTitle'))
         for(let elem of titles){
             if(!elem.classList.contains('unavailable')){
@@ -585,7 +586,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             let Done = _doneButton()
             let gs = params[1]
             store.appendChild(Done)
-            Done.onclick = publish('playerAction','extend ship', [gs]) 
+            Done.onclick = function(){publish('playerAction','extend ship', [gs])} 
             let checkAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(elem => elem.id)
             let compPropTitles = Array.from(document.querySelectorAll('.compPropertyTitle'))
             let toVet = compPropTitles.map(elem => elem.id)
@@ -593,6 +594,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                 let compPropElem =  compPropTitles[toVet.indexOf(elem)]
                 let par = compPropElem.parentElement
                 let children = Array.from(par.children).filter(child => child.classList.contains('compContainer') || child.classList.contains('compElement'))
+                
                 if(checkAgainst.includes(elem)){
                     compPropElem.classList.add('unavailable')
                 }
