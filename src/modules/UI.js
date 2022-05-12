@@ -588,14 +588,19 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             store.appendChild(Done)
             Done.onclick = function(){publish('playerAction','extend ship', [gs])} 
             let checkAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(elem => elem.id)
+            checkAgainst = checkAgainst.includes('count') ? checkAgainst = [...checkAgainst, 'plantCount', 'wreckageCount'] : checkAgainst
             let compPropTitles = Array.from(document.querySelectorAll('.compPropertyTitle'))
             let toVet = compPropTitles.map(elem => elem.id)
             for(let elem of toVet){
                 let compPropElem =  compPropTitles[toVet.indexOf(elem)]
                 let par = compPropElem.parentElement
+                let parSibs = Array.from(par.parentElement.children).filter(sib => sib.classList.contains('compPropertyTitle'))
                 let children = Array.from(par.children).filter(child => child.classList.contains('compContainer') || child.classList.contains('compElement'))
                 
                 if(checkAgainst.includes(elem)){
+                    compPropElem.classList.add('unavailable')
+                }
+                else if(children.length > 0 && parSibs.length > 0 && checkAgainst.includes(parSibs[0].id)){
                     compPropElem.classList.add('unavailable')
                 }
                 else if(children.length > 0){
