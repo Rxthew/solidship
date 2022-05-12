@@ -54,11 +54,11 @@ describe('testing placeShip function', () => {
         expect(newFirst2).toEqual({error: 'Ship has missing properties'})
     })
 
-    let newFirst3 = placeShip(new gameBoard().board,{isSunk: 'not sunk', damage: 44, type:'non-existing' },target1)
+    let newFirst3 = placeShip(new gameBoard().board,{isSunk: 'not sunk', damage: 44, mode:'non-existing' },target1)
 
     test('expect error when passing a ship object with missing properties', () => {
         expect(newFirst3).toEqual({error: 'Ship has missing properties'})
-        let newFirst4 = placeShip(new gameBoard().board, {damage: 44, type: 'non-existing', breakpoint: 'someBreakPoint'},target1)
+        let newFirst4 = placeShip(new gameBoard().board, {damage: 44, mode: 'non-existing', breakpoint: 'someBreakPoint'},target1)
         expect(newFirst4).toEqual({error: 'Ship has missing properties'})
     })
 
@@ -68,7 +68,6 @@ describe('testing moveShip function', () => {
     let first = new gameBoard().board
     let legacy = legacyShip()
     let source = 'A5'
-
    
     let second = placeShip(first,legacy,source).board
     
@@ -125,7 +124,7 @@ describe('testing upgradeShip (both re modification & re extending', () => {
         upgradeBoard = upgradeShip(upgradeBoard.board,'A6',['modify',['action'],'legacy',getChangedShip],upgradeBoard)
         expect(upgradeBoard.state).toBe('upgrade ship action')
         expect(upgradeBoard.board.B2.contains).toEqual(plantingShip())
-        expect(upgradeBoard.board.A6.contains.type).toBe('planting')
+        expect(upgradeBoard.board.A6.contains.mode).toBe('planting')
         expect(upgradeBoard.board.A6.contains.action).toEqual(['legacy'])
 
        })

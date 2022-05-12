@@ -24,7 +24,7 @@ test('Basic ship returns an object with a damage equalling 0, some new type, and
     expect(new basicShip('someNewType',3)).toEqual(
          {
              damage: 0,
-             type: 'someNewType',
+             mode: 'someNewType',
              breakpoint: 3
         } 
     )
@@ -54,7 +54,7 @@ test('Other ship objects contain right properties', () => {
     expect(legacy()).toEqual(
          {
              damage: 0,
-             type: 'legacy',
+             mode: 'legacy',
              breakpoint: 4,
              action: ['legacy'],
              properties : { messagingProtocol : 'legacy'},
@@ -65,7 +65,7 @@ test('Other ship objects contain right properties', () => {
     expect(relay()).toEqual(
          {
              damage: 0,
-             type: 'relay',
+             mode: 'relay',
              breakpoint: 3,
              action: ['message'],
              properties : { messagingProtocol : ['message','relay']},
@@ -121,9 +121,9 @@ test('setShipCount sets the count of an object to a new object passed in as the 
 
 test('getEquipmentType returns object with the equipment type, or error if equipment property was not present', () => {
     let plantingShip4 = planting()
-    expect(getEquipmentType(plantingShip4)).toEqual(['legacy'])
+    expect(getEquipmentType(plantingShip4)).toEqual(['classic'])
     let clearingShip3 = clear()
-    expect(getEquipmentType(clearingShip3)).toEqual(['legacy'])
+    expect(getEquipmentType(clearingShip3)).toEqual(['classic'])
     let clear4 = getChangedShip(clearingShip3,['properties','equipment','type'],'modern')
     expect(getEquipmentType(clear4)).toEqual(['modern'])
     let clear5 = clear()
@@ -213,7 +213,7 @@ describe('testing getChangedShip and components to evaluate that they can be use
         expect(customPlantingShip.action).toEqual(planting().action)
     })
     let plantingProperties = {properties : components().properties}
-    Object.assign(plantingProperties['properties'].equipment,{type : components().properties.equipment.type.legacy}, {count : components().properties.equipment.count.planting})
+    Object.assign(plantingProperties['properties'].equipment,{type : components().properties.equipment.type.classic}, {count : components().properties.equipment.count.plantCount})
     Object.assign(plantingProperties['properties'],{messagingProtocol : components('seagrass planting').properties.messagingProtocol.integrated})
 
     test('customPlantingShip possesses same properties as regular instance of planting ship', () => {
@@ -222,7 +222,7 @@ describe('testing getChangedShip and components to evaluate that they can be use
     })
     let customLegacyShip = new basicLegacyShip();
     let customActions = {action : [...components().action.defense,...components().action.relay]}
-    let customProperties = {properties :  { messagingProtocol : components('clear debris').properties.messagingProtocol.relay}}
+    let customProperties = {properties :  { messagingProtocol : components('clear debris').properties.messagingProtocol.sender}}
 
 
     test('ships can be customised in an ad hoc way with components', () => {
@@ -239,14 +239,14 @@ describe('testing getChangedShip and components to evaluate that they can be use
 
     test('getChangedShip should be able to add a property if it is not there', () => {
         let customMessagingShip = getChangedShip(new basicShip(),['action'],'relay')
-        customMessagingShip = getChangedShip(customMessagingShip,['properties','messagingProtocol'],'relay')
+        customMessagingShip = getChangedShip(customMessagingShip,['properties','messagingProtocol'],'sender')
         expect(customMessagingShip.properties).toEqual({messagingProtocol : ['message', 'relay']})
 
     })
 
     test('getChangedShip should not mutate the original ship passed through', () => {
         let customMessagingCopy = getChangedShip(new basicShip(),['action'],'relay')
-        customMessagingCopy = getChangedShip(customMessagingCopy,['properties','messagingProtocol'],'relay')
+        customMessagingCopy = getChangedShip(customMessagingCopy,['properties','messagingProtocol'],'sender')
         let customMessCopy2 = getChangedShip(customMessagingCopy,['properties', 'messagingProtocol'], 'receiver')
         expect(customMessCopy2.properties).toEqual({messagingProtocol : ['message','trigger']})
         expect(customMessagingCopy.properties).toEqual({messagingProtocol : ['message','relay']})
@@ -254,7 +254,7 @@ describe('testing getChangedShip and components to evaluate that they can be use
     })
 
     test('getChangedShip should return an error if messagingProtocol is somehow attached without action', () => {
-        let customMessagingShip2 = getChangedShip(new basicShip(),['properties','messagingProtocol'],'relay')
+        let customMessagingShip2 = getChangedShip(new basicShip(),['properties','messagingProtocol'],'sender')
         expect(customMessagingShip2).toEqual({error : 'Ship does not have a valid action property'})
     })
 

@@ -29,7 +29,7 @@ const _shipMethods = {
         return  new _templateForCustomShipTypes(['seagrass planting'], {
             messagingProtocol: 'planting',
             equipment : {
-                type : ['legacy'],
+                type : ['classic'],
                 count : {
                     plants : 0
                 }
@@ -46,7 +46,7 @@ const _shipMethods = {
         return new _templateForCustomShipTypes(['clear debris'], {
             messagingProtocol: 'clear',
             equipment : {
-                type: ['legacy'],
+                type: ['classic'],
                 count : {
                     wreckage: 0
                 }
@@ -58,8 +58,8 @@ const _shipMethods = {
 export const basicShip = class {
     damage = 0
     
-    constructor(type='custom', breakpoint=3){
-        this.type = type
+    constructor(mode='custom', breakpoint=3){
+        this.mode = mode
         this.breakpoint = breakpoint
     }
 }
@@ -69,8 +69,8 @@ export const basicLegacyShip = class extends basicShip {
     damage = this.breakpoint
     reinforcedBreakpoint = (this.breakpoint * 2) + 1
 
-    constructor(type, breakpoint){
-        super(type, breakpoint)    
+    constructor(mode, breakpoint){
+        super(mode, breakpoint)    
     }
 }
 
@@ -118,21 +118,21 @@ export const components = function(act){
             messagingProtocol : {
                 integrated : _actionToProtocol[act],
                 receiver : [_actionToProtocol[act], 'trigger'],
-                relay : [_actionToProtocol[act], 'relay'],
+                sender : [_actionToProtocol[act], 'relay'],
                 extendible : [_actionToProtocol[act]],
                 receiverExtension : ['trigger'],
                 relayExtension : ['relay']                   
             },
             equipment : {  
                     type: {
-                        legacy : ['legacy'],
+                        classic : ['classic'],
                         modern : ['modern']
                     },
                     count: {
-                        planting : {
+                        plantCount : {
                             plants : 0
                         },
-                        clearing : {
+                        wreckageCount : {
                             wreckage : 0
                         }
                     }

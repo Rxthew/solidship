@@ -21,7 +21,7 @@ const _checkShipObject = function(ship){
         return {error: 'Ship has missing properties'}
         }
     
-    const properties = ['isSunk', 'damage', 'breakpoint','type']
+    const properties = ['isSunk', 'damage', 'breakpoint','mode']
     for (let property of properties){
         if(property in ship === false){
             return {error: 'Ship has missing properties'}
@@ -160,7 +160,7 @@ export const upgradeShip =  function(currentBoard, shipLocation, changeConfig, c
 }
 
 const _countIncrementByType = {
-    'legacy' : 1,
+    'classic' : 1,
     'modern' : 2
 }
 
