@@ -431,14 +431,31 @@ const activateActionChoice = function(event,params,publish=gameEvents.publish){
 }
 
 const extendShipPublisher = function(event,params,publish=gameEvents.publish){
+    const removeOldChoiceMarking = function(){
+        const grandparent = event.target.parentElement.parentElement
+        let allChoices = Array.from(document.querySelectorAll('.Mod'))
+        if(allChoices.length === 0){return}
+        for(let choice of allChoices){
+            if(choice.parentElement.parentElement === grandparent){
+                choice.classList.remove('Mod')
+            }
+            else if(grandparent.parentElement.classList.contains('count') && choice.parentElement.parentElement.parentElement.classList.contains('count')){
+                choice.classList.remove('Mod')
+            }
+            return
+        }
+    }
+
     const shipLoc = params[0].target.id
     let gameState = params[1]
     let getBoard = params[3]
     let gb = getBoard(gameState)
-    let path = recordPathHelpers().chartPath(event)
-    let changeConfig = ['extend ship', path]
-    publish('extendShip',[gb,shipLoc, [...changeConfig, event.target.id],gameState])
-    event.target.classList.add('unavailable')
+    const path = recordPathHelpers().chartPath(event,'componentStore','compPropertyTitle').filter(option => option !== event.target.id)
+    const changeConfig = ['extend ship',path,event.target.id]
+    publish('extendShip',[gb,shipLoc, changeConfig,gameState])
+    removeOldChoiceMarking()
+    event.target.classList.add('Mod')
+
      return
     //Note: in order for this to work, it is vimp that gb refers to an updated gameboard each time, even if it is not rendered yet.
     //Otherwise it will keep referring to the same gameboard 
@@ -617,6 +634,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
                     }
                 }
             }
+            
             _availabilityGuard(...params) //revise when finishing.
 
         },
