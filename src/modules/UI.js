@@ -478,6 +478,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     const _availabilityGuard = function(...params){
         let store = document.querySelector('.componentStore')
         let main = document.querySelector('.mainConsole')
+        let gs = params[1]
         
         let titles = Array.from(document.querySelectorAll('.compPropertyTitle'))
         for(let elem of titles){
@@ -490,9 +491,14 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
         let noneAvail = document.createElement('span')
         noneAvail.textContent = 'Ship has all available components. Please return to previous page.'
         let ret = _doneButton()
-        ret.onclick = createOptionsConsole(...params) 
         ret.textContent = 'Return'
         deadEnd.appendChild(noneAvail)
+        deadEnd.appendChild(ret)
+        ret.onclick = function(){
+            publish('renderGameState',gs)
+            
+        } 
+        
         main.appendChild(deadEnd)
     }
     
