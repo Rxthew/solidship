@@ -1,6 +1,6 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
 import { gameEvents, updateState } from "./gamestate"
-import { getShipCount,setShipCount,getEquipmentType, setNewShip, checkMessagingProtocol, checkEquipment, getChangedShip, getAction} from "./ships"
+import { getShipCount,setShipCount,getEquipmentType, setNewShip, checkMessagingProtocol, checkEquipment, getChangedShip, getAction, getMessagingProtocol} from "./ships"
 
 
 
@@ -234,7 +234,7 @@ export const updatePlayerWrapper = function(someFunc, ...params){
     return player1
 }
 
-export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish, ups=updateState, checkMess=checkMessagingProtocol,checkEq=checkEquipment,getWr=getW,getPl=getP, lgl=legal,getA=getAction){
+export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish, ups=updateState, checkMess=checkMessagingProtocol,checkEq=checkEquipment,getWr=getW,getPl=getP, lgl=legal,getA=getAction, getMess=getMessagingProtocol){
     
 
     const _effectAction = {
@@ -248,6 +248,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                 let currPl = getPl(currState)
                 
                 if(Object.prototype.hasOwnProperty.call(checkMess(ship),'error')){
+                    console.log(checkMess(ship))
                     pub('renderError',checkMess(ship))
                     pub('triggerAI')
                     return
@@ -259,7 +260,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                 }               
 
                 const actObj = {
-                    'seagrass planting' : function(){
+                    'seagrass planting' : function(msg=false){
                         let newGs1 = effectFarm(board,loc,currState)
                         if(Object.prototype.hasOwnProperty.call(newGs1,'error')){
                             pub('renderError',newGs1)
@@ -267,10 +268,10 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                             return
                         }
                         pub('updateGameState',ups,newGs1)
-                        pub('triggerAI')
+                        msg === false ? pub('triggerAI') : false
 
                     },
-                    'clear debris' : function(){
+                    'clear debris' : function(msg=false){
                         let newGs2 = effectClear(board,loc,currState)
                         if(Object.prototype.hasOwnProperty.call(newGs2,'error')){
                             pub('renderError',newGs2)
@@ -278,10 +279,10 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                             return
                         }
                         pub('updateGameState',ups,newGs2)
-                        pub('triggerAI')
+                        msg === false ? pub('triggerAI') : false
 
                     },
-                    'launch decoys' : function(){
+                    'launch decoys' : function(msg=false){
                         let newGs3 = blockMissileAction(board,loc)
                         if(Object.prototype.hasOwnProperty.call(newGs3,'error')){
                             pub('renderError',newGs3)
@@ -290,34 +291,30 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                         }
                         Object.assign(newGs3, {wreckage: currWreck}, {plants : currPl})
                         pub('updateGameState',ups,newGs3)
-                        pub('triggerAI')
+                        msg === false ? pub('triggerAI') : false
 
                     },
                     'message' : function(){
-                        const orbit = lgl(board,loc)
-                        for(let targetloc of orbit){
-                            if(getContains(board,targetloc)){
-                                continue
-                            }
+                        let shipProt = getMess(ship)
+                        if(Array.isArray(shipProt) && shipProt[1] === 'relay'){
+                            const orbit = lgl(board,loc)
+                            for(let targetloc of orbit){
+                                if(!getContains(board,targetloc)){
+                                    continue
+                                }
                             let targetShip = getContains(board,targetloc)
                             let action = getA(targetShip)[0]
-                            let miniActObj = {
-                                'seagrass planting' : function(){
-
-                                },
-                                'clear debris' : function(){
-
-                                },
-                                'launch decoys' : function(){
-
-                                }
+                            if(action === 'message' || !Array.isArray(getMess(targetShip) || !getMess(targetShip)[1] === 'trigger')){
+                                continue
                             }
-                             
+                            actObj[action](true)   
                         }
-
-                        
-
-
+                        pub('triggerAI')
+                        return
+                        }
+                        pub('renderError',{error: 'Ship messaging protocol is not configured for messaging'})
+                        pub('triggerAI')
+                        return                        
                     },
                     'legacy' : function(){
                         pub('triggerAI')
