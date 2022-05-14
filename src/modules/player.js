@@ -1,6 +1,6 @@
 import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } from "./gameboard"
 import { gameEvents, updateState } from "./gamestate"
-import { getShipCount,setShipCount,getEquipmentType, setNewShip, checkMessagingProtocol, checkEquipment, getChangedShip} from "./ships"
+import { getShipCount,setShipCount,getEquipmentType, setNewShip, checkMessagingProtocol, checkEquipment, getChangedShip, getAction} from "./ships"
 
 
 
@@ -234,7 +234,7 @@ export const updatePlayerWrapper = function(someFunc, ...params){
     return player1
 }
 
-export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish, ups=updateState, checkMess=checkMessagingProtocol,checkEq=checkEquipment,getWr=getW,getPl=getP){
+export const effectPlayerAction = function(instruction, params, pub=gameEvents.publish, ups=updateState, checkMess=checkMessagingProtocol,checkEq=checkEquipment,getWr=getW,getPl=getP, lgl=legal,getA=getAction){
     
 
     const _effectAction = {
@@ -294,6 +294,29 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
 
                     },
                     'message' : function(){
+                        const orbit = lgl(board,loc)
+                        for(let targetloc of orbit){
+                            if(getContains(board,targetloc)){
+                                continue
+                            }
+                            let targetShip = getContains(board,targetloc)
+                            let action = getA(targetShip)[0]
+                            let miniActObj = {
+                                'seagrass planting' : function(){
+
+                                },
+                                'clear debris' : function(){
+
+                                },
+                                'launch decoys' : function(){
+
+                                }
+                            }
+                             
+                        }
+
+                        
+
 
                     },
                     'legacy' : function(){
@@ -376,6 +399,11 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
 
 const _extendShipSequence = function(paramsArray, ups=updateState, pub=gameEvents.publish){
     let newGb = upgradeShip(...paramsArray)
+    if(Object.prototype.hasOwnProperty.call(newGb,'error')){
+        pub('renderError',newGb)
+        pub('triggerAI')
+        return
+    }
     pub('updateGameState', ups,newGb)
     return newGb
 }
