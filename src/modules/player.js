@@ -248,7 +248,6 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                 let currPl = getPl(currState)
                 
                 if(Object.prototype.hasOwnProperty.call(checkMess(ship),'error')){
-                    console.log(checkMess(ship))
                     pub('renderError',checkMess(ship))
                     pub('triggerAI')
                     return
