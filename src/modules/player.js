@@ -2,8 +2,6 @@ import { gameBoard, defaultConfig, createContainsObject,updateBoardContents } fr
 import { gameEvents, updateState } from "./gamestate"
 import { getShipCount,setShipCount,getEquipmentType, setNewShip, checkMessagingProtocol, checkEquipment, getChangedShip, getAction, getMessagingProtocol} from "./ships"
 
-
-
 const [getBrdCont, setBrdCont, newBrd, getBrd] = [defaultConfig.getBoardContains, defaultConfig.setBoardContains, defaultConfig.newBoard, defaultConfig.getBoard]
 const [legal,getP,setP,getW,setW] = [defaultConfig.getBoardLegalMoves, defaultConfig.getPlantCount, defaultConfig.setPlantCount, defaultConfig.getWreckCount, defaultConfig.setWreckCount]
 const [getSc, setSc, getEt,setNs] = [getShipCount,setShipCount, getEquipmentType,setNewShip]
@@ -304,6 +302,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                             let targetShip = getContains(board,targetloc)
                             let action = getA(targetShip)[0]
                             if(action === 'message' || !Array.isArray(getMess(targetShip) || !getMess(targetShip)[1] === 'trigger')){
+                                pub('renderError', {error: 'Ship messaging protocol is not configured to be triggered'}) 
                                 continue
                             }
                             actObj[action](true)   

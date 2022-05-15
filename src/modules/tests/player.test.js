@@ -1,7 +1,7 @@
 import {test,expect,describe} from "@jest/globals";
 import { gameBoard, defaultConfig } from "../gameboard";
 import {playerObj, placeShip, moveShip, blockMissileAction, upgradeShip, effectFarm,effectClear,effectPlayerAction} from '../player';
-import {basicShip,legacyShip,plantingShip,clearingShip,defenseShip, getChangedShip} from '../ships'
+import {basicShip,legacyShip,plantingShip,clearingShip,defenseShip, relayShip, getChangedShip} from '../ships'
 
 
 test('Player object has correct properites', () => {
@@ -337,6 +337,43 @@ describe('testing effectPlayerAction("ePA")', () => {
         effectPlayerAction('action',[[gs,defaultConfig.getBoardContains,defaultConfig.getBoard],'C1','seagrass planting'],publisherDummy)
         expect(num).toBe(39)
 
+
+    })
+
+    test('ePA re: message act should publish string of actions, triggering AI only @end. If wrong params should ignore/render', () => {
+        let msgGs = new gameBoard()
+        num = 0
+        
+        let relay = relayShip()
+        msgGs.board.A1.contains = relay
+
+
+        effectPlayerAction('action',[[msgGs,defaultConfig.getBoardContains,defaultConfig.getBoard],'A1','message'],publisherDummy)
+        expect(num).toBe(3)
+
+        let msgPlanting = plantingShip()
+        msgGs.board.B1.contains = msgPlanting
+
+        effectPlayerAction('action',[[msgGs,defaultConfig.getBoardContains,defaultConfig.getBoard],'A1','message'],publisherDummy)
+        expect(num).toBe(7)
+
+        msgPlanting.properties.messagingProtocol = ['planting','trigger']
+
+        effectPlayerAction('action',[[msgGs,defaultConfig.getBoardContains,defaultConfig.getBoard],'A1','message'],publisherDummy)
+        expect(num).toBe(12)
+
+        let msgClearing = clearingShip()
+        msgGs.board.A2.contains = msgClearing
+        msgClearing.properties.messagingProtocol = ['clear','trigger']
+
+        effectPlayerAction('action', [[msgGs,defaultConfig.getBoardContains,defaultConfig.getBoard],'A1','message'],publisherDummy)
+        expect(num).toBe(22)
+
+
+
+        
+
+        
 
     })
 
