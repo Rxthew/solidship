@@ -225,7 +225,7 @@ describe('testing effectFarm & effectClear', () => {
 describe('testing effectPlayerAction("ePA")', () => {
     let num = 0
     const publisherDummy = function(str){
-        let evts = ['', 'renderError','updateGameState','triggerAI'] 
+        let evts = ['', 'renderError','updateGameState','triggerAI']
         num += evts.indexOf(str)
         return 
     }
@@ -358,6 +358,7 @@ describe('testing effectPlayerAction("ePA")', () => {
         expect(num).toBe(7)
 
         msgPlanting.properties.messagingProtocol = ['planting','trigger']
+        
 
         effectPlayerAction('action',[[msgGs,defaultConfig.getBoardContains,defaultConfig.getBoard],'A1','message'],publisherDummy)
         expect(num).toBe(12)
@@ -366,14 +367,20 @@ describe('testing effectPlayerAction("ePA")', () => {
         msgGs.board.A2.contains = msgClearing
         msgClearing.properties.messagingProtocol = ['clear','trigger']
 
+
         effectPlayerAction('action', [[msgGs,defaultConfig.getBoardContains,defaultConfig.getBoard],'A1','message'],publisherDummy)
-        expect(num).toBe(22)
+        expect(num).toBe(19)
 
+        msgClearing.properties.messagingProtocol = ['clear','relay']
 
+        effectPlayerAction('action', [[msgGs,defaultConfig.getBoardContains,defaultConfig.getBoard],'A1','message'],publisherDummy)
+        expect(num).toBe(25)
 
-        
+        let msgMessage2 = relayShip()
+        msgGs.board.A2.contains = msgMessage2
 
-        
+        effectPlayerAction('action', [[msgGs,defaultConfig.getBoardContains,defaultConfig.getBoard],'A1','message'],publisherDummy)
+        expect(num).toBe(31)
 
     })
 
