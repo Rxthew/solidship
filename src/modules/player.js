@@ -298,18 +298,27 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                         let msgBoard = function(){return getBoard(msgCurrState())}
                         let shipProt = getMess(ship)
                         if(Array.isArray(shipProt) && shipProt[1] === 'relay'){
-                            const orbit = lgl(board,loc)
-                            for(let targetloc of orbit){
-                                if(!getContains(board,targetloc)){
-                                    continue
+                            let legals = lgl(board,loc).filter(trgt => getContains(board,trgt) !== null)
+                            if(legals.length === 0){pub('triggerAI'); return}
+                            let orbit = []
+                            for(let targetloc of legals){
+                                let trgtShip = getContains(board, targetloc)
+                                let act = getA(trgtShip)[0]
+                                if(act === 'launch decoys'){
+                                    orbit.push([trgtShip, act,targetloc])
                                 }
-                                let targetShip = getContains(board,targetloc)
-                                let action = getA(targetShip)[0]
+                                else{
+                                    orbit.unshift([trgtShip,act,targetloc])
+                                }
+                            }
+                            console.log(orbit)
+                            for(let targets of orbit){
+                                let [targetShip,action,targetLoc] = targets
                                 if(action === 'message' || !Array.isArray(getMess(targetShip)) || getMess(targetShip)[1] !== 'trigger'){
                                     pub('renderError', {error: 'Ship messaging protocol is not configured to be triggered'}) 
                                     continue
                                 }
-                                actObj[action](true,targetloc,msgBoard(),msgCurrState())  
+                                actObj[action](true,targetLoc,msgBoard(),msgCurrState())  
                             }
                         pub('triggerAI')
                         return
