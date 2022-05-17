@@ -112,6 +112,7 @@ export const blockMissileAction = function(currentBoard, shipLocation, getCont=g
     let cont = createContainsObject(currentBoard,null,null,getCont)
     if(currentBoard.missileBlocked){
         blocked.missileBlocked = [...currentBoard.missileBlocked,...blocked.missileBlocked]
+        blocked.missileBlocked = [...new Set(blocked.missileBlocked)]
         delete cont.missileBlocked
     }
     updateBoardContents(board,cont, setCont)

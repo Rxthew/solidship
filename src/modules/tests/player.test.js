@@ -110,7 +110,7 @@ describe('testing missile block action',() => {
 
     test('if blocked zones exist already on current board, then adds to them',() => {
         let blocked3 = blockMissileAction(blocked1.board, 'C3')
-        expect(blocked3.board.missileBlocked).toEqual([...blocked1.board.missileBlocked, 'C3', ...blocked1.board['C3'].legalMoves])
+        expect(blocked3.board.missileBlocked).toEqual([...new Set([...blocked1.board.missileBlocked, 'C3', ...blocked1.board['C3'].legalMoves])])
     })
 
 })
