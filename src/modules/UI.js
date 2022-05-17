@@ -535,10 +535,10 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
     const ship = {
         'Move Ship' : function(...params){
-            let gs = params[2]
-            let getB = params[4]
+            let gs = params[1]
+            let getB = params[3]
             let gb = getB(gs)
-            let shipLoc = params[1].target.id
+            let shipLoc = params[0].target.id
             let legals = [...getLgl(gb,shipLoc)] 
             for(let elem of legals){
                 if(document.querySelector(`#${elem}`).classList.contains('ship')){
