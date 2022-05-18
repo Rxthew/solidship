@@ -56,6 +56,7 @@ export const gameLoop = function(playerName){ //this should be some input value 
 
 
 export const subscribeAllEvents = function(){
+    gameEvents.subscribe('senseEvent', isGameOver)
     subscribePlayerEvts(gameEvents.subscribe)
     subscribeAIEvts(gameEvents.subscribe)
     subscribeUIEvents(gameEvents.subscribe)

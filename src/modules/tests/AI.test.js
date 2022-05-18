@@ -426,7 +426,7 @@ describe('testing sendStatus function', () => {
     
     const checkArray = []
     const fakeEventPublisher = function(someStr){
-        let targets = ['updateAIObj','updateGameState','renderGameState','renderImpact']
+        let targets = ['updateAIObj','updateGameState','renderGameState','renderImpact','senseEvent']
         checkArray.push(targets.indexOf(someStr))
         return
     }
@@ -449,13 +449,13 @@ describe('testing sendStatus function', () => {
 
     test('expect sendStatus to publish specific events, but only if the AI Object gameboard state is about missile status', () => {
         sendStatus(aiObjWithMissile, getState, fakeEventPublisher)
-        expect(checkArray).toEqual([0,1,2,3])
+        expect(checkArray).toEqual([0,1,2,3,4])
         sendStatus(aiObjWithMissile2, getState, fakeEventPublisher)
-        expect(checkArray).toEqual([0,1,2,3,0,1,2,3])
+        expect(checkArray).toEqual([0,1,2,3,4,0,1,2,3,4])
         sendStatus(aiObjWithTargetKey,getState,fakeEventPublisher)
-        expect(checkArray).toEqual([0,1,2,3,0,1,2,3])
+        expect(checkArray).toEqual([0,1,2,3,4,0,1,2,3,4])
         sendStatus(aiObjWithTargetKey2,getState,fakeEventPublisher)
-        expect(checkArray).toEqual([0,1,2,3,0,1,2,3])
+        expect(checkArray).toEqual([0,1,2,3,4,0,1,2,3,4])
 
     })
 

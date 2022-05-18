@@ -345,6 +345,7 @@ export const sendStatus = function(currentAIObject, gs=getSt,publish=gameEvents.
         publish('updateGameState',us, currentGameState)
         publish('renderGameState',currentGameState)
         publish('renderImpact', currentGameState, gameAI.sessionAI.target)
+        publish('senseEvent', currentGameState)
         let updatedStateAIObj = us(AIReact(currentAIObject),currentGameState) 
         return updatedStateAIObj
     }
