@@ -27,7 +27,7 @@ const _checkShipObject = function(ship){
     }
     return ship
 }
-
+3
 
 const _checkTargetLoc = function(board,ship,key,getBoardContents = defaultConfig.getBoardContains){
     
@@ -311,7 +311,6 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                                     orbit.unshift([trgtShip,act,targetloc])
                                 }
                             }
-                            console.log(orbit)
                             for(let targets of orbit){
                                 let [targetShip,action,targetLoc] = targets
                                 if(action === 'message' || !Array.isArray(getMess(targetShip)) || getMess(targetShip)[1] !== 'trigger'){

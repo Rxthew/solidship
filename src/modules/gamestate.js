@@ -1,17 +1,47 @@
 import { events } from './events.js';
-import {gameBoard} from './gameboard.js'
+import {gameBoard, defaultConfig} from './gameboard.js'
+import { legacyShip } from './ships.js';
 import {subscribePlayerEvts} from './player.js'
 import { subscribeAIEvts } from './AI.js';
 import { subscribeUIEvents } from './UI.js'
 
 
 export const gameEvents = events()
-const newGs = new gameBoard('new game')
+const newGs = (function(){
+    let gs = new gameBoard('new game');
+    let board = defaultConfig.getBoard(gs)
+    defaultConfig.setBoardContains(board,'B3',legacyShip())
+    defaultConfig.setBoardContains(board,'D3',legacyShip())
+    return gs
+
+})()
 
 export const updateState = function(receiver,newState){
     receiver = Object.assign({},receiver)
     receiver.gameState = Object.assign({}, newState)
     return receiver
+}
+
+export const isGameOver = function(gs, getB=defaultConfig.getBoard, getCont = defaultConfig.getBoardContains, getW=defaultConfig.getWreckCount, getP=defaultConfig.getPlantCount, publish=gameEvents.publish){
+    const currentWreckage = getW(gs)
+    const currentPlants = getP(gs)
+    const board = getB(gs)
+    let shipCount = 0
+    for(let zone of Object.keys(board)){
+        if(getCont(board,zone) !== null){
+            shipCount++
+        }
+    }
+    if(shipCount === 36 && currentPlants >= 100){
+        publish('renderGameState', new gameBoard('Player Won'))
+        return
+    }
+    else if(shipCount === 0 || currentWreckage >= 25){
+        publish('renderGameState',new gameBoard('Player Lost'))
+        return
+    }
+    return
+    
 }
 
 export const gameLoop = function(playerName){ //this should be some input value from the intial screen. 
