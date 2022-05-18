@@ -261,23 +261,23 @@ describe('testing effectPlayerAction("ePA")', () => {
         num = 0
         
         effectPlayerAction('build',[gb,legacyShip(),'B5',new gameBoard()],publisherDummy)
-        expect(num).toBe(5)
+        expect(num).toBe(8)
 
         gb.B6.contains = legacyShip()
 
         effectPlayerAction('build',[gb,legacyShip(),'B6',new gameBoard()],publisherDummy)
-        expect(num).toBe(9)
+        expect(num).toBe(12)
 
         effectPlayerAction('build',[gb, null,'F2', new gameBoard()],publisherDummy)
-        expect(num).toBe(13)
+        expect(num).toBe(16)
 
         effectPlayerAction('move',[gb,'B6','C6', new gameBoard()],publisherDummy)
-        expect(num).toBe(18)
+        expect(num).toBe(21)
 
         gb.A1.contains = clearingShip()
 
         effectPlayerAction('move',[gb,'A1','E1', new gameBoard()],publisherDummy)
-        expect(num).toBe(22)
+        expect(num).toBe(25)
         
         
     })

@@ -349,9 +349,6 @@ export const sendStatus = function(currentAIObject, gs=getSt,publish=gameEvents.
         let updatedStateAIObj = us(AIReact(currentAIObject),currentGameState) 
         return updatedStateAIObj
     }
-    //To include: 
-    //check if game over, and if so reset.
-    //?//renderState i.e publish('renderGameState', gameAI.sessionAI.gameState)
     return 
 }
 

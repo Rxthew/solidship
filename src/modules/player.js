@@ -351,6 +351,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
             Object.assign(newGs4, {wreckage: currWreck}, {plants : currPl})
             pub('updateGameState',ups,newGs4)
             pub('triggerAI')
+            pub('triggerAI')
             
 
         },
