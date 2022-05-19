@@ -102,6 +102,8 @@ test('getShipCount returns an object with the plant/wreckage count, or error if 
     expect(getShipCount(clearingShip)).toEqual({wreckage : 50})
     let leg = legacy()
     expect(getShipCount(leg)).toEqual({error : 'Ship does not have a valid equipment property'})
+    leg.properties.equipment = {type : ['classic']}
+    expect(getShipCount(leg)).toEqual({error : 'Ship does not have a valid count property'})
 
 })
 
@@ -129,6 +131,9 @@ test('getEquipmentType returns object with the equipment type, or error if equip
     let clear5 = clear()
     delete clear5.properties.equipment 
     expect(getEquipmentType(clear5)).toEqual({error : 'Ship does not have a valid equipment property'})
+    let clear6 = clear()
+    delete clear6.properties.equipment.type
+    expect(getEquipmentType(clear6)).toEqual({error : 'Ship does not have a valid type property'})
     
 })
 

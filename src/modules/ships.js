@@ -232,12 +232,15 @@ export const getShipCount = function(ship){
         }
         shipSearch = shipSearch[elem]
     }
+    if(!Object.prototype.hasOwnProperty.call(shipSearch,'count')){
+        return {error : 'Ship does not have a valid count property'}
+    }
     return ship.properties.equipment.count
 
 }
 
 export const setShipCount = function(ship, propsObj){
-    let count = getShipCount(ship);
+    let count = getShipCount(ship)
     if(count.error){
         return {error : count.error}
     }
@@ -255,6 +258,9 @@ export const getEquipmentType = function(ship){
             return {error : 'Ship does not have a valid equipment property'}
         }
         shipSearch = shipSearch[elem]
+    }
+    if(!Object.prototype.hasOwnProperty.call(shipSearch,'type')){
+        return {error : 'Ship does not have a valid type property'}
     }
     return ship.properties.equipment.type
 }
