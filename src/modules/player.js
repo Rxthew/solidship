@@ -406,6 +406,9 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
 }
 
 const _extendShipSequence = function(paramsArray, ups=updateState, pub=gameEvents.publish){
+    let getB = paramsArray[0]
+    paramsArray[0] = getB(player1.sessionPlayer.gameState)
+    paramsArray = [...paramsArray, player1.sessionPlayer.gameState]
     let newGb = upgradeShip(...paramsArray)
     if(Object.prototype.hasOwnProperty.call(newGb,'error')){
         pub('renderError',newGb)

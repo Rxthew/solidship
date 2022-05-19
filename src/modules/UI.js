@@ -447,12 +447,10 @@ const extendShipPublisher = function(event,params,publish=gameEvents.publish){
     }
 
     const shipLoc = params[0].target.id
-    let gameState = params[1]
     let getBoard = params[3]
-    let gb = getBoard(gameState)
     const path = recordPathHelpers().chartPath(event,'componentStore','compPropertyTitle').filter(option => option !== event.target.id)
     const changeConfig = ['extend ship',path,event.target.id]
-    publish('extendShip',[gb,shipLoc, changeConfig,gameState])
+    publish('extendShip',[getBoard,shipLoc, changeConfig])
     removeOldChoiceMarking()
     event.target.classList.add('Mod')
 
