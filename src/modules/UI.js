@@ -188,7 +188,7 @@ const revealProps = {
         return prop
         },
     valueToUIelement : function(par,val,valContainerName='container',valName='element'){
-        if(Array.isArray(val)){
+        if(Array.isArray(val)){ 
             let container = document.createElement('div')
             container.classList.add(`${valContainerName}`)
             for(let elem of val){
@@ -199,15 +199,24 @@ const revealProps = {
                 container.appendChild(uiElement)
             }
             par.appendChild(container)
+            return container
         }
-        else if(typeof val === 'string' || typeof val === 'number'){
+        else if(typeof val === 'string'){
             let uiElement = document.createElement('span')
             uiElement.classList.add(`${valName}`)
             uiElement.id = val
             uiElement.textContent = camelPhraseParser(val)
             par.appendChild(uiElement)
+            return uiElement
         }
-        return
+        else if(typeof val === 'number'){//if just string. then add a separate one for number. Remember to take care of damage. marko
+            let uiElement = document.createElement('span')
+            uiElement.classList.add(`numeral`)
+            uiElement.textContent = camelPhraseParser(val)
+            par.appendChild(uiElement)
+            return uiElement
+        }
+        
     },        
 }
 
@@ -222,6 +231,20 @@ const _primaryMarker = function(par){
         }   
     }
     return
+}
+
+const _numeralPropStatus = function(val,par,titleType='propertyTitle',parType='property'){
+    let ruledOut = ['damage','breakpoint','reinforcedBreakpoint']
+    if(val.classList.contains('numeral')){
+        let title = Array.from(par.children).filter(sib => sib.classList.contains(`${titleType}`))[0]
+        if(!ruledOut.includes(title.id)){
+            par.classList.remove(`${parType}`)
+            par.classList.add('countProp')
+            title.classList.remove(`${titleType}`)
+            title.classList.add('countTitle')
+        }
+    }
+
 }
         
       
@@ -239,15 +262,16 @@ const displayShip = function(event, someGameState, someGetCont=defaultConfig.get
         let parent = viewConsole
         for (let elem of path){
             if(elem === path[path.length - 1]){
-                parent = revealProps.determineUIKey(parent,elem)
+                parent = revealProps.determineUIKey(parent,elem) //marko
                 let value = finalTarget[elem]
-                revealProps.valueToUIelement(parent,value)
+                value = revealProps.valueToUIelement(parent,value)
                 if(elem === 'action' || elem === 'messagingProtocol'){
                     _primaryMarker(parent)
                 }
+                _numeralPropStatus(value,parent)
             }  
             else {
-                parent = revealProps.determineUIKey(parent,elem)
+                parent = revealProps.determineUIKey(parent,elem) //marko
             }
             finalTarget = finalTarget[elem]
         }
@@ -337,12 +361,13 @@ const _componentStore = function(componentsObj=_componentFilter(ships.components
         let parent = store
         for (let elem of iteration){
             if(elem === iteration[iteration.length - 1]){
-                parent = revealProps.determineUIKey(parent,elem,'compProperty','compPropertyTitle')
+                parent = revealProps.determineUIKey(parent,elem,'compProperty','compPropertyTitle') //marko
                 let value = finalTarget[elem]
-                revealProps.valueToUIelement(parent,value,'compContainer','compElement')
+                value = revealProps.valueToUIelement(parent,value,'compContainer','compElement')
+                _numeralPropStatus(value,parent,'compPropertyTitle','compProperty')
             }
             else {
-                parent = revealProps.determineUIKey(parent,elem, 'compProperty','compPropertyTitle')
+                parent = revealProps.determineUIKey(parent,elem, 'compProperty','compPropertyTitle') //marko
             }
             finalTarget = finalTarget[elem]
         }
