@@ -209,7 +209,7 @@ const revealProps = {
             par.appendChild(uiElement)
             return uiElement
         }
-        else if(typeof val === 'number'){//if just string. then add a separate one for number. Remember to take care of damage. marko
+        else if(typeof val === 'number'){
             let uiElement = document.createElement('span')
             uiElement.classList.add(`numeral`)
             uiElement.textContent = camelPhraseParser(val)
@@ -233,13 +233,13 @@ const _primaryMarker = function(par){
     return
 }
 
-const _numeralPropStatus = function(val,par,titleType='propertyTitle',parType='property'){
+const _numeralPropStatus = function(val,par,titleType='propertyTitle',parType='property', parNewType='element'){
     let ruledOut = ['damage','breakpoint','reinforcedBreakpoint']
     if(val.classList.contains('numeral')){
         let title = Array.from(par.children).filter(sib => sib.classList.contains(`${titleType}`))[0]
         if(!ruledOut.includes(title.id)){
             par.classList.remove(`${parType}`)
-            par.classList.add('countProp')
+            par.classList.add(`${parNewType}`)
             title.classList.remove(`${titleType}`)
             title.classList.add('countTitle')
         }
@@ -262,7 +262,7 @@ const displayShip = function(event, someGameState, someGetCont=defaultConfig.get
         let parent = viewConsole
         for (let elem of path){
             if(elem === path[path.length - 1]){
-                parent = revealProps.determineUIKey(parent,elem) //marko
+                parent = revealProps.determineUIKey(parent,elem) 
                 let value = finalTarget[elem]
                 value = revealProps.valueToUIelement(parent,value)
                 if(elem === 'action' || elem === 'messagingProtocol'){
@@ -271,7 +271,7 @@ const displayShip = function(event, someGameState, someGetCont=defaultConfig.get
                 _numeralPropStatus(value,parent)
             }  
             else {
-                parent = revealProps.determineUIKey(parent,elem) //marko
+                parent = revealProps.determineUIKey(parent,elem) 
             }
             finalTarget = finalTarget[elem]
         }
@@ -361,13 +361,13 @@ const _componentStore = function(componentsObj=_componentFilter(ships.components
         let parent = store
         for (let elem of iteration){
             if(elem === iteration[iteration.length - 1]){
-                parent = revealProps.determineUIKey(parent,elem,'compProperty','compPropertyTitle') //marko
+                parent = revealProps.determineUIKey(parent,elem,'compProperty','compPropertyTitle') 
                 let value = finalTarget[elem]
                 value = revealProps.valueToUIelement(parent,value,'compContainer','compElement')
-                _numeralPropStatus(value,parent,'compPropertyTitle','compProperty')
+                _numeralPropStatus(value,parent,'compPropertyTitle','compProperty','compElement')
             }
             else {
-                parent = revealProps.determineUIKey(parent,elem, 'compProperty','compPropertyTitle') //marko
+                parent = revealProps.determineUIKey(parent,elem, 'compProperty','compPropertyTitle') 
             }
             finalTarget = finalTarget[elem]
         }
@@ -615,7 +615,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             store.appendChild(Done)
             Done.onclick = function(){publish('playerAction','extend ship', [gs])} 
             let checkAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(elem => elem.id)
-            checkAgainst = checkAgainst.includes('count') ? checkAgainst = [...checkAgainst, 'plantCount', 'wreckageCount'] : checkAgainst
+            //checkAgainst = checkAgainst.includes('count') ? checkAgainst = [...checkAgainst, 'plantCount', 'wreckageCount'] : checkAgainst
             let compPropTitles = Array.from(document.querySelectorAll('.compPropertyTitle'))
             let toVet = compPropTitles.map(elem => elem.id)
             for(let elem of toVet){
