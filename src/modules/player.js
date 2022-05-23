@@ -230,6 +230,7 @@ let player1 = {sessionPlayer : null}
 
 export const updatePlayerWrapper = function(someFunc, ...params){
     player1.sessionPlayer = someFunc(player1.sessionPlayer,...params)
+    //console.log(player1.sessionPlayer.gameState)
     return player1
 }
 
@@ -419,11 +420,22 @@ const _extendShipSequence = function(paramsArray, ups=updateState, pub=gameEvent
     return newGb
 }
 
+const _preventRepeatMissileState = function(getState=defaultConfig.getState, pub =gameEvents.publish, ups=updateState){
+    let missileStates = ['missile hit ship','missile blocked','missile sunk ship','missile missed ship']
+    let oldGs= player1.sessionPlayer.gameState
+    if(missileStates.includes(getState(oldGs))){
+        let newGs = Object.assign(Object.create(Object.getPrototypeOf(oldGs)),oldGs,{state : 'default action'})
+        pub('updateGameState',ups,newGs)
+    }
+}
+
+
 export const subscribePlayerEvts = function(someSubFunc=gameEvents.subscribe){
     someSubFunc('initGame', function(name){player1.sessionPlayer = new playerObj(name)}),
     someSubFunc('playerAction',effectPlayerAction)
     someSubFunc('extendShip', _extendShipSequence),
     someSubFunc('updateGameState', updatePlayerWrapper)
+    someSubFunc('triggerAI',_preventRepeatMissileState)
     
 }
 

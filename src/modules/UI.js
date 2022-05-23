@@ -615,7 +615,6 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             store.appendChild(Done)
             Done.onclick = function(){publish('playerAction','extend ship', [gs])} 
             let checkAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(elem => elem.id)
-            //checkAgainst = checkAgainst.includes('count') ? checkAgainst = [...checkAgainst, 'plantCount', 'wreckageCount'] : checkAgainst
             let compPropTitles = Array.from(document.querySelectorAll('.compPropertyTitle'))
             let toVet = compPropTitles.map(elem => elem.id)
             for(let elem of toVet){
