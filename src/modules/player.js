@@ -230,7 +230,7 @@ let player1 = {sessionPlayer : null}
 
 export const updatePlayerWrapper = function(someFunc, ...params){
     player1.sessionPlayer = someFunc(player1.sessionPlayer,...params)
-    //console.log(player1.sessionPlayer.gameState)
+    console.log(player1.sessionPlayer.gameState)
     return player1
 }
 
@@ -299,7 +299,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                         let msgBoard = function(){return getBoard(msgCurrState())}
                         let shipProt = getMess(ship)
                         if(Array.isArray(shipProt) && shipProt[1] === 'relay'){
-                            let legals = lgl(board,loc).filter(trgt => getContains(board,trgt) !== null)
+                            let legals = lgl(board,loc).filter(trgt => getContains(board,trgt) !== null && Object.prototype.hasOwnProperty.call(getContains(board,trgt),'action'))
                             if(legals.length === 0){pub('triggerAI'); return}
                             let orbit = []
                             for(let targetloc of legals){
