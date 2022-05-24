@@ -36,7 +36,7 @@ export const isGameOver = function(gs, getB=defaultConfig.getBoard, getCont = de
         publish('renderGameState', new gameBoard('Player Won'))
         return
     }
-    else if(shipCount === 0 || currentWreckage >= 25){
+    else if(shipCount === 0 || currentWreckage >= 100){
         publish('renderGameState',new gameBoard('Player Lost'))
         return
     }
