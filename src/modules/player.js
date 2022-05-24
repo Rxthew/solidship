@@ -299,7 +299,8 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                         let msgBoard = function(){return getBoard(msgCurrState())}
                         let shipProt = getMess(ship)
                         if(Array.isArray(shipProt) && shipProt[1] === 'relay'){
-                            let legals = lgl(board,loc).filter(trgt => getContains(board,trgt) !== null && Object.prototype.hasOwnProperty.call(getContains(board,trgt),'action'))
+                            let initfilterlegals = lgl(board,loc).filter(trgt => getContains(board,trgt) !== null)
+                            let legals = initfilterlegals.filter(trgt => Object.prototype.hasOwnProperty.call(getContains(board,trgt),'action') && Object.prototype.hasOwnProperty.call(getContains(board,trgt),'messagingProtocol'))
                             if(legals.length === 0){pub('triggerAI'); return}
                             let orbit = []
                             for(let targetloc of legals){
