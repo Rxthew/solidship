@@ -56,19 +56,19 @@ describe('testing isGameOver',() => {
 
     })
 
-    test('expect player to lose if wreckage is 25 and over', () => {
+    test('expect player to lose if wreckage is 100 and over', () => {
         let loserTheSecond = new gameBoard()
         loserTheSecond.board.A1.contains = {ship : 'placeholder'}
 
-        loserTheSecond.wreckage = 24
+        loserTheSecond.wreckage = 99
         isGameOver(loserTheSecond)
         expect(check).toBe(5)
 
-        loserTheSecond.wreckage = 25
+        loserTheSecond.wreckage = 100
         isGameOver(loserTheSecond)
         expect(check).toBe(6)
 
-        loserTheSecond.wreckage = 26
+        loserTheSecond.wreckage = 101
         isGameOver(loserTheSecond)
         expect(check).toBe(7)
     })
@@ -88,7 +88,7 @@ describe('testing isGameOver',() => {
         expect(check).toBe(7)
 
         ongoingBoard.plants = 99
-        ongoingBoard.wreckage = 24
+        ongoingBoard.wreckage = 99
 
         isGameOver(ongoingBoard)
         expect(check).toBe(7)
