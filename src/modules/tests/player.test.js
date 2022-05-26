@@ -278,6 +278,9 @@ describe('testing effectPlayerAction("ePA")', () => {
 
         effectPlayerAction('move',[gb,'A1','E1', new gameBoard()],publisherDummy)
         expect(num).toBe(25)
+
+        effectPlayerAction('build',[gb,new basicShip(),'A2', new gameBoard()],publisherDummy)
+        expect(num).toBe(30)
         
         
     })
