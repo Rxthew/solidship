@@ -32,22 +32,23 @@ describe('testing isGameOver',() => {
     }
     gameEvents.subscribe('renderGameState', dummyPublisher)
 
-    test('expect player to win if gameboard fully populated and plant count >== 100', () => {
+    test('expect player to win if gameboard fully populated and plant count >== 200', () => {
         let winner = new gameBoard()
         for (let zone of Object.keys(winner.board)){
             winner.board[`${zone}`].contains = {ship : 'placeholder'}
         }
-        winner.plants = 100 
+        winner.plants = 200 
         isGameOver(winner)
         expect(check).toBe(2)
-        winner.plants = 101
+        winner.plants = 201
         isGameOver(winner)
         expect(check).toBe(4)
-        winner.plants = 99
+        winner.plants = 199
         isGameOver(winner)
         expect(check).toBe(4)
 
     })
+
 
     test('expect player to lose if gameboard empty', () => {
         let loser = new gameBoard()
@@ -60,15 +61,15 @@ describe('testing isGameOver',() => {
         let loserTheSecond = new gameBoard()
         loserTheSecond.board.A1.contains = {ship : 'placeholder'}
 
-        loserTheSecond.wreckage = 99
+        loserTheSecond.wreckage = 199
         isGameOver(loserTheSecond)
         expect(check).toBe(5)
 
-        loserTheSecond.wreckage = 100
+        loserTheSecond.wreckage = 200
         isGameOver(loserTheSecond)
         expect(check).toBe(6)
 
-        loserTheSecond.wreckage = 101
+        loserTheSecond.wreckage = 201
         isGameOver(loserTheSecond)
         expect(check).toBe(7)
     })
@@ -87,13 +88,25 @@ describe('testing isGameOver',() => {
         isGameOver(ongoingBoard)
         expect(check).toBe(7)
 
-        ongoingBoard.plants = 99
-        ongoingBoard.wreckage = 99
+        ongoingBoard.plants = 199
+        ongoingBoard.wreckage = 199
 
         isGameOver(ongoingBoard)
         expect(check).toBe(7)
 
         
+    })
+
+    test('expect game to continue if gameboard fully populated and plant count >== 200 BUT wreckage is greater than 0', () => {
+        let nearlywin = new gameBoard()
+        for (let zone of Object.keys(nearlywin.board)){
+            nearlywin.board[`${zone}`].contains = {ship : 'placeholder'}
+        }
+        nearlywin.plants = 200 
+        nearlywin.wreckage = 1
+        isGameOver(nearlywin)
+        expect(check).toBe(7)
+
     })
 
 
