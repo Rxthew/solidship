@@ -153,7 +153,11 @@ test('getMessagingProtocol returns object with the messaging protocol',() => {
     expect(getMessagingProtocol(plantingShip5)).toBe('planting')
     let clearingShip6 = clear()
     expect(getMessagingProtocol(clearingShip6)).toBe('clear')
-
+    let basicShip1 = new basicShip()
+    expect(getMessagingProtocol(basicShip1)).toEqual({error : 'Ship does not have properties installed'})
+    let basicShip2 = new basicShip()
+    basicShip2.properties = {somethingElse : 0}
+    expect(getMessagingProtocol(basicShip2)).toEqual({error : 'Ship does not have messagingProtocol installed'})
 
 })
 
@@ -162,6 +166,8 @@ test('getAction returns object with the ship action',() => {
     expect(getAction(plantingShip6)).toEqual(['seagrass planting'])
     let legacy2 = legacy()
     expect(getAction(legacy2)).toEqual(['legacy'])
+    let basicShip3 = new basicShip()
+    expect(getAction(basicShip3)).toEqual({error : 'Ship does not have action installed'})
     
 })
 

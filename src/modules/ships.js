@@ -266,11 +266,20 @@ export const getEquipmentType = function(ship){
 }
 
 export const getMessagingProtocol = function(ship){
+    if(!Object.prototype.hasOwnProperty.call(ship,'properties')){
+        return {error : 'Ship does not have properties installed'}
+    }
+    else if(!Object.prototype.hasOwnProperty.call(ship.properties,'messagingProtocol')){
+        return {error : 'Ship does not have messagingProtocol installed'}
+    }
     return ship.properties.messagingProtocol
 
 }
 
 export const getAction = function(ship){
+    if(!Object.prototype.hasOwnProperty.call(ship,'action')){
+        return {error : 'Ship does not have action installed'}
+    }
     return ship.action
     
 }

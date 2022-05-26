@@ -297,10 +297,11 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                         player1.sessionPlayer === null ? updatePlayerWrapper(ups,currState) : false
                         let msgCurrState = function(){return player1.sessionPlayer.gameState}
                         let msgBoard = function(){return getBoard(msgCurrState())}
-                        let shipProt = getMess(ship)
+                        let shipProt = getMess(ship)                      
                         if(Array.isArray(shipProt) && shipProt[1] === 'relay'){
                             let initfilterlegals = lgl(board,loc).filter(trgt => getContains(board,trgt) !== null)
-                            let legals = initfilterlegals.filter(trgt => Object.prototype.hasOwnProperty.call(getContains(board,trgt),'action') && Object.prototype.hasOwnProperty.call(getContains(board,trgt),'messagingProtocol'))
+                            let secondFilter = initfilterlegals.filter(trgt => !Object.prototype.hasOwnProperty.call(getA(getContains(board,trgt)),'error'))
+                            let legals = secondFilter.filter(trgt => !Object.prototype.hasOwnProperty.call(getMess(getContains(board,trgt)),'error'))
                             if(legals.length === 0){pub('triggerAI'); return}
                             let orbit = []
                             for(let targetloc of legals){
@@ -353,7 +354,8 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
             Object.assign(newGs4, {wreckage: currWreck}, {plants : currPl})
             pub('updateGameState',ups,newGs4)
             pub('triggerAI')
-            pub('triggerAI')
+            Object.prototype.hasOwnProperty.call(ship,'action') ? pub('triggerAI') : false
+            
             
 
         },
