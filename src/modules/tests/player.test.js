@@ -347,7 +347,6 @@ describe('testing effectPlayerAction("ePA")', () => {
         let relay = relayShip()
         msgGs.board.A1.contains = relay
 
-
         effectPlayerAction('action',[[msgGs,defaultConfig.getBoardContains,defaultConfig.getBoard],'A1','message'],publisherDummy)
         expect(num).toBe(3)
 
