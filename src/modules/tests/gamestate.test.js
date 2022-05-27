@@ -97,13 +97,13 @@ describe('testing isGameOver',() => {
         
     })
 
-    test('expect game to continue if gameboard fully populated and plant count >== 200 BUT wreckage is greater than 0', () => {
+    test('expect game to continue if gameboard fully populated and plant count >== 200 BUT wreckage is greater than 5~', () => {
         let nearlywin = new gameBoard()
         for (let zone of Object.keys(nearlywin.board)){
             nearlywin.board[`${zone}`].contains = {ship : 'placeholder'}
         }
         nearlywin.plants = 200 
-        nearlywin.wreckage = 1
+        nearlywin.wreckage = 6
         isGameOver(nearlywin)
         expect(check).toBe(7)
 
