@@ -44,10 +44,10 @@ const _decisionByPhaseNo = {
 
     '2' : function(someHitKey, someTargets, someTargetIndex, legalKeyGen = (akeyVar) => getLgalMovs(new gameBoard().board, akeyVar)){
         let pivot = Math.floor((Math.random() * 10))
-        if(pivot <= 4){
+        if(pivot <= 2){
             return someTargets[someTargetIndex]
         }
-        else if(pivot <= 6){
+        else if(pivot <= 4){
             return someHitKey
         }
         else{
