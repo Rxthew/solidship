@@ -32,7 +32,7 @@ export const isGameOver = function(gs, getB=defaultConfig.getBoard, getCont = de
             shipCount++
         }
     }
-    if(shipCount === 36 && currentPlants >= 200 && currentWreckage <= 0){
+    if(shipCount === 36 && currentPlants >= 200 && currentWreckage <= 5){
         publish('renderGameState', new gameBoard('Player Won'))
         return
     }
