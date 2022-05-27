@@ -583,14 +583,14 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
         },
         'Modify Ship' : function(...params){
             const propTitles = document.querySelectorAll('.propertyTitle')
-            const props = Array.from(propTitles).map(elem => elem.id)
+            const props = Array.from(propTitles).map(elem => elem.id).filter(elem => elem !== 'count')
             let compStore = componentsObj()
             let compStoreKeys = Object.keys(compStore)
             let ind = 0
             for(let prop of props){
                 if(compStoreKeys.includes(prop)){
                     let propChildren = Array.from(propTitles[ind].parentElement.children).filter(key => key.classList.contains('property'))
-                    if(propChildren.length === 0 || prop === 'count'){
+                    if(propChildren.length === 0){
                         propTitles[ind].classList.add('Mod')
                         propTitles[ind].onclick = function(e){
                             activateModifyProperties(e, params)
