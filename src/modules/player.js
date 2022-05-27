@@ -172,7 +172,7 @@ export const effectFarm = function(currentBoard, shipLoc, currentGameState, getC
 
     const _incrementShip = function(){
         let currentShipCount = gc(ship)
-        let newShipCount = currentShipCount.plants + _countIncrementByType[type]
+        let newShipCount = currentShipCount.plants + _countIncrementByType[type[0]]
         let newShip = newS(ship,['properties','equipment','count'])    
         newShip = sc(newShip,{plants : newShipCount})        
         return newShip
@@ -180,7 +180,7 @@ export const effectFarm = function(currentBoard, shipLoc, currentGameState, getC
 
     const _incrementState = function(){
         const plantCount = gp(currentGameState)
-        const newPlantCount = plantCount + _countIncrementByType[type]
+        const newPlantCount = plantCount + _countIncrementByType[type[0]]
         Object.assign(newGameBoard, {wreckage : gw(currentGameState)} ,{state : 'effect farm action'}) 
         newGameBoard = sp(newGameBoard,newPlantCount)
         return newGameBoard
@@ -201,11 +201,11 @@ export const effectClear = function(currentBoard, shipLoc, currentGameState, get
     const ship = getCont(currentBoard, shipLoc)
     let type = gte(ship)
     const wreckCount = gw(currentGameState)
-    const provisoryWreckCount =  wreckCount - _countIncrementByType[type] 
+    const provisoryWreckCount =  wreckCount - _countIncrementByType[type[0]]
 
     const _incrementShip = function(){
         let currentShipCount = gc(ship)
-        let actualWreckCount = provisoryWreckCount <= 0 ? wreckCount : _countIncrementByType[type]
+        let actualWreckCount = provisoryWreckCount <= 0 ? wreckCount : _countIncrementByType[type[0]]
         let newShipCount = currentShipCount.wreckage + actualWreckCount
         let newShip = newS(ship,['properties','equipment','count'])
         newShip = sc(newShip, {wreckage : newShipCount})
