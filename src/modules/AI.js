@@ -79,26 +79,6 @@ const _missileHitMode = function(propsObj){
 
 }
 
-const _missileBlockedMode = function(propsObj){
-    
-    if(propsObj.hit === null){
-        return {
-            triangulation : true,
-            phase : 1,
-            hit : propsObj.target,
-            target : propsObj.target
-        }
-    }
-    return {
-        triangulation : true,
-        phase : 1,
-        hit : propsObj.hit,
-        target : propsObj.target
-    }
-
-
-}
-
 const _shipSunkMode = function(propsObj){
     return {
         triangulation : false,
@@ -132,7 +112,7 @@ const _missedMissileMode = function(propsObj){
 const _stateOptions = {
 
     'missile hit ship' : _missileHitMode,
-    'missile blocked' : _missileBlockedMode,
+    'missile blocked' : _missileHitMode,
     'missile sunk ship': _shipSunkMode,
     'missile missed ship':  _missedMissileMode
 }
@@ -357,6 +337,7 @@ export let gameAI = {sessionAI : new AIObj()}
 
 export const updateAIWrapper = function(someFunc,...params){
     gameAI.sessionAI = someFunc(gameAI.sessionAI, ...params)
+    console.log(gameAI.sessionAI.target)
     return
 }
 

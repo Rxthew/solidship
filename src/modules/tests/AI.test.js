@@ -234,7 +234,7 @@ describe('AI testing', () => {
 
     })
 
-    test('AI React when receiving an AI Object set to triangulation, and has a missile blocked, retains previous hit location and returns phases to 1', () => {
+    test('AI React when receiving an AI Object set to triangulation, and has a missile blocked, behaves the same way as if hit', () => {
         let blockedObject = new AIObj()
         blockedObject.triangulation = true;
         blockedObject.hit = 'C3';
@@ -245,7 +245,7 @@ describe('AI testing', () => {
         
         expect(updatedBlockedObj.triangulation).toBe(true)
         expect(updatedBlockedObj.phase).toBe(1)
-        expect(updatedBlockedObj.hit).toBe('C3')
+        expect(updatedBlockedObj.hit).toBe('B3')
 
     })
  
