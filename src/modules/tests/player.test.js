@@ -151,39 +151,63 @@ describe('testing effectFarm & effectClear', () => {
     let greatBigGB = new gameBoard();
     let aPlant = plantingShip()
     let anothPlant = plantingShip()
+    let anothPlant2 = plantingShip()
+    let anothPlant3 = plantingShip()
     anothPlant.properties.equipment.type = ['modern']
+    anothPlant2.properties.equipment.type = ['classic (damaged)']
+    anothPlant3.properties.equipment.type = ['classic (damaged','classic']
     greatBigGB.board.B1.contains = aPlant
     greatBigGB.board.C4.contains = anothPlant
     greatBigGB.board.C4.contains.properties.equipment.count.wreckage = 0 
+    greatBigGB.board.D4.contains = anothPlant2
+    greatBigGB.board.D4.contains.properties.equipment.count.plants = 1
+    greatBigGB.board.D5.contains = anothPlant3
     greatBigGB.wreckage = 4
     let aWreck = clearingShip()
     let anothWreck = clearingShip()
+    let anotherWreck = clearingShip()
+    let anotherWreck2 = clearingShip()
     anothWreck.properties.equipment.type = ['modern']
+    anotherWreck.properties.equipment.type = ['classic (damaged)']
+    anotherWreck2.properties.equipment.type = ['classic (damaged)', 'modern']
     greatBigGB.board.B5.contains = aWreck
     greatBigGB.board.C5.contains = anothWreck
+    greatBigGB.board.F4.contains = anotherWreck
+    greatBigGB.board.F4.contains.properties.equipment.count.wreckage = 1
+    greatBigGB.board.F5.contains = anotherWreck2
 
     const firstIter = effectFarm(greatBigGB.board, 'B1', greatBigGB)
     
     const secondIter = effectFarm(firstIter.board, 'C4', firstIter )
-
+    
+    const classicDamagedIter1 = effectFarm(secondIter.board,'D4',secondIter)
+    const classicDamagedIter2 = effectFarm(classicDamagedIter1.board,'D5',classicDamagedIter1)
     
 
     const thirdIter = effectClear(secondIter.board, 'B5', secondIter)
     const fourthIter = effectClear(thirdIter.board, 'C5', thirdIter)
     const fifthIter = effectClear(fourthIter.board, 'C4', fourthIter)
+    const fakeIter = Object.assign({},fifthIter,{wreckage : 12})
+    
+    const classicDamagedIter3 = effectClear(fifthIter.board, 'F4',fakeIter)
+    const classicDamagedIter4 = effectClear(classicDamagedIter3.board,'F5',classicDamagedIter3)
     
 
-    test('effectFarm returns a new gameBoard, if equipment type is legacy, adds to plant count by 1',() => {
+    test('effectFarm returns a new gameBoard, if equipment type is classic, adds to plant count by 1',() => {
         expect(firstIter.board.B1.contains.properties.equipment.count.plants).toBe(1)
         expect(secondIter.board.B1.contains.properties.equipment.count.plants).toBe(1)
+        expect(classicDamagedIter1.board.B1.contains.properties.equipment.count.plants).toBe(1)
+        expect(classicDamagedIter2.board.B1.contains.properties.equipment.count.plants).toBe(1)
 
     })
     test('effectFarm returns a new gameBoard, if equipment type is modern, adds to plant count by 2',() => {
         expect(firstIter.board.C4.contains.properties.equipment.count.plants).toBe(0)
         expect(secondIter.board.C4.contains.properties.equipment.count.plants).toBe(2)
+        expect(classicDamagedIter1.board.C4.contains.properties.equipment.count.plants).toBe(2)
+        expect(classicDamagedIter2.board.C4.contains.properties.equipment.count.plants).toBe(2)
         
     })
-    test('effectFarm returns a new gameBoard, if equipment type is legacy, adds to global plant count by 1',() => {
+    test('effectFarm returns a new gameBoard, if equipment type is classic, adds to global plant count by 1',() => {
         expect(greatBigGB.plants).toBe(0)
         expect(firstIter.plants).toBe(1)
         
@@ -193,7 +217,21 @@ describe('testing effectFarm & effectClear', () => {
         expect(secondIter.plants).toBe(3)
         
     })
-    test('effectClear returns a new gameBoard, if equipment type is legacy, adds to wreckage count by 1',() => {
+
+    test('effectFarm returns a new gameBoard, if equipment type is classic(damaged), add nothing to plant count & global count' , () => {
+        expect(classicDamagedIter1.plants).toBe(3)
+        expect(classicDamagedIter1.board.D4.contains.properties.equipment.count.plants).toBe(1)
+
+    })
+
+    test('effectFarm returns a new gameBoard, if equipment type is classic(damaged), but the array has another classic, ignore damage and add to plant count & global count via classic' , () => {
+        expect(classicDamagedIter2.plants).toBe(4)
+        expect(classicDamagedIter2.board.D5.contains.properties.equipment.count.plants).toBe(1)
+
+    })
+
+
+    test('effectClear returns a new gameBoard, if equipment type is classic, adds to wreckage count by 1',() => {
         expect(thirdIter.board.B5.contains.properties.equipment.count.wreckage).toBe(1)
 
     })
@@ -208,7 +246,7 @@ describe('testing effectFarm & effectClear', () => {
 
         
     })
-    test('effectClear returns a new gameBoard, if equipment type is legacy, removes from global wreckage by 1 (no negatives)',() => {
+    test('effectClear returns a new gameBoard, if equipment type is classic, removes from global wreckage by 1 (no negatives)',() => {
         expect(greatBigGB.wreckage).toBe(4)
         expect(firstIter.wreckage).toBe(4)
         expect(secondIter.wreckage).toBe(4)
@@ -219,6 +257,15 @@ describe('testing effectFarm & effectClear', () => {
         expect(fourthIter.wreckage).toBe(1)
         expect(fifthIter.wreckage).toBe(0)
         
+    })
+    test('effectClear returns a new gameBoard, if equipment type is classic (damaged),no effect on global wreckage or local count', () => {
+        expect(classicDamagedIter3.wreckage).toBe(12)
+        expect(classicDamagedIter3.board.F4.contains.properties.equipment.count.wreckage).toBe(1)
+
+    })
+    test('effectClear returns a new gameBoard, if equipment type is classic (damaged), but  modern in array also. Modern effects  global & local count', () => {
+        expect(classicDamagedIter4.wreckage).toBe(10)
+        expect(classicDamagedIter4.board.F5.contains.properties.equipment.count.wreckage).toBe(2)
     })
 })
 
