@@ -143,6 +143,22 @@ export const components = function(act){
     }   
 }
 
+export const getDamage = function(someShip){
+    return someShip.damage
+
+}
+
+export const setDamage = function(someShip,someValue){
+    someShip.damage = someValue
+    return someShip.damage
+
+}
+
+export const getIsSunk = function(someShip){
+   return someShip.isSunk(someShip.damage,someShip.breakpoint)
+
+}
+
 
 export const setNewShip = function(someShip, someShipProps){
     let propsObj = {}

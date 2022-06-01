@@ -305,8 +305,9 @@ describe('testing updateStatus function',() => {
         let damageGb2 = new gameBoard('D3')
         damageAI.gameState = damageGb2
         damageGb2.board['D3'].contains = clearingShip()
+        damageGb2.board['D3'].contains.damage = 1
 
-        expect(updateStatus(damageAI).gameState.board['D3'].contains.damage).toBe(1)
+        expect(updateStatus(damageAI).gameState.board['D3'].contains.damage).toBe(2)
         expect(updateStatus(damageAI).gameState.board['D3'].contains.properties.equipment.type).toBe(['classic (damaged)'])
 
         

@@ -18,6 +18,9 @@ const getMessagingProtocol = ships.getMessagingProtocol
 const getAction = ships.getAction
 const checkMessagingProtocol = ships.checkMessagingProtocol
 const checkEquipment = ships.checkEquipment
+const getIsSunk = ships.getIsSunk
+const getDamage = ships.getDamage
+const setDamage = ships.setDamage
 
 
 test('Basic ship returns an object with a damage equalling 0, some new type, and a breakpoint', () => {
@@ -91,6 +94,30 @@ test('basicLegacyShip instance sinks instantly the first time isSunk is called',
     let plantingLegacyShip = new basicLegacyShip('planting')
     expect(plantingLegacyShip.isSunk(plantingLegacyShip.damage,plantingLegacyShip.breakpoint)).toBe(true)
     
+})
+
+test('getIsSunk works the same isSunk if you pass in the ship only', () =>{
+    let clearingLegacyShip = new basicLegacyShip('clearing')
+    expect(getIsSunk(clearingLegacyShip)).toBe(true)
+    let regularPlants = planting()
+    expect(getIsSunk(regularPlants)).toBe(false)
+
+})
+
+test('getDamage retrieves damage of ship', () => {
+    let leg = legacy()
+    leg.damage = 2
+    expect(getDamage(leg)).toBe(2)
+    leg.damage += 2
+    expect(getDamage(leg)).toBe(4)
+
+})
+
+test('setDamage sets a new value of damage on a ship and then retrieves said value', () => {
+    let leg2 = legacy()
+    expect(setDamage(leg2,2)).toBe(2)
+    leg2.damage = 1
+    expect(setDamage(leg2,5)).toBe(5)
 })
 
 test('getShipCount returns an object with the plant/wreckage count, or error if equipment property was not present', () => {
