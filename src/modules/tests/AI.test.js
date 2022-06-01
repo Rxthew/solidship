@@ -293,6 +293,25 @@ describe('testing updateStatus function',() => {
 
     })
 
+    test('updateStatus w/missile hit on clear/planting renders classic equipment type to be damaged', () => {
+        let damageAI = new AIObj()
+        let damageGb = new gameBoard('D2')
+        damageGb.board['D2'].contains = plantingShip()
+        damageAI.gameState = damageGb
+
+        expect(updateStatus(damageAI).gameState.board['D2'].contains.damage).toBe(1)
+        expect(updateStatus(damageAI).gameState.board['D2'].contains.properties.equipment.type).toBe(['classic (damaged)'])
+
+        let damageGb2 = new gameBoard('D3')
+        damageAI.gameState = damageGb2
+        damageGb2.board['D3'].contains = clearingShip()
+
+        expect(updateStatus(damageAI).gameState.board['D3'].contains.damage).toBe(1)
+        expect(updateStatus(damageAI).gameState.board['D3'].contains.properties.equipment.type).toBe(['classic (damaged)'])
+
+        
+    })
+
     test('updateStatus w/missile hit increases wreckage count by 2', () => {
         let hitAI = new AIObj()
         let hitGb = new gameBoard('C2')
@@ -303,6 +322,7 @@ describe('testing updateStatus function',() => {
         expect(updateStatus(hitAI).gameState.wreckage).toBe(4)
         
     })
+
 
     test('updateStatus returns an AI Obj with a valid gameboard which replaces ship with null and a missile sunk ship state if ship sinks from a hit',() => {
         let AI3 = new AIObj()
