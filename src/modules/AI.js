@@ -3,8 +3,11 @@ const [getLgalMovs, getSt, newBrd] = [defaultConfig.getBoardLegalMoves, defaultC
 const [getBrd, getBCont, setBCont] = [defaultConfig.getBoard, defaultConfig.getBoardContains, defaultConfig.setBoardContains]
 const [getW, setW, getP, setP] = [defaultConfig.getWreckCount, defaultConfig.setWreckCount, defaultConfig.getPlantCount, defaultConfig.setPlantCount]
 import {gameEvents, updateState} from "./gamestate"
-import {getShipCount} from "./ships"
+import {getShipCount,getDamage,setDamage,getIsSunk} from "./ships"
 const getC = getShipCount
+const getD = getDamage
+const setD = setDamage
+const shipSunk = getIsSunk
 
 
 export const AIObj = class {
@@ -171,9 +174,10 @@ const _sunkVesselCheckUpdate = function(vesselSunk, vessel){
     return vessel
 }
 
-const _generateDamage = function(hitShip,hitValue=1){
-     hitShip.damage += hitValue
-     return _sunkVesselCheckUpdate(hitShip.isSunk(hitShip.damage, hitShip.breakpoint), hitShip)
+const _generateDamage = function(hitShip,hitValue=1,getdmg=getD,setdmg=setD,sunk=shipSunk){
+     let newval = getdmg(hitShip) + hitValue
+     setdmg(hitShip,newval)
+     return _sunkVesselCheckUpdate(sunk(hitShip), hitShip)
 }
 
 const _missileBlockingCheck = function(board, target, getCont=getBCont, setCont=setBCont){
@@ -257,7 +261,7 @@ const _discountContribution = function(someBoard, someCount, getState, getWrecka
 }
 
    
-const _hitCheckingMechanism = function(key, currentGameState, currentBoard, gs=getSt, nb=newBrd, gb=getBrd, getKey=getBCont, setKey=setBCont,gw=getW,sw=setW,gp=getP,sp=setP, gc=getC){
+const _hitCheckingMechanism = function(key, currentGameState, currentBoard, gs=getSt, nb=newBrd, gb=getBrd, getKey=getBCont, setKey=setBCont,gw=getW,sw=setW,gp=getP,sp=setP, gc=getC,gd=getD,sd=setD,sunk=shipSunk){
     
     const currentBoardChecked = _missileBlockingCheck(currentBoard,key,getKey,setKey)
     if(Object.prototype.hasOwnProperty.call(currentBoardChecked, 'missileBlocked')){
@@ -284,7 +288,7 @@ const _hitCheckingMechanism = function(key, currentGameState, currentBoard, gs=g
     
     let updatedValue = Object.assign(Object.create(Object.getPrototypeOf(loc)),loc)
     let shipActionCount = gc(updatedValue) 
-    updatedValue = _generateDamage(updatedValue)
+    updatedValue = _generateDamage(updatedValue,1,gd,sd,sunk)
     let vesselStatus = updatedValue === null ? nb('missile sunk ship') : nb('missile hit ship')
     Object.assign(vesselStatus,{wreckage : gw(currentGameState)},{plants: gp(currentGameState)})
     vesselStatus = _wreckageCounter(vesselStatus, gs, gw, sw, nb)
@@ -298,7 +302,7 @@ const _hitCheckingMechanism = function(key, currentGameState, currentBoard, gs=g
 }
 
 
-export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],gc=getC){
+export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],gc=getC,gd=getD,sd=setD,sunk=shipSunk){
     let gb = gbs[1]
     let currentGameState = currentAIObject.gameState;
     let currentState = gs(currentGameState);
@@ -306,7 +310,7 @@ export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getB
     let keys = Object.keys(currentBoard)
     if(keys.includes(currentState)){
         let updatedAIObject = new AIObj()
-        updatedAIObject = Object.assign(updatedAIObject, currentAIObject, {gameState: _hitCheckingMechanism(currentState, currentGameState, currentBoard, gs, ...gbs,gc)})
+        updatedAIObject = Object.assign(updatedAIObject, currentAIObject, {gameState: _hitCheckingMechanism(currentState, currentGameState, currentBoard, gs, ...gbs,gc,gd,sd,sunk)})
         return updatedAIObject
     }
     else{
@@ -341,7 +345,7 @@ export const updateAIWrapper = function(someFunc,...params){
     return
 }
 
-export const triggerAIEvts = function(somePubFunc=gameEvents.publish, aiReactParams=[getSt, [newBrd,getBrd,getW,getP]],updateStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],getC], sendStatParams=[getSt,somePubFunc=gameEvents.publish, updateState]){
+export const triggerAIEvts = function(somePubFunc=gameEvents.publish, aiReactParams=[getSt, [newBrd,getBrd,getW,getP]],updateStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],getC,getD,setD,shipSunk], sendStatParams=[getSt,somePubFunc=gameEvents.publish, updateState]){
     somePubFunc('updateAIObj', AIReact, ...aiReactParams)
     somePubFunc('updateAIObj', updateStatus,...updateStatParams)
     somePubFunc('updateAIObj', sendStatus,...sendStatParams)
