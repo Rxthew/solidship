@@ -116,6 +116,7 @@ const _stateOptions = {
 
     'missile hit ship' : _missileHitMode,
     'missile blocked' : _missileHitMode,
+    //'missile barrage' : _missileHitMode,
     'missile sunk ship': _shipSunkMode,
     'missile missed ship':  _missedMissileMode
 }
