@@ -482,7 +482,7 @@ describe('testing sendStatus function', () => {
     
     const checkArray = []
     const fakeEventPublisher = function(someStr){
-        let targets = ['updateAIObj','updateGameState','renderGameState','renderImpact','senseEvent']
+        let targets = ['updateAIObj','updateGameState','renderGameState','renderImpact','senseEvent','triggerAI']
         checkArray.push(targets.indexOf(someStr))
         return
     }
@@ -501,6 +501,9 @@ describe('testing sendStatus function', () => {
     const aiObjWithMissile2 = new AIObj()
     aiObjWithMissile2.gameState.state = 'missile hit ship'
 
+    const aiObjWithMissileBarrage = new AIObj()
+    aiObjWithMissileBarrage.gameState.state = 'missile barrage'
+
 
 
     test('expect sendStatus to publish specific events, but only if the AI Object gameboard state is about missile status', () => {
@@ -513,6 +516,11 @@ describe('testing sendStatus function', () => {
         sendStatus(aiObjWithTargetKey2,getState,fakeEventPublisher)
         expect(checkArray).toEqual([0,1,2,3,4,0,1,2,3,4])
 
+    })
+
+    test('expect sendStatus to publish usual events & triggers AI twice outside the synchronous flow if gameboard state is missile barrage', async () => {
+        await sendStatus(aiObjWithMissileBarrage,getState, fakeEventPublisher)
+        expect(checkArray).toEqual([0,1,2,3,4,5,5])
     })
 
 }) 
