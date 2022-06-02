@@ -332,6 +332,10 @@ export const sendStatus = function(currentAIObject, gs=getSt,publish=gameEvents.
         publish('renderImpact', currentGameState, gameAI.sessionAI.target)
         publish('senseEvent', currentGameState)
         let updatedStateAIObj = us(AIReact(currentAIObject),currentGameState) 
+        if(currentState === 'missile barrage'){
+            publish('triggerAI')
+            publish('triggerAI')
+        }            
         return updatedStateAIObj
     }
     return 

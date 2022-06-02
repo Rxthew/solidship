@@ -87,7 +87,7 @@ describe('AI testing', () => {
     })
 
 
-    test('AI React returns an AI Object with same gameState, mode set to triangulation, sets phase to 1 and stores hit location when missile hits a target or is blocked', () => {
+    test('AI React returns an AI Object with same gameState, mode set to triangulation, sets phase to 1 and stores hit location when missile hits a target, is blocked or barrage', () => {
         let aiObject3 = new AIObj()
         aiObject3.gameState.state = 'missile hit ship'
         aiObject3.target = 'A1'
@@ -106,6 +106,16 @@ describe('AI testing', () => {
         expect(newerObj.triangulation).toBe(true)
         expect(newerObj.hit).toBe('A1')
         expect(newerObj.phase).toBe(1)
+
+        let someOtherObject3 = new AIObj()
+        someOtherObject3.gameState.state = 'missile barrage'
+        someOtherObject3.target = 'A1'
+
+        let thisObj = AIReact(someOtherObject3)
+        expect(thisObj.gameState).toEqual(someOtherObject3.gameState)
+        expect(thisObj.triangulation).toBe(true)
+        expect(thisObj.hit).toBe('A1')
+        expect(thisObj.phase).toBe(1)
 
     })
 
@@ -248,6 +258,21 @@ describe('AI testing', () => {
         expect(updatedBlockedObj.hit).toBe('B3')
 
     })
+
+    test('AI React when receiving an AI Object set to triangulation, and undertakes a missile barrage, behaves the same way as if hit', () => {
+        let barrageObject = new AIObj()
+        barrageObject.triangulation = true;
+        barrageObject.hit = 'C3';
+        barrageObject.phase = 2;
+        barrageObject.target = 'B3'
+        barrageObject.gameState.state = 'missile barrage'
+        let updatedBarrageObj = AIReact(barrageObject)
+        
+        expect(updatedBarrageObj.triangulation).toBe(true)
+        expect(updatedBarrageObj.phase).toBe(1)
+        expect(updatedBarrageObj.hit).toBe('B3')
+
+    })
  
 })
 
@@ -316,7 +341,7 @@ describe('testing updateStatus function',() => {
 
     test('updateStatus w/ double missile hit on clear/planting & only modern equipment sends a \'missile barrage\' state', () => {
         let newDamageAI = new AIObj()
-        let damageGb3 = new gameBoard('D2')
+        let damageGb3 = new gameBoard('E1')
         damageGb3.board['E1'].contains = plantingShip()
         damageGb3.board['E1'].contains.damage = 1
         damageGb3.board['E1'].contains.properties.equipment.type = ['modern']
@@ -480,7 +505,7 @@ describe('testing updateStatus function',() => {
 
 describe('testing sendStatus function', () => {
     
-    const checkArray = []
+    let checkArray = []
     const fakeEventPublisher = function(someStr){
         let targets = ['updateAIObj','updateGameState','renderGameState','renderImpact','senseEvent','triggerAI']
         checkArray.push(targets.indexOf(someStr))
@@ -518,9 +543,11 @@ describe('testing sendStatus function', () => {
 
     })
 
-    test('expect sendStatus to publish usual events & triggers AI twice outside the synchronous flow if gameboard state is missile barrage', async () => {
-        await sendStatus(aiObjWithMissileBarrage,getState, fakeEventPublisher)
+    test('expect sendStatus to publish usual events & triggers AI twice if gameboard state is missile barrage', () => {
+        checkArray = []
+        sendStatus(aiObjWithMissileBarrage,getState, fakeEventPublisher)
         expect(checkArray).toEqual([0,1,2,3,4,5,5])
+        
     })
 
 }) 
