@@ -207,7 +207,7 @@ const _missileBlockingCheck = function(board, target, getCont=getBCont, setCont=
 const _wreckageCounter = function(someBoard, getState, getWreckage, setWreckage, newBoard){
     const state = getState(someBoard)
     const options = Object.keys(_stateOptions)
-    const values = [2,2,5,1]
+    const values = [2,2,2,5,1]
     let rubric = {}
     for(let x = 0; x < options.length; x++){
         rubric[options[x]] = values[x]
