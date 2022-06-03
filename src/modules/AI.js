@@ -3,12 +3,13 @@ const [getLgalMovs, getSt, newBrd] = [defaultConfig.getBoardLegalMoves, defaultC
 const [getBrd, getBCont, setBCont] = [defaultConfig.getBoard, defaultConfig.getBoardContains, defaultConfig.setBoardContains]
 const [getW, setW, getP, setP] = [defaultConfig.getWreckCount, defaultConfig.setWreckCount, defaultConfig.getPlantCount, defaultConfig.setPlantCount]
 import {gameEvents, updateState} from "./gamestate"
-import {getShipCount,getDamage,setDamage,getIsSunk} from "./ships"
+import {getShipCount,getDamage,setDamage,getIsSunk,getEquipmentType, setEquipmentType} from "./ships"
 const getC = getShipCount
 const getD = getDamage
 const setD = setDamage
 const shipSunk = getIsSunk
-
+const getE = getEquipmentType
+const setE = setEquipmentType
 
 export const AIObj = class {
     constructor(gameState=new gameBoard('new game'),triangulation=false,phase=0, hit=null, target=null ){
@@ -261,8 +262,53 @@ const _discountContribution = function(someBoard, someCount, getState, getWrecka
 
 }
 
+const _equipmentDependencyGuard = function(someBoard,ship,gs=getSt,ge=getE,gd=getDamage){
+    let state = gs(someBoard)
+    if(state !== 'missile hit ship'){
+        return false
+    }
+    if(Object.prototype.hasOwnProperty.call(ge(ship),'error')){
+        return false
+    }
+    if(gd(ship) >= 2 && ge(ship).filter(part => part !== 'modern').length === 0){
+        return true
+    }
+    return 'pass'
+}
+
+const _equipmentDependencyCost = function(ship, ge=getE, se=setE){
+
+    const classicDamage = function(){
+        let classics = ge(ship).filter(part => part === 'classic')
+        if(classics.length === 0){
+            return ship
+        }
+        let newShip = Object.assign(Object.create(Object.getPrototypeOf(ship)),ship)
+        let newEq = [...ge(ship)]
+        newEq.splice(newEq.indexOf('classic'),1,'classic (damaged)')
+        se(newShip,newEq)
+        return newShip
+    }
+
+    const modernDamage = function(){
+        let noModern = ge(ship).filter(part => part !== 'modern')
+        let newShip = Object.assign(Object.create(Object.getPrototypeOf(ship)),ship)
+        se(newShip,noModern)
+        return newShip 
+    }
+
+    let noDamage = ge(ship).filter(part => part !== 'classic (damaged)')
+    if(noDamage.length === 0){
+        return ship
+    }
+    if(noDamage[0] !== 'modern'){ 
+        return classicDamage()
+    }
+    return modernDamage()
+}
+
    
-const _hitCheckingMechanism = function(key, currentGameState, currentBoard, gs=getSt, nb=newBrd, gb=getBrd, getKey=getBCont, setKey=setBCont,gw=getW,sw=setW,gp=getP,sp=setP, gc=getC,gd=getD,sd=setD,sunk=shipSunk){
+const _hitCheckingMechanism = function(key, currentGameState, currentBoard, gs=getSt, nb=newBrd, gb=getBrd, getKey=getBCont, setKey=setBCont,gw=getW,sw=setW,gp=getP,sp=setP, gc=getC, ge=getE, se=setE, gd=getD,sd=setD,sunk=shipSunk){
     
     const currentBoardChecked = _missileBlockingCheck(currentBoard,key,getKey,setKey)
     if(Object.prototype.hasOwnProperty.call(currentBoardChecked, 'missileBlocked')){
@@ -291,9 +337,11 @@ const _hitCheckingMechanism = function(key, currentGameState, currentBoard, gs=g
     let shipActionCount = gc(updatedValue) 
     updatedValue = _generateDamage(updatedValue,1,gd,sd,sunk)
     let vesselStatus = updatedValue === null ? nb('missile sunk ship') : nb('missile hit ship')
+    vesselStatus = _equipmentDependencyGuard(vesselStatus,updatedValue,gs,ge,gd) === true ? nb('missile barrage') : vesselStatus
     Object.assign(vesselStatus,{wreckage : gw(currentGameState)},{plants: gp(currentGameState)})
     vesselStatus = _wreckageCounter(vesselStatus, gs, gw, sw, nb)
     vesselStatus = _discountContribution(vesselStatus, shipActionCount,gs,gw,sw,gp,sp,nb)
+    updatedValue = _equipmentDependencyGuard(vesselStatus,updatedValue,gs,ge,gd) === 'pass' ?  _equipmentDependencyCost(updatedValue,ge,se) : updatedValue
     let containsObj = createContainsObject(currentBoardChecked, key, updatedValue, getKey)
     let boardWithUpdatedVessel = gb(vesselStatus)
 
@@ -303,7 +351,7 @@ const _hitCheckingMechanism = function(key, currentGameState, currentBoard, gs=g
 }
 
 
-export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],gc=getC,gd=getD,sd=setD,sunk=shipSunk){
+export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],gc=getC,ge=getE,se=setE, gd=getD,sd=setD,sunk=shipSunk){
     let gb = gbs[1]
     let currentGameState = currentAIObject.gameState;
     let currentState = gs(currentGameState);
@@ -311,7 +359,7 @@ export const updateStatus = function(currentAIObject, gs=getSt, gbs=[newBrd,getB
     let keys = Object.keys(currentBoard)
     if(keys.includes(currentState)){
         let updatedAIObject = new AIObj()
-        updatedAIObject = Object.assign(updatedAIObject, currentAIObject, {gameState: _hitCheckingMechanism(currentState, currentGameState, currentBoard, gs, ...gbs,gc,gd,sd,sunk)})
+        updatedAIObject = Object.assign(updatedAIObject, currentAIObject, {gameState: _hitCheckingMechanism(currentState, currentGameState, currentBoard, gs, ...gbs,gc,ge,se,gd,sd,sunk)})
         return updatedAIObject
     }
     else{
@@ -350,7 +398,7 @@ export const updateAIWrapper = function(someFunc,...params){
     return
 }
 
-export const triggerAIEvts = function(somePubFunc=gameEvents.publish, aiReactParams=[getSt, [newBrd,getBrd,getW,getP]],updateStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],getC,getD,setD,shipSunk], sendStatParams=[getSt,somePubFunc=gameEvents.publish, updateState]){
+export const triggerAIEvts = function(somePubFunc=gameEvents.publish, aiReactParams=[getSt, [newBrd,getBrd,getW,getP]],updateStatParams=[getSt, [newBrd,getBrd,getBCont,setBCont,getW,setW,getP,setP],getC,getE,setE,getD,setD,shipSunk], sendStatParams=[getSt,somePubFunc=gameEvents.publish, updateState]){
     somePubFunc('updateAIObj', AIReact, ...aiReactParams)
     somePubFunc('updateAIObj', updateStatus,...updateStatParams)
     somePubFunc('updateAIObj', sendStatus,...sendStatParams)

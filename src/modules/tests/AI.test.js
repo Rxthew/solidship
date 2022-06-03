@@ -323,17 +323,19 @@ describe('testing updateStatus function',() => {
         let damageGb = new gameBoard('D2')
         damageGb.board['D2'].contains = plantingShip()
         damageAI.gameState = damageGb
+        let newlyDamaged = updateStatus(damageAI)
 
-        expect(updateStatus(damageAI).gameState.board['D2'].contains.damage).toBe(1)
-        expect(updateStatus(damageAI).gameState.board['D2'].contains.properties.equipment.type).toBe(['classic (damaged)'])
+        expect(newlyDamaged.gameState.board['D2'].contains.damage).toBe(1)
+        expect(newlyDamaged.gameState.board['D2'].contains.properties.equipment.type).toEqual(['classic (damaged)'])
 
         let damageGb2 = new gameBoard('D3')
         damageAI.gameState = damageGb2
         damageGb2.board['D3'].contains = clearingShip()
         damageGb2.board['D3'].contains.damage = 1
+        let newlyDamaged2 = updateStatus(damageAI)
 
-        expect(updateStatus(damageAI).gameState.board['D3'].contains.damage).toBe(2)
-        expect(updateStatus(damageAI).gameState.board['D3'].contains.properties.equipment.type).toBe(['classic (damaged)'])
+        expect(newlyDamaged2.gameState.board['D3'].contains.damage).toBe(2)
+        expect(newlyDamaged2.gameState.board['D3'].contains.properties.equipment.type).toEqual(['classic (damaged)'])
 
         
     })
@@ -346,24 +348,27 @@ describe('testing updateStatus function',() => {
         damageGb3.board['E1'].contains.damage = 1
         damageGb3.board['E1'].contains.properties.equipment.type = ['modern']
         newDamageAI.gameState = damageGb3
-        expect(updateStatus(newDamageAI).gameState.state).toBe('missile barrage')
-        expect(updateStatus(newDamageAI).gameState.board['E1'].contains.properties.equipment.type).toBe(['modern'])
+        let newlyDamaged3 = updateStatus(newDamageAI)
+        expect(newlyDamaged3.gameState.state).toBe('missile barrage')
+        expect(newlyDamaged3.gameState.board['E1'].contains.properties.equipment.type).toEqual(['modern'])
 
         let damageGb4 = new gameBoard('E3')
         damageGb4.board['E3'].contains = clearingShip()
         damageGb4.board['E3'].contains.damage = 1
         damageGb4.board['E3'].contains.properties.equipment.type = ['modern', 'modern']
         newDamageAI.gameState = damageGb4
-        expect(updateStatus(newDamageAI).gameState.state).toBe('missile barrage')
-        expect(updateStatus(newDamageAI).gameState.board['E3'].contains.properties.equipment.type).toBe(['modern', 'modern'])
+        let newlyDamaged4 = updateStatus(newDamageAI)
+        expect(newlyDamaged4.gameState.state).toBe('missile barrage')
+        expect(newlyDamaged4.gameState.board['E3'].contains.properties.equipment.type).toEqual(['modern', 'modern'])
 
         let damageGb5 = new gameBoard('E4')
         damageGb5.board['E4'].contains = clearingShip()
         damageGb5.board['E4'].contains.damage = 1
         damageGb5.board['E4'].contains.properties.equipment.type = ['modern', 'classic']
         newDamageAI.gameState = damageGb5
-        expect(updateStatus(newDamageAI).gameState.state).toBe('missile hit ship')
-        expect(updateStatus(newDamageAI).gameState.board['E4'].contains.properties.equipment.type).toBe(['classic']) 
+        let newlyDamaged5 = updateStatus(newDamageAI)
+        expect(newlyDamaged5.gameState.state).toBe('missile hit ship')
+        expect(newlyDamaged5.gameState.board['E4'].contains.properties.equipment.type).toEqual(['classic']) 
 
 
         let damageGb6 = new gameBoard('E5')
@@ -371,10 +376,30 @@ describe('testing updateStatus function',() => {
         damageGb6.board['E5'].contains.damage = 1
         damageGb6.board['E5'].contains.properties.equipment.type = ['modern', 'classic (damaged)']
         newDamageAI.gameState = damageGb6
-        expect(updateStatus(newDamageAI).gameState.state).toBe('missile hit ship')
-        expect(updateStatus(newDamageAI).gameState.board['E5'].contains.properties.equipment.type).toBe(['classic (damaged)'])
+        let newlyDamaged6 = updateStatus(newDamageAI)
+        expect(newlyDamaged6.gameState.state).toBe('missile hit ship')
+        expect(newlyDamaged6.gameState.board['E5'].contains.properties.equipment.type).toEqual(['classic (damaged)'])
     
         
+    })
+
+    test('updateStatus w/missile hit on clear/planting on damaged classic equipment type does nothing', () => {
+        let nothingAI = new AIObj()
+        let nothingGb = new gameBoard('F6')
+        nothingGb.board['F6'].contains = plantingShip()
+        nothingGb.board['F6'].contains.properties.equipment.type = ['classic (damaged)']
+        nothingAI.gameState = nothingGb
+        let damagedNothing = updateStatus(nothingAI)
+
+        expect(damagedNothing.gameState.board['F6'].contains.damage).toBe(1)
+        expect(damagedNothing.gameState.board['F6'].contains.properties.equipment.type).toEqual(['classic (damaged)'])
+
+        damagedNothing.gameState.state = 'F6'
+        let moreNothing = updateStatus(damagedNothing)
+
+        expect(moreNothing.gameState.board['F6'].contains.damage).toBe(2)
+        expect(moreNothing.gameState.board['F6'].contains.properties.equipment.type).toEqual(['classic (damaged)'])
+
     })
 
     test('updateStatus w/missile hit increases wreckage count by 2', () => {

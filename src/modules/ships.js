@@ -269,10 +269,9 @@ export const setEquipmentType = function(ship, typeArray){
     if(type.error){
         return {error : type.error}
     }
-    ship.properties.equipment.type = Object.assign(type, typeArray)
+    ship.properties.equipment.type = typeArray
     return ship 
 }
-
 
 
 export const getEquipmentType = function(ship){
