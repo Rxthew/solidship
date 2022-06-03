@@ -13,6 +13,7 @@ const getChangedShip = ships.getChangedShip
 const getShipCount = ships.getShipCount
 const setShipCount = ships.setShipCount
 const getEquipmentType = ships.getEquipmentType
+const setEquipmentType = ships.setEquipmentType
 const setNewShip = ships.setNewShip
 const getMessagingProtocol = ships.getMessagingProtocol
 const getAction = ships.getAction
@@ -21,6 +22,7 @@ const checkEquipment = ships.checkEquipment
 const getIsSunk = ships.getIsSunk
 const getDamage = ships.getDamage
 const setDamage = ships.setDamage
+
 
 
 test('Basic ship returns an object with a damage equalling 0, some new type, and a breakpoint', () => {
@@ -162,6 +164,17 @@ test('getEquipmentType returns object with the equipment type, or error if equip
     delete clear6.properties.equipment.type
     expect(getEquipmentType(clear6)).toEqual({error : 'Ship does not have a valid type property'})
     
+})
+
+test('setEquipmentType sets the equipment type of an object to a new object passed in as the second parameter', () => {
+    let p = planting()
+    setEquipmentType(p,['classic (damaged)'])
+    expect(p.properties.equipment.type).toEqual(['classic (damaged)'])
+    let c = clear()
+    setEquipmentType(c, ['modern','modern'])
+    expect(c.properties.equipment.type).toEqual(['modern','modern'])
+    let l = legacy()
+    expect(setEquipmentType(l,['classic'])).toEqual({error : 'Ship does not have a valid equipment property'})
 })
 
 test('setNewShip takes a ship and some properties and copies them. Properties mentioned should not mutate original ship if modified', () => {
