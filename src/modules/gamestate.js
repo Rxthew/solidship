@@ -22,7 +22,7 @@ export const updateState = function(receiver,newState){
     return receiver
 }
 
-export const isGameOver = function(gs, getB=defaultConfig.getBoard, getCont = defaultConfig.getBoardContains, getW=defaultConfig.getWreckCount, getP=defaultConfig.getPlantCount, publish=gameEvents.publish){
+export const isGameOver = function(gs, getW=defaultConfig.getWreckCount, getP=defaultConfig.getPlantCount, publish=gameEvents.publish, getB=defaultConfig.getBoard, getCont = defaultConfig.getBoardContains){
     if(typeof gs !== 'object'){
         return
     }
@@ -44,16 +44,6 @@ export const isGameOver = function(gs, getB=defaultConfig.getBoard, getCont = de
         return
     }
     return
-    
-}
-
-export const gameLoop = function(playerName){ //this should be some input value from the intial screen. 
-    subscribeAllEvents()
-    gameEvents.publish('initGame', playerName) //Note: re this line , hop over to the UI.js and subscribe renderState to initGame
-    //now you need to make a new initial gameState, update that state for player and ai and then ->
-    //publish(renderGameState, newgs)
-    gameEvents.publish('updateGameState',updateState,newGs)
-    gameEvents.publish('renderGameState',newGs )                                                
     
 }
 
@@ -84,8 +74,6 @@ export const firstHappeningSensor = function(str, publish=gameEvents.publish){
 }
 
 
-
-
 export const subscribeAllEvents = function(){
     gameEvents.subscribe('senseEvent', isGameOver)
     subscribePlayerEvts(gameEvents.subscribe)
@@ -93,7 +81,15 @@ export const subscribeAllEvents = function(){
     subscribeUIEvents(gameEvents.subscribe)
 }
 
-
+export const gameLoop = function(playerName){ //this should be some input value from the intial screen. 
+    subscribeAllEvents()
+    gameEvents.publish('initGame', playerName) //Note: re this line , hop over to the UI.js and subscribe renderState to initGame
+    //now you need to make a new initial gameState, update that state for player and ai and then ->
+    //publish(renderGameState, newgs)
+    gameEvents.publish('updateGameState',updateState,newGs)
+    gameEvents.publish('renderGameState',newGs )                                                
+    
+}
 
 
 
