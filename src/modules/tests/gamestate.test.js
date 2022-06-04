@@ -111,7 +111,7 @@ describe('testing isGameOver',() => {
 
 })
 
-test('testing firstHappeningSensor', () => {
+test('testing firstHappeningSensor should publish only prescribed strings & once only', () => {
     let testArray = []
     let testFunction = function(someKey){
         if(someKey === 'test'){
@@ -134,6 +134,15 @@ test('testing firstHappeningSensor', () => {
     expect(testArray).toEqual(['test passed'])
 
     expect(firstHappeningSensor('test',dumbPublish)).toEqual(['test'])
+    expect(testArray).toEqual(['test passed'])
+
+    expect(firstHappeningSensor('missile hit ship',dumbPublish)).toEqual(['test'])
+    expect(testArray).toEqual(['test passed'])
+
+    expect(firstHappeningSensor('effect clear action',dumbPublish)).toEqual(['test'])
+    expect(testArray).toEqual(['test passed'])
+
+    expect(firstHappeningSensor(5,dumbPublish)).toEqual(['test'])
     expect(testArray).toEqual(['test passed'])
     
     
