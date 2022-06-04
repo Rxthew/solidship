@@ -54,6 +54,32 @@ export const gameLoop = function(playerName){ //this should be some input value 
     
 }
 
+const _eventsToRespondTo = {
+    'test' : () => 'test',
+    'new game' :  () => 
+        'Dispatch : Hello there. We are the dispatch '+
+         'crew.\nOur remit is to explain what is going '+
+         'on\nby providing status updates. '+
+         '\n\nLet us begin by reminding you what the mission'+
+         '\nis and what tasks we need to complete to'+
+         '\nfulfil it',
+    
+}
+
+let _alreadyHappened = []
+
+export const firstHappeningSensor = function(str, publish=gameEvents.publish){
+    if(_alreadyHappened.includes(str)){
+        return _alreadyHappened
+    }
+    else if(Object.keys(_eventsToRespondTo).includes(str)){
+        _alreadyHappened = [..._alreadyHappened,str]
+        publish('renderLog', _eventsToRespondTo[str]())
+        return _alreadyHappened
+    }
+    return _alreadyHappened
+}
+
 
 export const subscribeAllEvents = function(){
     gameEvents.subscribe('senseEvent', isGameOver)

@@ -1,5 +1,5 @@
 import { describe,test,expect} from "@jest/globals";
-import { updateState, isGameOver,gameEvents } from "../gamestate";
+import { updateState, isGameOver,gameEvents,firstHappeningSensor } from "../gamestate";
 import { gameBoard} from '../gameboard'
 
 
@@ -107,9 +107,35 @@ describe('testing isGameOver',() => {
         isGameOver(nearlywin)
         expect(check).toBe(7)
 
-    })
+    })    
 
+})
 
+test('testing firstHappeningSensor', () => {
+    let testArray = []
+    let testFunction = function(someKey){
+        if(someKey === 'test'){
+            return 'test passed'
+        }
+    }
+    let dumbPublish = function(eventName,key){
+        if(eventName === 'renderLog'){
+            testArray.push(testFunction(key))
+        }
+        return testArray
+    }
+    expect(firstHappeningSensor('some test',dumbPublish)).toEqual([])
+    expect(testArray).toEqual([])
+
+    expect(firstHappeningSensor('test',dumbPublish)).toEqual(['test'])
+    expect(testArray).toEqual(['test passed'])
+
+    expect(firstHappeningSensor('some test',dumbPublish)).toEqual(['test'])
+    expect(testArray).toEqual(['test passed'])
+
+    expect(firstHappeningSensor('test',dumbPublish)).toEqual(['test'])
+    expect(testArray).toEqual(['test passed'])
+    
     
 
 })
