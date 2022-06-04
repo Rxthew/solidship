@@ -273,7 +273,7 @@ describe('testing getChangedShip and components to evaluate that they can be use
     })
     let customLegacyShip = new basicLegacyShip();
     let customActions = {action : [...components().action.defense,...components().action.relay]}
-    let customProperties = {properties :  { messagingProtocol : components('clear debris').properties.messagingProtocol.sender}}
+    let customProperties = {properties :  { messagingProtocol : [...components('clear debris').properties.messagingProtocol.extendible, ...components('clear debris').properties.messagingProtocol.relayExtension]}}
 
 
     test('ships can be customised in an ad hoc way with components', () => {
@@ -290,17 +290,17 @@ describe('testing getChangedShip and components to evaluate that they can be use
 
     test('getChangedShip should be able to add a property if it is not there', () => {
         let customMessagingShip = getChangedShip(new basicShip(),['action'],'relay')
-        customMessagingShip = getChangedShip(customMessagingShip,['properties','messagingProtocol'],'sender')
-        expect(customMessagingShip.properties).toEqual({messagingProtocol : ['message', 'relay']})
+        customMessagingShip = getChangedShip(customMessagingShip,['properties','messagingProtocol'],'extendible')
+        expect(customMessagingShip.properties).toEqual({messagingProtocol : ['message']})
 
     })
 
     test('getChangedShip should not mutate the original ship passed through', () => {
         let customMessagingCopy = getChangedShip(new basicShip(),['action'],'relay')
-        customMessagingCopy = getChangedShip(customMessagingCopy,['properties','messagingProtocol'],'sender')
-        let customMessCopy2 = getChangedShip(customMessagingCopy,['properties', 'messagingProtocol'], 'receiver')
-        expect(customMessCopy2.properties).toEqual({messagingProtocol : ['message','trigger']})
-        expect(customMessagingCopy.properties).toEqual({messagingProtocol : ['message','relay']})
+        customMessagingCopy = getChangedShip(customMessagingCopy,['properties','messagingProtocol'],'integrated')
+        let customMessCopy2 = getChangedShip(customMessagingCopy,['properties', 'messagingProtocol'], 'extendible')
+        expect(customMessCopy2.properties).toEqual({messagingProtocol : ['message']})
+        expect(customMessagingCopy.properties).toEqual({messagingProtocol :'message'})
         
     })
 

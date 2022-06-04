@@ -286,8 +286,11 @@ const standardShipStore = {
     'Legacy' : ships.legacyShip,
     'Planting' : ships.plantingShip,
     'Defense' : ships.defenseShip,
-    'Relay' : ships.relayShip,
     'Clearing' : ships.clearingShip
+ //**Relay method below has been retained here for the sake of completion only. In practice, this is not available.*/
+ // 'Relay' : ships.relayShip,
+ //***/
+    
 }
 
 const _shipStore = function(shipsObj=standardShipStore){

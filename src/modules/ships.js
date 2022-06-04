@@ -39,9 +39,11 @@ const _shipMethods = {
     defense : function(){
         return  new _templateForCustomShipTypes(['launch decoys'], {messagingProtocol: 'defense'})
     },
+    //**Relay method below has been retained here for the sake of completion only. In practice, this is is not available.*/
     relay : function(){
         return  new _templateForCustomShipTypes(['message'], {messagingProtocol: ['message','relay']})
     },
+    //***/
     clear : function(){
         return new _templateForCustomShipTypes(['clear debris'], {
             messagingProtocol: 'clear',
@@ -87,9 +89,11 @@ export const defenseShip = function (){
     return Object.assign(_shipMethods.defense(), new basicShip('defense',3))
 }
 
-export const relayShip = function(){
+//**Relay method below has been retained here for the sake of completion only. In practice, this is not available.*/
+export const relayShip = function(){            
     return Object.assign(_shipMethods.relay(), new basicShip('relay',3))
 }
+//***/
 
 export const clearingShip = function(){
     return Object.assign(_shipMethods.clear(), new basicShip('clear',3))
@@ -117,8 +121,10 @@ export const components = function(act){
         properties : {
             messagingProtocol : {
                 integrated : _actionToProtocol[act],
-                receiver : [_actionToProtocol[act], 'trigger'],
-                sender : [_actionToProtocol[act], 'relay'],
+//**Relay methods below have been retained here for the sake of completion only. In practice, these are not available.*/
+//                receiver : [_actionToProtocol[act], 'trigger'],
+//                sender : [_actionToProtocol[act], 'relay'],
+//***/
                 extendible : [_actionToProtocol[act]],
                 receiverExtension : ['trigger'],
                 relayExtension : ['relay']                   
