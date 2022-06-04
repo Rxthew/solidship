@@ -107,7 +107,13 @@ describe('testing isGameOver',() => {
         isGameOver(nearlywin)
         expect(check).toBe(7)
 
-    })    
+    })
+    
+    test('expect nothing to happen if anything other than an object is passed as a parameter', () => {
+        isGameOver(12)
+        isGameOver('testing')
+        expect(check).toBe(7)
+    })
 
 })
 
@@ -143,6 +149,9 @@ test('testing firstHappeningSensor should publish only prescribed strings & once
     expect(testArray).toEqual(['test passed'])
 
     expect(firstHappeningSensor(5,dumbPublish)).toEqual(['test'])
+    expect(testArray).toEqual(['test passed'])
+
+    expect(firstHappeningSensor({},dumbPublish)).toEqual(['test'])
     expect(testArray).toEqual(['test passed'])
     
     

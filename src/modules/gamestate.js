@@ -23,6 +23,9 @@ export const updateState = function(receiver,newState){
 }
 
 export const isGameOver = function(gs, getB=defaultConfig.getBoard, getCont = defaultConfig.getBoardContains, getW=defaultConfig.getWreckCount, getP=defaultConfig.getPlantCount, publish=gameEvents.publish){
+    if(typeof gs !== 'object'){
+        return
+    }
     const currentWreckage = getW(gs)
     const currentPlants = getP(gs)
     const board = getB(gs)
@@ -79,6 +82,8 @@ export const firstHappeningSensor = function(str, publish=gameEvents.publish){
     }
     return _alreadyHappened
 }
+
+
 
 
 export const subscribeAllEvents = function(){
