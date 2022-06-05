@@ -61,7 +61,7 @@ const _eventsToRespondTo = {
 
 let _alreadyHappened = []
 
-export const firstHappeningSensor = function(str, publish=gameEvents.publish){
+export const firstHappeningSensor = function(str, publish=gameEvents.publish){ 
     if(_alreadyHappened.includes(str)){
         return _alreadyHappened
     }
@@ -71,6 +71,52 @@ export const firstHappeningSensor = function(str, publish=gameEvents.publish){
         return _alreadyHappened
     }
     return _alreadyHappened
+}
+
+export let days = 0
+
+export const logCounts = function(gs,getW=defaultConfig.getWreckCount,getP=defaultConfig.getPlantCount,publish=gameEvents.publish){
+    if(typeof gs !== 'object'){
+        return
+    }
+    const currentCounts =  [getW(gs), getP(gs),++days]
+    publish('renderLog',currentCounts)
+
+}
+
+const _thresholds = ( () => {
+    const _wreckageThresholds = new Map()
+    const _plantThresholds = new Map()
+    const _daysThresholds = new Map()
+
+    _wreckageThresholds.set(1,'first wreckage')
+    _plantThresholds.set(1,'first plant')
+    _daysThresholds.set(1,'first day') 
+
+
+    return [
+        _wreckageThresholds,
+        _plantThresholds,
+        _daysThresholds
+    ]
+
+})()
+
+export const thresholdSensor = function(gs,getW=defaultConfig.getWreckCount,getP=defaultConfig.getPlantCount,publish=gameEvents.publish){
+    if(typeof gs !== 'object'){
+        return
+    }
+    const currentCounts =  [getW(gs), getP(gs),days]
+    for(let ind = 0; ind < currentCounts.length; ind++){
+        let val = currentCounts[ind]
+        let thresholdOrder = _thresholds[ind].keys()
+        let valueToCheck = thresholdOrder.next().value
+        if(valueToCheck <= val){
+            publish('senseEvent',_thresholds[ind].get(valueToCheck))
+            _thresholds[ind].delete(valueToCheck)
+        }       
+    }
+    return
 }
 
 

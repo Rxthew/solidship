@@ -1,8 +1,6 @@
 import { describe,test,expect} from "@jest/globals";
-import { updateState, isGameOver,gameEvents,firstHappeningSensor } from "../gamestate";
+import { updateState, isGameOver,gameEvents,firstHappeningSensor,logCounts,thresholdSensor, days } from "../gamestate";
 import { gameBoard} from '../gameboard'
-
-
 
 
 test('state of gameBoard updates', () => {
@@ -153,7 +151,47 @@ test('testing firstHappeningSensor should publish only prescribed strings & once
 
     expect(firstHappeningSensor({},dumbPublish)).toEqual(['test'])
     expect(testArray).toEqual(['test passed'])
-    
-    
+      
 
+})
+
+test('testing logCounts', () => {
+    
+    let testArray2 = []
+    let logCountsBoard = new gameBoard()
+    let dumbLog = function(obj){
+        if(obj[0] === logCountsBoard.wreckage && obj[1] === logCountsBoard.plants && obj[2] === days){
+            testArray2.push(0)
+        }
+        return
+    }
+    gameEvents.subscribe('renderLog',dumbLog)
+    logCounts(logCountsBoard)
+    expect(testArray2).toEqual([0])
+
+})
+
+test('testing thresholdSensor -> sense event fires if next threshold is reached or exceeded (does nothing if object not passed in as first param)', () => {
+    let testArray3 = []
+    let thresholdGb = new gameBoard()
+    let dumbSense = function(str){
+        if(str.substring(0,5) === 'first'){
+            testArray3.push(1)
+        }
+        return testArray3
+    }
+    gameEvents.subscribe('senseEvent', dumbSense)
+    thresholdSensor(thresholdGb)
+    expect(testArray3).toEqual([])
+    thresholdGb.wreckage = 2
+    thresholdGb.plants = 1
+    thresholdSensor(thresholdGb)
+    expect(testArray3).toEqual([1,1])
+    logCounts(thresholdGb)
+    thresholdSensor(thresholdGb)
+    expect(testArray3).toEqual([1,1,1])
+    thresholdSensor(22)
+    thresholdSensor('missile hit ship')
+    expect(testArray3).toEqual([1,1,1])
+    
 })
