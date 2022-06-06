@@ -73,13 +73,13 @@ export const firstHappeningSensor = function(str, publish=gameEvents.publish){
     return _alreadyHappened
 }
 
-export let days = 0
+export let gameTime = {days : 0}
 
 export const logCounts = function(gs,getW=defaultConfig.getWreckCount,getP=defaultConfig.getPlantCount,publish=gameEvents.publish){
     if(typeof gs !== 'object'){
         return
     }
-    const currentCounts =  [getW(gs), getP(gs),++days]
+    const currentCounts =  [getW(gs), getP(gs),++gameTime.days]
     publish('renderLog',currentCounts)
 
 }
@@ -106,7 +106,7 @@ export const thresholdSensor = function(gs,getW=defaultConfig.getWreckCount,getP
     if(typeof gs !== 'object'){
         return
     }
-    const currentCounts =  [getW(gs), getP(gs),days]
+    const currentCounts =  [getW(gs), getP(gs),gameTime.days]
     for(let ind = 0; ind < currentCounts.length; ind++){
         let val = currentCounts[ind]
         let thresholdOrder = _thresholds[ind].keys()

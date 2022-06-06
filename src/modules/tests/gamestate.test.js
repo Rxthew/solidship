@@ -1,5 +1,5 @@
 import { describe,test,expect} from "@jest/globals";
-import { updateState, isGameOver,gameEvents,firstHappeningSensor,logCounts,thresholdSensor, days } from "../gamestate";
+import { updateState, isGameOver,gameEvents,firstHappeningSensor,logCounts,thresholdSensor, gameTime } from "../gamestate";
 import { gameBoard} from '../gameboard'
 
 
@@ -155,19 +155,24 @@ test('testing firstHappeningSensor should publish only prescribed strings & once
 
 })
 
-test('testing logCounts', () => {
-    
+test('testing logCounts -> fires renderLog with array of values to be rendered, if param is not an object then does nothing', () => {
     let testArray2 = []
     let logCountsBoard = new gameBoard()
     let dumbLog = function(obj){
-        if(obj[0] === logCountsBoard.wreckage && obj[1] === logCountsBoard.plants && obj[2] === days){
+        if(obj[0] === logCountsBoard.wreckage && obj[1] === logCountsBoard.plants && obj[2] === gameTime.days){
             testArray2.push(0)
         }
         return
     }
     gameEvents.subscribe('renderLog',dumbLog)
+    logCounts('default action')
+    expect(testArray2).toEqual([])
     logCounts(logCountsBoard)
     expect(testArray2).toEqual([0])
+    logCounts('missile sunk ship')
+    expect(testArray2).toEqual([0])
+    gameTime.days = 0
+    
 
 })
 
