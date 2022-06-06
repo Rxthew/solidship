@@ -272,7 +272,7 @@ describe('testing effectFarm & effectClear', () => {
 describe('testing effectPlayerAction("ePA")', () => {
     let num = 0
     const publisherDummy = function(str){
-        let evts = ['', 'renderError','updateGameState','triggerAI']
+        let evts = ['', 'renderLog','updateGameState','triggerAI']
         num += evts.indexOf(str)
         return 
     }

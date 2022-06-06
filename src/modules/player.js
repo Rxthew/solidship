@@ -266,12 +266,12 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                 let ship = getContains(board,loc)
                 
                 if(Object.prototype.hasOwnProperty.call(checkMess(ship),'error')){
-                    pub('renderError',checkMess(ship))
+                    pub('renderLog',checkMess(ship).error,'error')
                     pub('triggerAI')
                     return
                 }
                 if(Object.prototype.hasOwnProperty.call(checkEq(ship,actionChoice),'error')){
-                    pub('renderError',checkEq(ship, actionChoice))
+                    pub('renderLog',checkEq(ship, actionChoice).error,'error')
                     pub('triggerAI')
                     return
                 }               
@@ -280,7 +280,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                     'seagrass planting' : function(msg=false,location=loc,brd=board,gs=currState){
                         let newGs1 = effectFarm(brd,location,gs)
                         if(Object.prototype.hasOwnProperty.call(newGs1,'error')){
-                            pub('renderError',newGs1)
+                            pub('renderLog',newGs1.error,'error')
                             pub('triggerAI')
                             return
                         }
@@ -291,7 +291,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                     'clear debris' : function(msg=false,location=loc,brd=board,gs=currState){
                         let newGs2 = effectClear(brd,location,gs)
                         if(Object.prototype.hasOwnProperty.call(newGs2,'error')){
-                            pub('renderError',newGs2)
+                            pub('renderLog',newGs2.error,'error')
                             pub('triggerAI')
                             return
                         }
@@ -304,7 +304,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                         let currWreck = getWr(gs)
                         let currPl = getPl(gs)
                         if(Object.prototype.hasOwnProperty.call(newGs3,'error')){
-                            pub('renderError',newGs3)
+                            pub('renderLog',newGs3.error,'error')
                             pub('triggerAI')
                             return
                         }
@@ -337,7 +337,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                             for(let targets of orbit){
                                 let [targetShip,action,targetLoc] = targets
                                 if(action === 'message' || !Array.isArray(getMess(targetShip)) || getMess(targetShip)[1] !== 'trigger'){
-                                    pub('renderError', {error: 'Ship messaging protocol is not configured to be triggered'}) 
+                                    pub('renderLog', 'Ship messaging protocol is not configured to be triggered','error') 
                                     continue
                                 }
                                 actObj[action](true,targetLoc,msgBoard(),msgCurrState())  
@@ -345,7 +345,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
                         pub('triggerAI')
                         return
                         }
-                        pub('renderError',{error: 'Ship messaging protocol is not configured for messaging'})
+                        pub('renderLog','Ship messaging protocol is not configured for messaging','error')
                         pub('triggerAI')
                         return                        
                     },
@@ -367,7 +367,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
             let currWreck = getWr(currState)
             let currPl = getPl(currState)
             if(Object.prototype.hasOwnProperty.call(newGs4,'error')){
-                pub('renderError',newGs4)
+                pub('renderLog',newGs4.error,'error')
                 pub('triggerAI')
                 return
             }
@@ -385,7 +385,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
             let currWreck = getWr(currState)
             let currPl = getPl(currState)
             if(Object.prototype.hasOwnProperty.call(newGs5,'error')){
-                pub('renderError',newGs5)
+                pub('renderLog',newGs5.error,'error')
                 pub('triggerAI')
                 return
             }
@@ -398,7 +398,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
             const [board,loc,changeConf,currState] = paramArray
             let newGs6 = upgradeShip(board,loc,changeConf,currState)
             if(Object.prototype.hasOwnProperty.call(newGs6,'error')){
-                pub('renderError',newGs6)
+                pub('renderLog',newGs6.error,'error')
                 pub('triggerAI')
                 return
             }
@@ -412,7 +412,7 @@ export const effectPlayerAction = function(instruction, params, pub=gameEvents.p
             const [board,loc,changeConf,currState] = paramArray
             let newGs7 = upgradeShip(board,loc,changeConf,currState)
             if(Object.prototype.hasOwnProperty.call(newGs7,'error')){
-                pub('renderError',newGs7)
+                pub('renderLog',newGs7.error,'error')
                 pub('triggerAI')
                 return
             }
@@ -435,7 +435,7 @@ const _extendShipSequence = function(paramsArray, ups=updateState, pub=gameEvent
     paramsArray = [...paramsArray, player1.sessionPlayer.gameState]
     let newGb = upgradeShip(...paramsArray)
     if(Object.prototype.hasOwnProperty.call(newGb,'error')){
-        pub('renderError',newGb)
+        pub('renderLog',newGb.error,'error')
         pub('triggerAI')
         return
     }

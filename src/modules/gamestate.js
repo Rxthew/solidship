@@ -122,6 +122,9 @@ export const thresholdSensor = function(gs,getW=defaultConfig.getWreckCount,getP
 
 export const subscribeAllEvents = function(){
     gameEvents.subscribe('senseEvent', isGameOver)
+    gameEvents.subscribe('senseEvent', firstHappeningSensor)
+    gameEvents.subscribe('senseEvent', logCounts)
+    gameEvents.subscribe('senseEvent', thresholdSensor)
     subscribePlayerEvts(gameEvents.subscribe)
     subscribeAIEvts(gameEvents.subscribe)
     subscribeUIEvents(gameEvents.subscribe)
