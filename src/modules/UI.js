@@ -801,3 +801,36 @@ export const subscribeUIEvents = function(someSubFunc=gameEvents.subscribe){
 
     
 }
+
+export const printLog = function(str,type='regular'){
+    let printMode = {
+        regular : function(){
+            //add  text as a span
+
+        },
+        error : function(){
+            //add text as a span with classList as an error.
+            
+
+        }
+
+    }
+    const solidImplement = function(type){
+        printMode['regular']()
+        document.querySelector(`#${type}ltr`).classList.contains('collected') ? document.querySelector(`#${type}ltr`).classList.add('collected') : false
+    }
+    type.length > 1 ? printMode[type]() : solidImplement(type)
+    return
+
+}
+
+export const printValues = function(counts){
+    if(Array.isArray(counts)){
+        let globalWreckage = document.querySelector('#globalWreckage')
+        let globalPlants = document.querySelector('#globalPlants')
+        let days = document.querySelector('#days')
+        globalWreckage.textContent, globalPlants.textContent, days.textContent = counts
+    }
+    return
+
+}
