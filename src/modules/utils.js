@@ -43,3 +43,26 @@ export const camelPhraseParser = function(str){
     }
     return str   
 }
+
+const _fetchAsset = async function(assetName){
+    try {
+        const image = new Request(`../src/assets/${assetName}`)
+        const response = await fetch(image)
+        const data = await response.text()
+        return data
+    }
+    catch (error){
+        console.log(error)
+
+    }
+}
+
+export const renderImage = async function(node,assetName){
+    try {
+        const data = await _fetchAsset(assetName)
+        node.innerHTML = data
+    }
+    catch(error){
+        console.log(error)
+    }
+}
