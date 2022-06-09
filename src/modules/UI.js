@@ -1,7 +1,7 @@
 import { defaultConfig} from './gameboard.js'
 import { gameEvents } from './gamestate.js'
 import * as ships from './ships.js'
-import { camelPhraseParser } from './utils.js'
+import { camelPhraseParser, renderImage } from './utils.js'
 
 const _buildBoard = function(){
     const lets = ['A','B','C','D','E','F']
@@ -772,6 +772,16 @@ const renderPlayerEffect = function(){
     return
 }
 
+const _renderShipImage = async function(node,assetName){
+    try {
+        node.classList.contains('ship') ? await renderImage(node,assetName) : false
+
+    }
+    catch(error){
+        console.log(error)
+    }
+}
+
 
 export const renderState = function(someGameState, someGetCont=defaultConfig.getBoardContains, gb=defaultConfig.getBoard, publish=gameEvents.publish){
     let someGb = gb(someGameState)
@@ -786,7 +796,7 @@ export const renderState = function(someGameState, someGetCont=defaultConfig.get
     for (let elem of Object.keys(someGb)){ 
         if(document.querySelector(`#${elem}`) && someGetCont(someGb,elem)){
             document.querySelector(`#${elem}`).classList.add('ship')
-            document.querySelector(`#${elem}`).textContent = 'S' //to modify later
+            _renderShipImage(document.querySelector(`#${elem}`),'ship.svg')
             document.querySelector(`#${elem}`).onclick = function(event) {
             publish('viewShip',event,someGameState,someGetCont,gb);
             } 
