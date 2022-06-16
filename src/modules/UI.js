@@ -56,7 +56,7 @@ const createMainConsole = function(){
     }
     let mainConsole = document.createElement('div')
     mainConsole.classList.add('mainConsole')
-    document.body.appendChild(mainConsole)
+    document.querySelector('main').appendChild(mainConsole)
     return mainConsole
 
 }
@@ -790,7 +790,7 @@ export const renderState = function(someGameState, someGetCont=defaultConfig.get
     if(document.querySelector('.gamezone')){
         document.querySelector('.gamezone').remove()
     }
-    document.body.appendChild(newBoard)
+    document.querySelector('main').appendChild(newBoard)
     createMainConsole()
     createOptionsConsole(null,someGameState,someGetCont,gb)
     _skipTurn()
@@ -807,12 +807,16 @@ export const renderState = function(someGameState, someGetCont=defaultConfig.get
 
 export const createDispatchLog = function(){
     const dispatchElements = (function(){
-        document.createElement('section')
-        document.createElement('textarea')
+        const logContainer = document.createElement('section')
+        const log = document.createElement('div')
         return {
-
+            logContainer,
+            log,
         }
     })()
+
+    document.querySelector('main').appendChild(dispatchElements.logContainer)
+    dispatchElements.logContainer.appendChild(dispatchElements.log)
 }
 
 export const printLog = function(str,type='regular'){
