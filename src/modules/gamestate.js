@@ -50,12 +50,26 @@ export const isGameOver = function(gs, getW=defaultConfig.getWreckCount, getP=de
 const _eventsToRespondTo = {
     'test' : () => 'test',
     'new game' :  () => 
-        'Dispatch : Hello there. We are the dispatch '+
+        'Dispatch : Hello there. We are the Dispatch '+
          'crew.\nOur remit is to explain what is going '+
          'on\nby providing status updates. '+
          '\n\nLet us begin by reminding you what the mission'+
          '\nis and what tasks we need to complete to'+
-         '\nfulfil it',
+         '\nfulfil it.'+
+         '\n\nAs you know these are international waters, and'+
+         '\nwe are looking to cultivate seagrass on this seabed.'+
+         '\nYou see, seagrass accounts for 10% of the ocean\'s'+ //link this part
+         '\ncapacity to store carbon. This aligns perfectly with'+
+         '\nour goal to fight climate change.'+
+         '\n\nIt is also important for marine conservation and'+
+         '\nbiodiversity, and this location has recently been added'+
+         '\nto the growing index of our Restoration Plan. With this,'+
+         '\nwe shall be making an impact on a global level.'+
+         '\n\nWe are making good progress, but you see...There\'s a problem'+
+         '\n\nBig Oil has an interest in this territory because they believe'+
+         '\nthat there is petroleum underneath the sea floor.'+ 
+         '\n\nNaturally, they are determined to mine the area to the point of'+
+         '\nan ecological disaster.',
     
 }
 
