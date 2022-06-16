@@ -1,5 +1,6 @@
+import { format } from 'prettier'
 import { defaultConfig} from './gameboard.js'
-import { gameEvents } from './gamestate.js'
+import { gameEvents, gameLoop } from './gamestate.js'
 import * as ships from './ships.js'
 import { camelPhraseParser, renderImage } from './utils.js'
 
@@ -37,6 +38,7 @@ const _buildBoard = function(){
     }
     return gameBoard
 }
+
 
 const _skipTurn = function(){
     let skip = document.createElement('button')
@@ -843,4 +845,57 @@ export const printValues = function(counts){
     }
     return
 
+}
+
+export const landingPage = function(){
+
+    const initNodes = (function(){
+        const gameContainer = document.createElement('div')
+        const header = document.createElement('header')
+        const playerNameForm = document.createElement('form')
+        const playerLabel = document.createElement('label')
+        const playerInput = document.createElement('input')
+        const playerSubmit = document.createElement('button')
+        return {
+            gameContainer,
+            header,
+            playerNameForm,
+            playerLabel,
+            playerInput,
+            playerSubmit
+        }
+    })()
+    
+    const setTextContent = function(){
+        initNodes.header.textContent = 'SOLIDSHIP' 
+        initNodes.playerLabel.textContent = 'What is your name?'
+        initNodes.playerSubmit.textContent = 'Submit'
+    }
+
+    const setAttributes = function(){
+        initNodes.playerLabel.setAttribute('for','playerName')
+        initNodes.playerInput.id = 'playerName'
+        initNodes.playerInput.setAttribute('required','required')
+        initNodes.playerInput.setAttribute('autocomplete','off')
+        initNodes.playerSubmit.type = 'submit'
+        initNodes.playerNameForm.onsubmit = function(){
+            initNodes.playerNameForm.remove()
+            gameLoop(initNodes.playerInput.value)
+        }
+
+    }
+
+    const appendNodes = function(){
+        document.body.appendChild(initNodes.gameContainer)
+        initNodes.gameContainer.appendChild(initNodes.header)
+        initNodes.gameContainer.appendChild(initNodes.playerNameForm)
+        initNodes.playerNameForm.appendChild(initNodes.playerLabel)
+        initNodes.playerNameForm.appendChild(initNodes.playerInput)
+        initNodes.playerNameForm.appendChild(initNodes.playerSubmit)
+    }
+
+    setTextContent()
+    setAttributes()
+    appendNodes()
+    return
 }

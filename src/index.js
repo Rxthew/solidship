@@ -1,4 +1,5 @@
-import { gameLoop } from "./modules/gamestate";
+import { landingPage } from "./modules/UI";
 import './solidstyles.css'
 
-gameLoop('player')
+
+landingPage()
