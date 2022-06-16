@@ -805,12 +805,14 @@ export const renderState = function(someGameState, someGetCont=defaultConfig.get
     }   
 }
 
-export const subscribeUIEvents = function(someSubFunc=gameEvents.subscribe){
-    someSubFunc('renderGameState', renderState)
-    someSubFunc('viewShip', displayShip)
-    someSubFunc('viewShip', createOptionsConsole)
+export const createDispatchLog = function(){
+    const dispatchElements = (function(){
+        document.createElement('section')
+        document.createElement('textarea')
+        return {
 
-    
+        }
+    })()
 }
 
 export const printLog = function(str,type='regular'){
@@ -851,6 +853,7 @@ export const landingPage = function(){
     const initNodes = (function(){
         const gameContainer = document.createElement('main')
         const header = document.createElement('header')
+        const headline = document.createElement('h1')
         const playerNameForm = document.createElement('form')
         const formContainer = document.createElement('div')
         const playerLabel = document.createElement('label')
@@ -859,6 +862,7 @@ export const landingPage = function(){
         return {
             gameContainer,
             header,
+            headline,
             playerNameForm,
             formContainer,
             playerLabel,
@@ -868,7 +872,7 @@ export const landingPage = function(){
     })()
     
     const setTextContent = function(){
-        initNodes.header.textContent = 'SOLIDSHIP' 
+        initNodes.headline.textContent = 'SOLIDSHIP' 
         initNodes.playerLabel.textContent = 'What is your name?'
         initNodes.playerSubmit.textContent = 'Submit'
     }
@@ -891,6 +895,7 @@ export const landingPage = function(){
         document.body.appendChild(initNodes.gameContainer)
         initNodes.gameContainer.appendChild(initNodes.header)
         initNodes.gameContainer.appendChild(initNodes.playerNameForm)
+        initNodes.header.appendChild(initNodes.headline)
         initNodes.playerNameForm.appendChild(initNodes.playerLabel)
         initNodes.playerNameForm.appendChild(initNodes.formContainer)
         initNodes.formContainer.appendChild(initNodes.playerInput)
@@ -901,4 +906,13 @@ export const landingPage = function(){
     setAttributes()
     appendNodes()
     return
+}
+
+export const subscribeUIEvents = function(someSubFunc=gameEvents.subscribe){
+    someSubFunc('initGame',createDispatchLog)
+    someSubFunc('renderGameState', renderState)
+    someSubFunc('viewShip', displayShip)
+    someSubFunc('viewShip', createOptionsConsole)
+
+    
 }
