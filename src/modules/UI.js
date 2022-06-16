@@ -1,4 +1,3 @@
-import { format } from 'prettier'
 import { defaultConfig} from './gameboard.js'
 import { gameEvents, gameLoop } from './gamestate.js'
 import * as ships from './ships.js'
@@ -877,6 +876,7 @@ export const landingPage = function(){
     const setAttributes = function(){
         initNodes.playerLabel.setAttribute('for','playerName')
         initNodes.playerInput.id = 'playerName'
+        initNodes.playerInput.setAttribute('name','playerName')
         initNodes.playerInput.setAttribute('required','required')
         initNodes.playerInput.setAttribute('autocomplete','off')
         initNodes.playerSubmit.type = 'submit'
