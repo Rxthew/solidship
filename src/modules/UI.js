@@ -850,9 +850,10 @@ export const printValues = function(counts){
 export const landingPage = function(){
 
     const initNodes = (function(){
-        const gameContainer = document.createElement('div')
+        const gameContainer = document.createElement('main')
         const header = document.createElement('header')
         const playerNameForm = document.createElement('form')
+        const formContainer = document.createElement('div')
         const playerLabel = document.createElement('label')
         const playerInput = document.createElement('input')
         const playerSubmit = document.createElement('button')
@@ -860,6 +861,7 @@ export const landingPage = function(){
             gameContainer,
             header,
             playerNameForm,
+            formContainer,
             playerLabel,
             playerInput,
             playerSubmit
@@ -890,8 +892,9 @@ export const landingPage = function(){
         initNodes.gameContainer.appendChild(initNodes.header)
         initNodes.gameContainer.appendChild(initNodes.playerNameForm)
         initNodes.playerNameForm.appendChild(initNodes.playerLabel)
-        initNodes.playerNameForm.appendChild(initNodes.playerInput)
-        initNodes.playerNameForm.appendChild(initNodes.playerSubmit)
+        initNodes.playerNameForm.appendChild(initNodes.formContainer)
+        initNodes.formContainer.appendChild(initNodes.playerInput)
+        initNodes.formContainer.appendChild(initNodes.playerSubmit)
     }
 
     setTextContent()

@@ -1,5 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Metal+Mania&display=swap');
 
+
+main {
+    display : flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center
+}
+
 header {
     font-family: 'Metal Mania','cursive';
     font-size: x-large
