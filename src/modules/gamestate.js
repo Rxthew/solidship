@@ -51,25 +51,51 @@ const _eventsToRespondTo = {
     'test' : () => 'test',
     'new game' :  () => 
         'Dispatch : Hello there. We are the Dispatch '+
-         'crew.\nOur remit is to explain what is going '+
-         'on\nby providing status updates. '+
+         'crew. Our remit is to explain what is going '+
+         'on by providing status updates.'+
          '\n\nLet us begin by reminding you what the mission'+
-         '\nis and what tasks we need to complete to'+
-         '\nfulfil it.'+
-         '\n\nAs you know these are international waters, and'+
-         '\nwe are looking to cultivate seagrass on this seabed.'+
-         '\nYou see, seagrass accounts for 10% of the ocean\'s'+ //link this part
-         '\ncapacity to store carbon. This aligns perfectly with'+
-         '\nour goal to fight climate change.'+
-         '\n\nIt is also important for marine conservation and'+
-         '\nbiodiversity, and this location has recently been added'+
-         '\nto the growing index of our Restoration Plan. With this,'+
-         '\nwe shall be making an impact on a global level.'+
+         'is and what tasks we need to complete to'+
+         'fulfil it. '+
+         '\n\nAs you know these are international waters, and '+
+         'we are looking to cultivate seagrass on this seabed. '+
+         'You see, seagrass accounts for 10% of the ocean\'s '+ //link this part
+         'capacity to store carbon. This aligns perfectly with '+
+         'our goal to fight climate change.'+
+         '\n\nIt is also important for marine conservation and '+
+         'biodiversity, and this location has recently been added '+
+         'to the growing index of our Restoration Plan. With this, '+
+         'we shall be making an impact on a global level.'+
          '\n\nWe are making good progress, but you see...There\'s a problem'+
-         '\n\nBig Oil has an interest in this territory because they believe'+
-         '\nthat there is petroleum underneath the sea floor.'+ 
-         '\n\nNaturally, they are determined to mine the area to the point of'+
-         '\nan ecological disaster.',
+         '\n\nBig Oil has an interest in this territory because they believe '+
+         'that there is petroleum underneath the sea floor.'+ 
+         '\n\nNaturally, they are determined to mine the area to the point of '+
+         'an ecological disaster. We have lawyers doing their best to settle '+
+         'the matter legally, but it is taking a long time. In the mean time '+
+         'a naval paramilitary group has been firing at our vessels. Big Oil '+
+         'is doing everything to bully us off the area.'+
+         '\n\nThat is where you come in. With you on our side, we can turn the'+
+         'tide against them. We have provided you with two ships to start with '+
+         'They are legacy warships, but we are a peaceful organisation and that '+
+         'means that we cannot engage violently, therefore these have been stripped '+
+         'of their attacking capacity. Their value is that they have a relatively high '+
+         'breakpoint so they can endure more damage than a standard ship. '+
+         '\n\nTo win this we need to achieve 3 objectives:'+
+         '\n\n1. Numbers. We fill the whole area with our ships.'+
+         '\n\n2. Protect the sea. We need to keep wreckage down to a minimum of X units.'+ //replace X
+         '\n\n3. Continue the restoration effort. We need to have a minimum of Y units of seagrass'+//replace Y
+         '\n\n We do this, and victory is ours, but if the enemy sinks all our ships, or the'+
+         'wreckage rises above Z units then Big Oil will have won.'+//replace Z
+         '\n\nThe odds are stacked against us, so we need to minimise time spent building and maintaining ships. '+
+         'Remember, each day is precious so we must not waste them. To help you with designing the ships, we have '+
+         'hired two consultants who will assist you during this campaign. Meet Tim and Audrey:'+
+         '\n\nTim: Hello there! I\'m Tim.'+
+         '\n\nAudrey: and this is Audrey. Pleasure to meet you.'+
+         '\n\nDispatch: These two come from different backgrounds, take their advice with a grain of salt they will '+
+         'sometimes disagree, and that is when you have to make a choice, but when they do agree then it is generally '+
+         'a good idea to go along with it. You can also choose to discard their opinions completely if you wish.'+
+         '\n\nWe shall leave you to it for now, but have a click around the consoles and we\'ll give you guidance on what you\re '+
+         'working with, depending on what you click.'
+          
     
 }
 
