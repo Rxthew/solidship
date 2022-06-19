@@ -49,6 +49,7 @@ export const isGameOver = function(gs, getW=defaultConfig.getWreckCount, getP=de
 
 const _eventsToRespondTo = {
     'test' : () => 'test',
+
     'new game' :  () => 
         'Dispatch : Hello there. We are the Dispatch '+
          'crew. Our remit is to explain what is going '+
@@ -94,7 +95,16 @@ const _eventsToRespondTo = {
          'sometimes disagree, and that is when you have to make a choice, but when they do agree then it is generally '+
          'a good idea to go along with it. You can also choose to discard their opinions completely if you wish.'+
          '\n\nWe shall leave you to it for now, but have a click around the consoles and we\'ll give you guidance on what you\re '+
-         'working with, depending on what you click.'
+         'working with, depending on what you click.',
+    
+    'missile missed ship' : () => 
+        'Dispatch : It looks like the enemy has missed our ship. When that happens you will be getting a "missile missed ship" '+
+        'status from us here in the log. \n\nThis is the best case scenario for us when the enemy attacks, but it does not come '+
+        'a cost. Observe that the wreckage count has gone up. Therefore even when the enemy is off the mark, we still pay a '+
+        'price since our mission is the protection of the seabed. Our fleet is just the means to achieve that objective.'+
+        '\n\nNot to worry. I am sure that our clearing ships are up to the task. Right?'
+
+    
           
     
 }
