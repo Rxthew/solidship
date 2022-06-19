@@ -102,8 +102,27 @@ const _eventsToRespondTo = {
         'status from us here in the log. \n\nThis is the best case scenario for us when the enemy attacks, but it does not come '+
         'a cost. Observe that the wreckage count has gone up. Therefore even when the enemy is off the mark, we still pay a '+
         'price since our mission is the protection of the seabed. Our fleet is just the means to achieve that objective.'+
-        '\n\nNot to worry. I am sure that our clearing ships are up to the task. Right?'
+        '\n\nNot to worry. I am sure that our clearing ships are up to the task. Right?',
 
+    'missile hit ship' : () => 
+        'Dispatch : It looks like the enemy has hit one of our ships. When that happens you will be getting a "missile hit ship " '+
+        'status from us here in the log. \n\nThis is not good. You should view the ship by observing the enemy\'s last target in the '+
+        'bar above the battle grid and clicking on that location. There you can compare the ship\'s "Damage" with its "Breakpoint".'+ //review location of 'last target'
+        '\n\nRemember if the damage matches or exceeds the breakpoint then that ship will sink, so be careful.'+
+        '\n\nTim: What we ought to do here is move the ship. The enemy likes to hit the same target after getting a hit.'+
+        '\n\nAudrey: True, but this is not always the case. The data suggests that they tend to send missiles in the same area'+
+        'at times too.'+
+        '\n\nTim: They only do this occasionally though. Most of the times they target the same location.'+
+        '\n\nAudrey: Yes. That is the full view. Anyway, the point is moving a ship can work most of the time, but it is no guarantee. '+
+        'The only way to guarantee safety is to have the ship come under the protection of defense ship. \n\nTo do this, the ship must be'+
+        'only one zone away from the defense ship and the defense ship must "Effect Action" right before the enemy targets its missile at'+
+        'said ship.'+
+        '\n\nTim: Sound complicated. Better to just move the ship.'+
+        '\n\nAudrey: It really is not that complicated. You want to protect a ship that just been hit. The enemy will likely hit the same'+
+        'target, so if there is a defense ship one move away, you click on that and "Effect Action".'+
+        '\n\nTim: I would just move honestly.'+
+        '\n\nAudrey: Whatever.'+
+        '\n\nDispatch: We hasten to add that when a ship is hit the wreckage count goes up by X. So do keep that factor in mind as well.'//replace X with the actual value.
     
           
     
