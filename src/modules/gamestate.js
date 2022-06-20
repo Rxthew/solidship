@@ -105,7 +105,7 @@ const _eventsToRespondTo = {
         '\n\nNot to worry. I am sure that our clearing ships are up to the task. Right?',
 
     'missile hit ship' : () => 
-        'Dispatch : It looks like the enemy has hit one of our ships. When that happens you will be getting a "missile hit ship " '+
+        'Dispatch : It looks like the enemy has hit one of our ships. When that happens you will be getting a "missile hit ship" '+
         'status from us here in the log. \n\nThis is not good. You should view the ship by observing the enemy\'s last target in the '+
         'bar above the battle grid and clicking on that location. There you can compare the ship\'s "Damage" with its "Breakpoint".'+ //review location of 'last target'
         '\n\nRemember if the damage matches or exceeds the breakpoint then that ship will sink, so be careful.'+
@@ -122,7 +122,18 @@ const _eventsToRespondTo = {
         'target, so if there is a defense ship one move away, you click on that and "Effect Action".'+
         '\n\nTim: I would just move honestly.'+
         '\n\nAudrey: Whatever.'+
-        '\n\nDispatch: We hasten to add that when a ship is hit the wreckage count goes up by X. So do keep that factor in mind as well.'//replace X with the actual value.
+        '\n\nDispatch: We hasten to add that when a ship is hit the wreckage count goes up by X. So do keep that factor in mind as well.',//replace X with the actual value.
+    
+    'missile sunk ship' : () => 
+        'Dispatch : It looks like the enemy has sunk one of our ship. When that happens you will be getting a "missile sunk ship" '+
+        'status from us here in the log.\n\nNote that the wreckage has gone up by M amount. This is the highest that it can go, '+ //replace M with the actual value.
+        'so I urge you to be mindful of this fact because if this keeps happening the pile-up in debris will be difficult to manage'+
+        '\n\nTim: Are we losing this?\n\nAudrey: Don\'t panic. Plenty of ships are going to sink before this is over. We are lucky'+
+        'that these ships are automated so there is no loss of human life involved.\n\nTim: I hope that wasn\'t a clearing ship that '+
+        'just went under\n\nAudrey: Or a planting ship...\n\nDispatch: Just for your information, Tim and Audrey are saying this because '+
+        'if a clearing ship is sunk then all the debris it collected is added back to the wreckage count. Therefore clearing ships with '+
+        'high wreckage amounts could be a single point of failure, so it is better to distribute clearing where possible.\n\nThe same goes '+
+        'for planting ships: all plants falling under a sunk ship\'s responsibility are removed with it.'
     
           
     
