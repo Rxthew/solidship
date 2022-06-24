@@ -116,7 +116,7 @@ const recordPathHelpers = function(){
         let prop = event.target.id
         let path = [prop]
         while(parent !== document.querySelector(`.${initParent}`)){
-            if(parent === document.querySelector('body')){
+            if(parent === document.querySelector('main')){
                 return
             }
             parent = parent.parentElement
@@ -253,7 +253,7 @@ const _numeralPropStatus = function(val,par,titleType='propertyTitle',parType='p
 
 const displayShip = function(event, someGameState, someGetCont=defaultConfig.getBoardContains, gb=defaultConfig.getBoard){
     let someGb= gb(someGameState)
-    let key = event.target.id
+    let key = event.target.closest('td').id
     let paths = _recordPaths(someGb, key,someGetCont)
     let viewConsole = _createViewConsole()
     let shipObj = someGetCont(someGb,key)
@@ -425,7 +425,7 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
 }
 
 const activateExtendComponent = function(event, params, publish=gameEvents.publish){
-    const shipLoc = params[0].target.id
+    const shipLoc = params[0].target.closest('td').id
     let gameState = params[1]
     let getBoard = params[3]
     let gb = getBoard(gameState)
@@ -449,7 +449,7 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
 }
 
 const activateActionChoice = function(event,params,publish=gameEvents.publish){
-    const shipLoc = params[0].target.id
+    const shipLoc = params[0].target.closest('td').id
     const gs = params[1]
     const getCont = params[2]
     const getB = params[3]
@@ -475,7 +475,7 @@ const extendShipPublisher = function(event,params,publish=gameEvents.publish){
         }
     }
 
-    const shipLoc = params[0].target.id
+    const shipLoc = params[0].target.closest('td').id
     let getBoard = params[3]
     const path = recordPathHelpers().chartPath(event,'componentStore','compPropertyTitle').filter(option => option !== event.target.id)
     const changeConfig = ['extend ship',path,event.target.id]
@@ -565,7 +565,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             let gs = params[1]
             let getB = params[3]
             let gb = getB(gs)
-            let shipLoc = params[0].target.id
+            let shipLoc = params[0].target.closest('td').id
             let legals = [...getLgl(gb,shipLoc)] 
             for(let elem of legals){
                 if(document.querySelector(`#${elem}`).classList.contains('ship')){
@@ -793,7 +793,7 @@ export const renderState = function(someGameState, someGetCont=defaultConfig.get
     document.querySelector('main').appendChild(newBoard)
     createMainConsole()
     createOptionsConsole(null,someGameState,someGetCont,gb)
-    _skipTurn()
+    //_skipTurn()
     for (let elem of Object.keys(someGb)){ 
         if(document.querySelector(`#${elem}`) && someGetCont(someGb,elem)){
             document.querySelector(`#${elem}`).classList.add('ship')
