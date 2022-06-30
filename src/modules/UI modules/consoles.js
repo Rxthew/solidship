@@ -1,11 +1,6 @@
 
-const integrateChild = function(parent,child){
-    parent.appendChild(child)
-    return {
-        'parent': parent,
-        'child' : child
-    }
-}
+import {integrateChild} from '../utils.js'
+
 
 const creations = {
      main : function(){
