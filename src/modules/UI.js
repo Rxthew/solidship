@@ -56,6 +56,9 @@ const createMainConsole = function(){
     }
     let mainConsole = document.createElement('div')
     mainConsole.classList.add('mainConsole')
+    let nav = document.createElement('nav')
+    nav.id = 'navBar'
+    mainConsole.appendChild(nav)
     document.querySelector('main').appendChild(mainConsole)
     return mainConsole
 
