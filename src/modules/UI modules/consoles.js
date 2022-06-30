@@ -1,4 +1,3 @@
-
 import {integrateChild} from '../utils.js'
 
 
@@ -25,15 +24,19 @@ const creations = {
         let viewConsole = document.createElement('div')
         viewConsole.classList.add('viewConsole')
         return viewConsole
+    },
+
+    ship : function(){
+        if(document.querySelector('#shipConsole')){
+            document.querySelector('#shipConsole').remove()
+        }
+        let shipConsole = document.createElement('div')
+        shipConsole.id = 'shipConsole'
+        return shipConsole
     }
 
 }
 
-export const finishers = {
-    main : () => integrateChild(document.querySelector('main'),creations.main()),
-    nav : () => integrateChild(document.querySelector('.mainConsole'),creations.nav()),
-    view : () => integrateChild(document.querySelector('.mainConsole'),creations.view())
-}
 
 const toggleNone = function(event){
     if(event.target === event.currentTarget){
@@ -53,15 +56,26 @@ const uiButton = function(uiContainer){
 
 }
 
-export const pushUIElement = function(uiContainer){
+const pushUIElement = function(uiContainer){
     const view = document.querySelector('.viewConsole');
     return integrateChild(view,uiContainer)
 
 }
 
-export const toggleSetup = function(uiContainer){
+const toggleSetup = function(uiContainer){
     const nav = document.querySelector('nav')
     return integrateChild(nav,uiButton(uiContainer))
+}
+
+export const finishers = {
+    main : () => integrateChild(document.querySelector('main'),creations.main()),
+    nav : () => integrateChild(document.querySelector('.mainConsole'),creations.nav()),
+    view : () => integrateChild(document.querySelector('.mainConsole'),creations.view()),
+    ship : () => {
+        const shipConsole = creations.ship();
+        pushUIElement(shipConsole)
+        toggleSetup(shipConsole)
+    }
 }
 
 
