@@ -1,5 +1,6 @@
 import recordPathHelpers from './paths'
 import { components } from '../ships'
+import { revealProps } from '../utils'
 
 
 const recordComponentPaths = function(obj){
@@ -14,7 +15,7 @@ const recordComponentPaths = function(obj){
 
 }
 
-const componentFilter = function(componentsObj=components){
+const componentActionFilter = function(componentsObj=components){
     const primaryAction = Array.from(document.querySelectorAll('.primaryMarker')).filter(element => element.closest('#action'))
     if(primaryAction.length > 0){
         const firstAct = primaryAction.textContent
@@ -34,7 +35,9 @@ const componentFilter = function(componentsObj=components){
 
 
 
-const _componentStore = function(componentsObj=componentFilter(components),path=recordComponentPaths(componentsObj)){
+
+
+const _componentStore = function(componentsObj=componentActionFilter(components),path=recordComponentPaths(componentsObj)){
     if(document.querySelector('.optConsole')){
         document.querySelector('.optConsole').remove()
     }
@@ -64,7 +67,7 @@ const _componentStore = function(componentsObj=componentFilter(components),path=
      
 }
 
-const _filterComponentPaths = function(event,componentsObj=componentFilter(components)){
+const _filterComponentPaths = function(event,componentsObj=componentActionFilter(components)){
     let initPath = recordPathHelpers().chartPath(event)
     let allPaths = recordComponentPaths(componentsObj)
     let allCopy = [...allPaths]
