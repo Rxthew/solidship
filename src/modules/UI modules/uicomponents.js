@@ -1,6 +1,6 @@
 import recordPathHelpers from './paths'
 import { components } from '../ships'
-import { revealProps } from '../utils'
+import { revealProps, numeralPropStatus } from '../utils'
 
 
 const recordComponentPaths = function(obj){
@@ -16,7 +16,7 @@ const recordComponentPaths = function(obj){
 }
 
 const componentActionFilter = function(componentsObj=components){
-    const primaryAction = Array.from(document.querySelectorAll('.primaryMarker')).filter(element => element.closest('#action'))
+    const primaryAction = Array.from(document.querySelectorAll('.primaryMarker')).filter(element => element.closest('.action'))
     if(primaryAction.length > 0){
         const firstAct = primaryAction.textContent
         return componentsObj(firstAct) 
@@ -32,9 +32,10 @@ const componentActionFilter = function(componentsObj=components){
     }
 }
 
+const componentExtendShipFilter = function(componentObj=components){
 
 
-
+}
 
 
 const _componentStore = function(componentsObj=componentActionFilter(components),path=recordComponentPaths(componentsObj)){
@@ -53,7 +54,7 @@ const _componentStore = function(componentsObj=componentActionFilter(components)
                 parent = revealProps.determineUIKey(parent,elem,'compProperty','compPropertyTitle') 
                 let value = finalTarget[elem]
                 value = revealProps.valueToUIelement(parent,value,'compContainer','compElement')
-                _numeralPropStatus(value,parent,'compPropertyTitle','compProperty','compElement')
+                numeralPropStatus(value,parent,'compPropertyTitle','compProperty','compElement')
             }
             else {
                 parent = revealProps.determineUIKey(parent,elem, 'compProperty','compPropertyTitle') 
