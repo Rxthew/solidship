@@ -32,13 +32,43 @@ const componentActionFilter = function(componentsObj=components){
     }
 }
 
-const componentExtendShipFilter = function(componentObj=components){
-
+const componentPathFilters = {
+    'Extend Component' : function(event,componentsObj=componentActionFilter(components)){
+        let initPath = recordPathHelpers().chartPath(event)
+        let allPaths = recordComponentPaths(componentsObj)
+        let allCopy = [...allPaths]
+        let ind = 0
+        for(let arr of allCopy){
+            for(let elem of initPath){
+                    if(arr[initPath.indexOf(elem)] !== elem){
+                        delete allPaths[ind]
+                    }
+                }
+                ind++
+            }
+            allPaths = allPaths.filter(arr => arr !== undefined)
+            return allPaths
+    },
+    'Extend Ship' : function(componentsObj=componentActionFilter(components)){
+        const allPaths = recordComponentPaths(componentsObj)
+        const toCheckAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(title => title.id)
+        let newPaths = []
+        for(let path of allPaths){
+            let newPath = [...path].filter(elem => !toCheckAgainst.includes(elem))
+            newPaths = newPath.length > 0 ? [...newPaths, newPath] : newPaths
+        }
+        const setPaths = [...new Set(newPaths)]
+        if(setPaths.length > 0){
+            return setPaths
+        }
+        return false
+    }
 
 }
 
 
-const _componentStore = function(componentsObj=componentActionFilter(components),path=recordComponentPaths(componentsObj)){
+
+const componentStore = function(componentsObj=componentActionFilter(components),path=recordComponentPaths(componentsObj)){
     if(document.querySelector('.optConsole')){
         document.querySelector('.optConsole').remove()
     }
@@ -66,21 +96,4 @@ const _componentStore = function(componentsObj=componentActionFilter(components)
     main.appendChild(store)
 
      
-}
-
-const _filterComponentPaths = function(event,componentsObj=componentActionFilter(components)){
-    let initPath = recordPathHelpers().chartPath(event)
-    let allPaths = recordComponentPaths(componentsObj)
-    let allCopy = [...allPaths]
-    let ind = 0
-    for(let arr of allCopy){
-        for(let elem of initPath){
-                if(arr[initPath.indexOf(elem)] !== elem){
-                    delete allPaths[ind]
-                }
-            }
-            ind++
-        }
-        allPaths = allPaths.filter(arr => arr !== undefined)
-        return allPaths
 }
