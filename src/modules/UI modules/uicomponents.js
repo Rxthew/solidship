@@ -15,7 +15,7 @@ const recordComponentPaths = function(obj){
 
 }
 
-const componentActionFilter = function(componentsObj=components){
+export const componentActionFilter = function(componentsObj=components){
     const primaryAction = Array.from(document.querySelectorAll('.primaryMarker')).filter(element => element.closest('.action'))
     if(primaryAction.length > 0){
         const firstAct = primaryAction.textContent

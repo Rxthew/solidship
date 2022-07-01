@@ -1,4 +1,7 @@
-import { componentPathFilters, componentStore } from "./uicomponents"
+import { componentActionFilter, componentPathFilters, componentStore } from "./uicomponents"
+import { integrateChild } from "../utils"
+import {gameEvents} from '../gamestate'
+import recordPathHelpers from "./paths"
 
 const activateModifyProperties = function(event, params, publish=gameEvents.publish){
     
@@ -7,7 +10,7 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
     let getBoard = params[3]
     let gb = getBoard(gameState)
     const paths = _filterComponentPaths(event)
-    componentStore(_componentFilter(ships.components),paths)
+    componentStore(componentActionFilter(),paths)
     let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
     for(let opt of finalOptions){
         let par = opt.parentElement
@@ -30,7 +33,7 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
     let getBoard = params[3]
     let gb = getBoard(gameState)
     const paths = _filterComponentPaths(event)
-    componentStore(_componentFilter(ships.components),paths)
+    componentStore(componentActionFilter(),paths)
     let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
     for(let opt of finalOptions){
         let par = opt.parentElement
@@ -60,6 +63,19 @@ const activateActionChoice = function(event,params,publish=gameEvents.publish){
 }
 
 const extendShipPublisher = function(event,params,publish=gameEvents.publish){
+
+    if(!event.target.classList.contains('.compProperyTitle')){
+        return
+    }
+
+    const prepareArguments = function(){
+        const shipLoc = params[0].target.closest('td').id
+        const getBoard = params[3]
+        const path = recordPathHelpers().chartPath(event,'componentStore','compPropertyTitle').filter(option => option !== event.target.id)
+        const changeConfig = ['extend ship',path,event.target.id]
+        return [getBoard, shipLoc, changeConfig]
+    }
+
     const removeOldChoiceMarking = function(){
         const grandparent = event.target.parentElement.parentElement
         let allChoices = Array.from(document.querySelectorAll('.Mod'))
@@ -75,15 +91,10 @@ const extendShipPublisher = function(event,params,publish=gameEvents.publish){
         }
     }
 
-    const shipLoc = params[0].target.closest('td').id
-    let getBoard = params[3]
-    const path = recordPathHelpers().chartPath(event,'componentStore','compPropertyTitle').filter(option => option !== event.target.id)
-    const changeConfig = ['extend ship',path,event.target.id]
-    publish('extendShip',[getBoard,shipLoc, changeConfig])
+    publish('extendShip',[...prepareArguments()])
     removeOldChoiceMarking()
     event.target.classList.add('Mod')
-
-     return
+    return
     //Note: in order for this to work, it is vimp that gb refers to an updated gameboard each time, even if it is not rendered yet.
     //Otherwise it will keep referring to the same gameboard 
 }
@@ -93,39 +104,13 @@ const extendShipPublisher = function(event,params,publish=gameEvents.publish){
 
 const _generateOptionsObject = function(componentsObj=ships.components, getLgl=defaultConfig.getBoardLegalMoves,publish=gameEvents.publish){
 
-    const _doneButton = function(){
-        const Done = document.createElement('button')
-        Done.classList.add('done')
-        Done.textContent = 'Done'
-        return Done
+    const doneButton = function(){
+        const done = document.createElement('button')
+        done.classList.add('done')
+        done.textContent = 'Done'
+        return done
     }
 
-    const _availabilityGuard = function(...params){
-        let store = document.querySelector('.componentStore')
-        let main = document.querySelector('.mainConsole')
-        let gs = params[1]
-        
-        let titles = Array.from(document.querySelectorAll('.compPropertyTitle'))
-        for(let elem of titles){
-            if(!elem.classList.contains('unavailable')){
-                return
-            }
-        }
-        store.remove()
-        let deadEnd = document.createElement('div')
-        let noneAvail = document.createElement('span')
-        noneAvail.textContent = 'Ship has all available components. Please return to previous page.'
-        let ret = _doneButton()
-        ret.textContent = 'Return'
-        deadEnd.appendChild(noneAvail)
-        deadEnd.appendChild(ret)
-        ret.onclick = function(){
-            publish('renderGameState',gs)
-            
-        } 
-        
-        main.appendChild(deadEnd)
-    }
     
     const defaultOpts = {
         'Build New Ship' : function(...params){
@@ -212,37 +197,32 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
         },
         'Extend Ship' : function(...params){
-            componentStore()
-            let store = document.querySelector('.componentStore')
-            let Done = _doneButton()
-            let gs = params[1]
-            store.appendChild(Done)
-            Done.onclick = function(){publish('playerAction','extend ship', [gs])} 
-            let checkAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(elem => elem.id)
-            let compPropTitles = Array.from(document.querySelectorAll('.compPropertyTitle'))
-            let toVet = compPropTitles.map(elem => elem.id)
-            for(let elem of toVet){
-                let compPropElem =  compPropTitles[toVet.indexOf(elem)]
-                let par = compPropElem.parentElement
-                let parSibs = Array.from(par.parentElement.children).filter(sib => sib.classList.contains('compPropertyTitle'))
-                let children = Array.from(par.children).filter(child => child.classList.contains('compContainer') || child.classList.contains('compElement'))
-                
-                if(checkAgainst.includes(elem)){
-                    compPropElem.classList.add('unavailable')
-                }
-                else if(children.length > 0 && parSibs.length > 0 && checkAgainst.includes(parSibs[0].id)){
-                    compPropElem.classList.add('unavailable')
-                }
-                else if(children.length > 0){
-                    compPropElem.onclick = function(e){
-                        extendShipPublisher(e, params)
-                        //Remember need to add a cancelAction event in body later.
-                        //cancelAction should remove toggleHide.
+            const intitialiseComponentStore = function(){
+                const paths = componentPathFilters['Extend Ship']()
+                componentStore(componentActionFilter(),paths)
+            }
+
+            const appendDoneButton = function(){
+                const store = document.querySelector('.componentStore')
+                const gs = params[1]
+                integrateChild(store,doneButton())
+                store.onclick = function(event){
+                    if(event.target.classList.contains('done')){
+                        publish('playerAction','extend ship', [gs])
                     }
                 }
             }
+
+            const addExtendShipListener = function(){
+                document.querySelector('.componentStore').onclick = function(e){
+                    extendShipPublisher(e, params)
+                }
+            }
             
-            _availabilityGuard(...params) //revise when finishing.
+            intitialiseComponentStore()
+            appendDoneButton()
+            addExtendShipListener()
+            
 
         },
         'Extend Component' : function(...params){
