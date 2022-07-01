@@ -32,7 +32,7 @@ const componentActionFilter = function(componentsObj=components){
     }
 }
 
-const componentPathFilters = {
+export const componentPathFilters = {
     'Extend Component' : function(event,componentsObj=componentActionFilter(components)){
         let initPath = recordPathHelpers().chartPath(event)
         let allPaths = recordComponentPaths(componentsObj)
@@ -68,7 +68,7 @@ const componentPathFilters = {
 
 
 
-const componentStore = function(componentsObj=componentActionFilter(components),path=recordComponentPaths(componentsObj)){
+export const componentStore = function(componentsObj=componentActionFilter(components),path=recordComponentPaths(componentsObj)){
     if(document.querySelector('.optConsole')){
         document.querySelector('.optConsole').remove()
     }
