@@ -1,9 +1,11 @@
-import {finishers} from './consoles'
 import { componentActionFilter, componentPathFilters, componentStore } from "./uicomponents"
-import {shipStore, standardShipStore} from './uiship'
+import { components } from '../ships'
+import { defaultConfig } from '../gameboard'
+import { finishers } from './consoles'
+import { gameEvents } from '../gamestate'
 import { integrateChild } from "../utils"
-import {gameEvents} from '../gamestate'
 import recordPathHelpers from "./paths"
+import { shipStore, standardShipStore } from './uiship'
 
 const activateModifyProperties = function(event, params, publish=gameEvents.publish){
     
@@ -104,7 +106,7 @@ const extendShipPublisher = function(event,params,publish=gameEvents.publish){
 
 
 
-const _generateOptionsObject = function(componentsObj=ships.components, getLgl=defaultConfig.getBoardLegalMoves,publish=gameEvents.publish){
+const _generateOptionsObject = function(componentsObj=components, getLgl=defaultConfig.getBoardLegalMoves,publish=gameEvents.publish){
 
     const doneButton = function(){
         const done = document.createElement('button')
@@ -124,7 +126,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
             }
 
-            const prepareArguments = function(shipChoice, zone){
+            const prepareBuildArguments = function(shipChoice, zone){
                 const [gameState, getB] = [params[1], params[3]]
                 const gb = getB(gameState)
                 return [
@@ -142,7 +144,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
                 gameZone.onclick = function(zoneEvent){
                     if(zoneEvent.target.classList.contains('.moveHighlight')){
-                        publish('playerAction', 'build',[...prepareArguments(shipChoice, zoneEvent.target)])
+                        publish('playerAction', 'build',[...prepareBuildArguments(shipChoice, zoneEvent.target)])
                     }
                     else{
                         const highlights = Array.from(document.querySelectorAll('.moveHighlight'))
@@ -165,7 +167,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     const ship = {
         'Move Ship' : function(...params){
 
-            const prepareArguments = function(targetLocation){
+            const prepareMoveArguments = function(targetLocation){
                 const [gs,getB] = [params[1], params[3]]
                 const [gb, shipZone] = [getB(gs),params[0].target.closest('td').id]
                 const legals = [...getLgl(gb,shipZone)]
@@ -181,7 +183,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
             const gameZone = document.querySelector('.gamezone')
             gameZone.onclick = function(event){
                 if(event.target.classList.contains('moveHighlight')){
-                    publish('playerAction','move',[...prepareArguments(event.target)])
+                    publish('playerAction','move',[...prepareMoveArguments(event.target)])
                 }
                 else{
                     const highlights = Array.from(document.querySelectorAll('.moveHighlight'))
@@ -192,28 +194,27 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
         },
         'Modify Ship' : function(...params){
-            const propTitles = document.querySelectorAll('.propertyTitle')
-            const props = Array.from(propTitles).map(elem => elem.id).filter(elem => elem !== 'count')
-            let compStore = componentsObj()
-            let compStoreKeys = Object.keys(compStore)
-            let ind = 0
-            for(let prop of props){
-                if(compStoreKeys.includes(prop)){
-                    let propChildren = Array.from(propTitles[ind].parentElement.children).filter(key => key.classList.contains('property'))
-                    if(propChildren.length === 0){
-                        propTitles[ind].classList.add('Mod')
-                        propTitles[ind].onclick = function(e){
-                            activateModifyProperties(e, params)
-                        }
-                    }
-                    else {
-                        compStore = compStore[prop]
-                        compStoreKeys = Object.keys(compStore)
-                    }
-                     
+            const markPropertiesToModify = function(){
+                const elements = Array.from(document.querySelectorAll('.element'))
+                const properties = elements.map(node => node.closest('.property'))
+                const titles = properties.map(property => [...property.children].filter('.propertyTitle')[0])
+                titles.map(title => title.classList.add('Mod'))
+                return 
+            }
+
+            const unmarkPropertiesToModify = function(){
+                const titles = Array.from(document.querySelectorAll('.Mod'))
+                titles.map(node => node.classList.remove('Mod'))
+            }
+
+            markPropertiesToModify()
+            const shipConsole = document.querySelector('#ship')
+            shipConsole.onclick = function(event){
+                if(event.target.classList.contains('Mod')){
+                    activateModifyProperties(event, params)
+                    unmarkPropertiesToModify()
                 }
-                ind++
-               
+                
             }
 
         },
