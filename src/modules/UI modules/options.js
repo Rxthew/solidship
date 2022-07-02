@@ -1,4 +1,6 @@
+import {finishers} from './consoles'
 import { componentActionFilter, componentPathFilters, componentStore } from "./uicomponents"
+import {shipStore, standardShipStore} from './uiship'
 import { integrateChild } from "../utils"
 import {gameEvents} from '../gamestate'
 import recordPathHelpers from "./paths"
@@ -114,60 +116,79 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
     
     const defaultOpts = {
         'Build New Ship' : function(...params){
-            let gameState = params[1]
-            let getB = params[3]
-            let gb = getB(gameState)
-            document.querySelector('.mainConsole').appendChild(_shipStore())
-            const ships = Array.from(document.querySelectorAll('.shipOption'))
-            const zones = Array.from(document.querySelectorAll('.zone'))
-            const _prepPlaceShip = function(chosenShip){
-                for (let zone of zones){
-                    if(zone.classList.contains('ship')){
-                        continue
-                    }
-                    zone.classList.add('moveHighlight')
-                    
-                    zone.onclick = function(){
-                        publish('playerAction','build',[gb,standardShipStore[chosenShip](),zone.id,gameState])
-                        
-                    }
-                }
-            }
-            for(let ship of ships){
-                ship.onclick = function(){
-                    _prepPlaceShip(ship.textContent)
-                    
-                }
-            }
-        }
 
-    //remember to revise this if playerAction is not the right event name &/or other changes. 
-    //Also need to add a cancelAction event in body later.   
-    }//cancelAction should remove toggleHide.
+            const initialiseShipStore = function(){
+                const store = shipStore()
+                finishers['store'](store)
+                return document.querySelector('#store')
+
+            }
+
+            const prepareArguments = function(shipChoice, zone){
+                const [gameState, getB] = [params[1], params[3]]
+                const gb = getB(gameState)
+                return [
+                    gb,
+                    standardShipStore[shipChoice](),
+                    zone.id,
+                    gameState,
+                ]
+            }
+
+            const preparePlaceShip = function(shipChoice){
+                const gameZone = document.querySelector('.gamezone')
+                const zones = Array.from(document.querySelectorAll('.zone'))
+                zones.map(zone => !zone.classList.contains('ship') ? zone.classList.add('moveHighlight') : false)
+
+                gameZone.onclick = function(zoneEvent){
+                    if(zoneEvent.target.classList.contains('.moveHighlight')){
+                        publish('playerAction', 'build',[...prepareArguments(shipChoice, zoneEvent.target)])
+                    }
+                    else{
+                        const highlights = Array.from(document.querySelectorAll('.moveHighlight'))
+                        highlights.map(zone => zone.classList.remove('moveHighlight'))
+                    }
+                }
+            }
+
+            const store = initialiseShipStore()
+            store.onclick = function(event){
+                if(event.target.classList.contains('shipOption')){
+                    preparePlaceShip(event.target.textContent)
+                }
+
+            }
+            
+        }
+    }
 
     const ship = {
         'Move Ship' : function(...params){
-            let gs = params[1]
-            let getB = params[3]
-            let gb = getB(gs)
-            let shipLoc = params[0].target.closest('td').id
-            let legals = [...getLgl(gb,shipLoc)] 
-            for(let elem of legals){
-                if(document.querySelector(`#${elem}`).classList.contains('ship')){
-                    continue
-                }
-                else{
-                    document.querySelector(`#${elem}`).classList.add('moveHighlight')
-                    document.querySelector(`#${elem}`).onclick = function(){
-                        publish('playerAction','move',[gb, shipLoc, elem,gs])
-                    }
-                    //remember to revise this if playerAction is not the right event name &/or other changes. 
-                    //Also need to add a cancelAction event in body later.
-                    //cancelAction should remove toggleHide.
-                }
+
+            const prepareArguments = function(targetLocation){
+                const [gs,getB] = [params[1], params[3]]
+                const [gb, shipZone] = [getB(gs),params[0].target.closest('td').id]
+                const legals = [...getLgl(gb,shipZone)]
+                legals.map(zone => !zone.classList.contains('ship') ? zone.classList.add('moveHighlight') : false )
+                return [
+                    gb,
+                    shipZone,
+                    targetLocation,
+                    gs
+                ]
             }
 
+            const gameZone = document.querySelector('.gamezone')
+            gameZone.onclick = function(event){
+                if(event.target.classList.contains('moveHighlight')){
+                    publish('playerAction','move',[...prepareArguments(event.target)])
+                }
+                else{
+                    const highlights = Array.from(document.querySelectorAll('.moveHighlight'))
+                    highlights.map(zone => zone.classList.remove('moveHighlight'))
+                }
 
+            }
 
         },
         'Modify Ship' : function(...params){

@@ -61,7 +61,7 @@ export const displayShip = function(event, someGameState, someGetCont=defaultCon
     return shipConsole 
 }
 
-const standardShipStore = {
+export const standardShipStore = {
     'Basic' : function(){return new ships.basicShip()},
     'Basic (Legacy)' : function(){return new ships.basicLegacyShip()},
     'Legacy' : ships.legacyShip,
