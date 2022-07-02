@@ -276,7 +276,7 @@ const _generateOptionsObject = function(componentsObj=ships.components, getLgl=d
 
     }
     const toFilterList = [
-        [document.querySelector('#shipConsole'), function(){
+        [document.querySelector('#ship'), function(){
             return {defaultOpts}
         }],
         [Array.from(document.querySelectorAll('.propertyTitle')).some(tit => tit.id === 'action'), function(){

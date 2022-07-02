@@ -27,11 +27,11 @@ const creations = {
     },
 
     ship : function(){
-        if(document.querySelector('#shipConsole')){
-            document.querySelector('#shipConsole').remove()
+        if(document.querySelector('#ship')){
+            document.querySelector('#ship').remove()
         }
         let shipConsole = document.createElement('div')
-        shipConsole.id = 'shipConsole'
+        shipConsole.id = 'ship'
         return shipConsole
     }
 
