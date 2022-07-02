@@ -6,12 +6,12 @@ const creations = {
         if(document.querySelector('.mainConsole')){
             document.querySelector('.mainConsole').remove()
         }
-        let mainConsole = document.createElement('div')
+        const mainConsole = document.createElement('div')
         mainConsole.classList.add('mainConsole')
         return mainConsole
     },
     nav : function(){
-        let nav = document.createElement('nav')
+        const nav = document.createElement('nav')
         nav.id = 'navBar'
         nav.onClick = toggleNone
         return nav
@@ -21,7 +21,7 @@ const creations = {
         if(document.querySelector('.viewConsole')){
             document.querySelector('.viewConsole').remove()
         }
-        let viewConsole = document.createElement('div')
+        const viewConsole = document.createElement('div')
         viewConsole.classList.add('viewConsole')
         return viewConsole
     },
@@ -30,9 +30,17 @@ const creations = {
         if(document.querySelector('#ship')){
             document.querySelector('#ship').remove()
         }
-        let shipConsole = document.createElement('div')
+        const shipConsole = document.createElement('div')
         shipConsole.id = 'ship'
         return shipConsole
+    },
+    store : function(){
+        if(document.querySelector('#store')){
+            document.querySelector('store').remove()
+        }
+        const store = document.createElement('div')
+        store.id = 'store'
+        return store
     }
 
 }
@@ -75,6 +83,12 @@ export const finishers = {
         const shipConsole = creations.ship();
         pushUIElement(shipConsole)
         toggleSetup(shipConsole)
+    },
+    store : (storeType) => {
+        const store = creations.store()
+        integrateChild(store,storeType)
+        pushUIElement(store)
+        toggleSetup(store)
     }
 }
 
