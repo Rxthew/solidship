@@ -13,7 +13,7 @@ const creations = {
     nav : function(){
         const nav = document.createElement('nav')
         nav.id = 'navBar'
-        nav.onClick = toggleNone
+        nav.onclick = toggleNone
         return nav
     },
 

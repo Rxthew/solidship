@@ -141,8 +141,7 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
                 const gameZone = document.querySelector('.gamezone')
                 const zones = Array.from(document.querySelectorAll('.zone'))
                 zones.map(zone => !zone.classList.contains('ship') ? zone.classList.add('moveHighlight') : false)
-
-                gameZone.onclick = function(zoneEvent){
+                const markHighlights = function(zoneEvent){
                     if(zoneEvent.target.classList.contains('.moveHighlight')){
                         publish('playerAction', 'build',[...prepareBuildArguments(shipChoice, zoneEvent.target)])
                     }
@@ -151,15 +150,16 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
                         highlights.map(zone => zone.classList.remove('moveHighlight'))
                     }
                 }
+                gameZone.addEventListener('click',markHighlights) 
             }
 
             const store = initialiseShipStore()
-            store.onclick = function(event){
+            store.addEventListener('click', function(event){
                 if(event.target.classList.contains('shipOption')){
                     preparePlaceShip(event.target.textContent)
                 }
 
-            }
+            }) 
             
         }
     }
@@ -181,7 +181,7 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
             }
 
             const gameZone = document.querySelector('.gamezone')
-            gameZone.onclick = function(event){
+            const markMoves = function(event){
                 if(event.target.classList.contains('moveHighlight')){
                     publish('playerAction','move',[...prepareMoveArguments(event.target)])
                 }
@@ -191,6 +191,7 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
                 }
 
             }
+            gameZone.addEventListener('click', markMoves)
 
         },
         'Modify Ship' : function(...params){
@@ -209,13 +210,13 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
 
             markPropertiesToModify()
             const shipConsole = document.querySelector('#ship')
-            shipConsole.onclick = function(event){
+            const activateModify = function(event){
                 if(event.target.classList.contains('Mod')){
                     activateModifyProperties(event, params)
                     unmarkPropertiesToModify()
-                }
-                
+                }    
             }
+            shipConsole.addEventListener('click',activateModify)
 
         },
         'Extend Ship' : function(...params){
@@ -228,17 +229,19 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
                 const store = document.querySelector('.componentStore')
                 const gs = params[1]
                 integrateChild(store,doneButton())
-                store.onclick = function(event){
+
+                const extendShipActivate = function(event){
                     if(event.target.classList.contains('done')){
                         publish('playerAction','extend ship', [gs])
                     }
                 }
+                store.addEventListener('click',extendShipActivate)  
             }
 
             const addExtendShipListener = function(){
-                document.querySelector('.componentStore').onclick = function(e){
+                document.querySelector('.componentStore').addEventListener('click', function(e){
                     extendShipPublisher(e, params)
-                }
+                })
             }
             
             intitialiseComponentStore()

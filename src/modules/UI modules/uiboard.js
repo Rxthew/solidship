@@ -51,16 +51,18 @@ const renderShipImage = async function(node,assetName){
 export const UIBoard = function(someGameState, someGetCont, gb, publish){
     const someGb = gb(someGameState);
     const newBoard = integrateChild(document.querySelector('main'),buildBoard())
-    newBoard.onclick = function(event) {
-        if(event.target.classList.contains('ship')){
-            publish('viewShip',event,someGameState,someGetCont,gb);
-        }} 
-    for (let elem of Object.keys(someGb)){ 
+    for(let elem of Object.keys(someGb)){ 
         if(document.querySelector(`#${elem}`) && someGetCont(someGb,elem)){
             document.querySelector(`#${elem}`).classList.add('ship')
             renderShipImage(document.querySelector(`#${elem}`),'ship.svg')
         }
     }
+    const viewShip = function(event) {
+        if(event.target.classList.contains('ship')){
+            publish('viewShip',event,someGameState,someGetCont,gb);
+        }} 
+    newBoard.addEventListener('click',viewShip) 
+    
 }
 
 
