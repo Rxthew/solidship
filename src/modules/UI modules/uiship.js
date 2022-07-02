@@ -1,3 +1,4 @@
+import * as ships from '../ships'
 import recordPathHelpers from 'paths.js'
 import { defaultConfig } from '../gameboard'
 import { revealProps, numeralPropStatus } from '../utils'
@@ -31,7 +32,7 @@ const primaryMarker = function(par){
 }
                     
 
-const displayShip = function(event, someGameState, someGetCont=defaultConfig.getBoardContains, gb=defaultConfig.getBoard){
+export const displayShip = function(event, someGameState, someGetCont=defaultConfig.getBoardContains, gb=defaultConfig.getBoard){
     let someGb= gb(someGameState)
     let key = event.target.closest('td').id
     let paths = recordPaths(someGb, key,someGetCont)
@@ -60,4 +61,34 @@ const displayShip = function(event, someGameState, someGetCont=defaultConfig.get
     return shipConsole 
 }
 
-export default displayShip
+const standardShipStore = {
+    'Basic' : function(){return new ships.basicShip()},
+    'Basic (Legacy)' : function(){return new ships.basicLegacyShip()},
+    'Legacy' : ships.legacyShip,
+    'Planting' : ships.plantingShip,
+    'Defense' : ships.defenseShip,
+    'Clearing' : ships.clearingShip
+ //**Relay method below has been retained here for the sake of completion only. In practice, this is not available.*/
+ // 'Relay' : ships.relayShip,
+ //***/
+    
+}
+
+export const shipStore = function(shipsObj=standardShipStore){
+    if(document.querySelector('#store')){
+        document.querySelector('#store').remove()
+    }
+    let store = document.createElement('div')
+    store.classList.add('shipStore')
+    let choices = Object.keys(shipsObj)
+    for (let elem of choices){
+        let ship = document.createElement('span')
+        ship.textContent = elem
+        ship.classList.add('shipOption')
+        store.appendChild(ship) 
+    }
+    return store
+
+}
+
+
