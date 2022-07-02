@@ -1,7 +1,7 @@
 import * as ships from '../ships'
 import recordPathHelpers from 'paths.js'
 import { defaultConfig } from '../gameboard'
-import { revealProps, numeralPropStatus } from '../utils'
+import { revealProps } from '../utils'
 import {finishers} from './consoles'
 
 const recordPaths = function(someGb,key,someGetCont=defaultConfig.getBoardContains){
@@ -50,7 +50,6 @@ export const displayShip = function(event, someGameState, someGetCont=defaultCon
                 if(elem === 'action' || elem === 'messagingProtocol'){
                     primaryMarker(parent)
                 }
-                numeralPropStatus(value,parent)
             }  
             else {
                 parent = revealProps.determineUIKey(parent,elem) 

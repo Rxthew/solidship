@@ -57,19 +57,6 @@ const fromNormToCamel = function(str){
 
 }
 
-export const numeralPropStatus = function(val,par,titleType='propertyTitle',parType='property', parNewType='element'){
-    let ruledOut = ['damage','breakpoint','reinforcedBreakpoint']
-    if(val.classList.contains('numeral')){
-        let title = Array.from(par.children).filter(sib => sib.classList.contains(`${titleType}`))[0]
-        if(!ruledOut.includes(title.id)){
-            par.classList.remove(`${parType}`)
-            par.classList.add(`${parNewType}`)
-            title.classList.remove(`${titleType}`)
-            title.classList.add('countTitle')
-        }
-    }
-
-}
 
 export const integrateChild = function(parent,child){
     parent.appendChild(child)
