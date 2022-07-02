@@ -102,11 +102,12 @@ export const revealProps = {
 
     },
     keyToUIelement : function(parent,key,propName='property',propTitleName='propertyTitle'){
+        const edgeCases = ['mode', 'count', 'breakpoint','damage','reinforcedBreakpoint']
         let prop = document.createElement('div')
         let title = document.createElement('span')
-        prop.classList.add(`${propName}`)
+        edgeCases.includes(prop) ? prop.classList.add('static') : prop.classList.add(`${propName}`)
         prop.classList.add(`${key}`)
-        title.classList.add(`${propTitleName}`)
+        edgeCases.includes(prop) ? title.classList.add('staticTitle') : title.classList.add(`${propTitleName}`)
         title.id = key        
         title.textContent = camelPhraseParser(key) 
         prop.appendChild(title)
@@ -127,17 +128,10 @@ export const revealProps = {
             par.appendChild(container)
             return container
         }
-        else if(typeof val === 'string'){
+        else {
             let uiElement = document.createElement('span')
             uiElement.classList.add(`${valName}`)
             uiElement.id = val
-            uiElement.textContent = camelPhraseParser(val)
-            par.appendChild(uiElement)
-            return uiElement
-        }
-        else if(typeof val === 'number'){
-            let uiElement = document.createElement('span')
-            uiElement.classList.add(`numeral`)
             uiElement.textContent = camelPhraseParser(val)
             par.appendChild(uiElement)
             return uiElement
