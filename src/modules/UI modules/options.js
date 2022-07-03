@@ -8,27 +8,54 @@ import recordPathHelpers from "./paths"
 import { shipStore, standardShipStore } from './uiship'
 
 const activateModifyProperties = function(event, params, publish=gameEvents.publish){
-    
-    const shipLoc = params[0].target.id
-    let gameState = params[1]
-    let getBoard = params[3]
-    let gb = getBoard(gameState)
-    const paths = _filterComponentPaths(event)
-    componentStore(componentActionFilter(),paths)
-    let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
-    for(let opt of finalOptions){
-        let par = opt.parentElement
-        let children = Array.from(par.children).filter(child => child.classList.contains('compContainer') || child.classList.contains('compElement'))
-        if(children.length > 0){
-            opt.onclick = function(ev){
-                const path = recordPathHelpers().chartPath(ev,'componentStore','compPropertyTitle').filter(option => option !== opt.id)
-                const changeConfig = ['modify',path,opt.id]
-                publish('playerAction','modify',[gb, shipLoc, changeConfig, gameState]) 
-            } 
-        }
-         //remember to revise this if playerAction is not the right event name &/or other changes. 
-         //Also need to add a cancelAction event in body later.
+
+    const createComponentStore = function(){
+        const paths = componentPathFilters['Extend Component'](event)
+        const store = componentStore(componentActionFilter(),paths)
+        return store
+
     }
+
+    const createModifyListener = function(event){
+        const properties = Array.from(document.querySelectorAll('.compElement')).map(element => element.closest('.compProperty'))
+        const targets = properties.map(property => Array.from(property.children).filter(child => child.classList.contains('.compPropertyTitle'))[0])
+        if(targets.includes(event.target)){
+            publish(...prepareModifyArguments(event))
+        }
+    }
+
+    const createChangeConfig = function(clickEvent){
+        const path = function(){
+            return recordPathHelpers().chartPath(clickEvent,'componentStore','compPropertyTitle').filter(option => option !== clickEvent.target.id)
+        }
+        return [
+            'modify',
+            path(),
+            clickEvent.id
+        ]
+        
+    }
+    
+    const prepareModifyArguments = function(clickEvent){
+        const [shipLocation, gameState, getBoard] = [params[0].target.id, params[1], params[3]]
+        const gb = getBoard(gameState)
+        return [
+            'playerAction',
+            'modify',
+            [
+                gb,
+                shipLocation,
+                createChangeConfig(clickEvent),
+                gameState
+
+            ]
+        ]
+
+    }
+
+    const store = createComponentStore()
+    store.addEventListener('click',createModifyListener)
+    
 }
 
 const activateExtendComponent = function(event, params, publish=gameEvents.publish){
