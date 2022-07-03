@@ -26,6 +26,15 @@ const creations = {
         return viewConsole
     },
 
+    opts : function(){
+        if(document.querySelector('#opts')){
+            document.querySelector('#opts').remove()
+        }
+        const optConsole = document.createElement('div')
+        optConsole.id = 'opts'
+        return optConsole
+    },
+
     ship : function(){
         if(document.querySelector('#ship')){
             document.querySelector('#ship').remove()
@@ -79,6 +88,11 @@ export const finishers = {
     main : () => integrateChild(document.querySelector('main'),creations.main()),
     nav : () => integrateChild(document.querySelector('.mainConsole'),creations.nav()),
     view : () => integrateChild(document.querySelector('.mainConsole'),creations.view()),
+    opts: () => {
+        const optConsole = creations.opts()
+        pushUIElement(optConsole)
+        toggleSetup(optConsole)
+    },
     ship : () => {
         const shipConsole = creations.ship();
         pushUIElement(shipConsole)
