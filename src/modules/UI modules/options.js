@@ -7,14 +7,15 @@ import { integrateChild } from "../utils"
 import recordPathHelpers from "./paths"
 import { shipStore, standardShipStore } from './uiship'
 
+const createComponentStore = function(someEvent){
+    const paths = componentPathFilters['Extend Component'](someEvent)
+    const store = componentStore(componentActionFilter(),paths)
+    return store
+
+}
+
 const activateModifyProperties = function(event, params, publish=gameEvents.publish){
 
-    const createComponentStore = function(){
-        const paths = componentPathFilters['Extend Component'](event)
-        const store = componentStore(componentActionFilter(),paths)
-        return store
-
-    }
 
     const createModifyListener = function(event){
         const properties = Array.from(document.querySelectorAll('.compElement')).map(element => element.closest('.compProperty'))
@@ -37,7 +38,7 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
     }
     
     const prepareModifyArguments = function(clickEvent){
-        const [shipLocation, gameState, getBoard] = [params[0].target.id, params[1], params[3]]
+        const [shipLocation, gameState, getBoard] = [params[0].target.closest('td').id, params[1], params[3]]
         const gb = getBoard(gameState)
         return [
             'playerAction',
@@ -53,32 +54,52 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
 
     }
 
-    const store = createComponentStore()
+    const store = createComponentStore(event)
     store.addEventListener('click',createModifyListener)
     
 }
 
 const activateExtendComponent = function(event, params, publish=gameEvents.publish){
-    const shipLoc = params[0].target.closest('td').id
-    let gameState = params[1]
-    let getBoard = params[3]
-    let gb = getBoard(gameState)
-    const paths = _filterComponentPaths(event)
-    componentStore(componentActionFilter(),paths)
-    let finalOptions = Array.from(document.querySelectorAll('.compPropertyTitle'))
-    for(let opt of finalOptions){
-        let par = opt.parentElement
-        let children = Array.from(par.children).filter(child => child.classList.contains('compContainer'))
-        if(children.length > 0){
-            opt.onclick = function(ev){
-                const path = recordPathHelpers().chartPath(ev,'componentStore','compPropertyTitle').filter(option => option !== opt.id)
-                const changeConfig = ['extend component',path,opt.id]
-                publish('playerAction','extend component',[gb,shipLoc, changeConfig,gameState])
-            }
+    
+    const createExtendConfig = function(clickEvent){
+        const path = function(){
+            return recordPathHelpers().chartPath(clickEvent,'componentStore','compPropertyTitle').filter(option => option !== clickEvent.target.id)
         }
-        //remember to revise this if playerAction is not the right event name &/or other changes. 
-         //Also need to add a cancelAction event in body later.
+        return [
+            'extend component',
+            path(),
+            clickEvent.id
+        ]
+        
     }
+
+    const prepareExtendArguments = function(clickEvent){
+        const [shipLocation, gameState, getBoard] = [params[0].target.closest('td').id, params[1], params[3]]
+        const gb = getBoard(gameState)
+        return [
+            'playerAction',
+            'extend component',
+            [
+                gb,
+                shipLocation,
+                createExtendConfig(clickEvent),
+                gameState
+
+            ]
+        ]
+
+    }
+
+    const createExtendListener = function(event){
+        const properties = Array.from(document.querySelectorAll('.compElement')).map(element => element.closest('.compProperty'))
+        const targets = properties.map(property => Array.from(property.children).filter(child => child.classList.contains('.compPropertyTitle'))[0])
+        if(targets.includes(event.target)){
+            publish(...prepareExtendArguments(event))
+        }
+    }
+
+    const store = createComponentStore(event)
+    store.addEventListener('click',createExtendListener)
 
 }
 
