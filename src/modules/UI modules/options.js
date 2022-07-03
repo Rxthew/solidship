@@ -1,7 +1,7 @@
 import { componentActionFilter, componentPathFilters, componentStore } from "./uicomponents"
 import { components } from '../ships'
 import { defaultConfig } from '../gameboard'
-import { finishers } from './consoles'
+import { finishers, toggleToConsole } from './consoles'
 import { gameEvents } from '../gamestate'
 import { integrateChild } from "../utils"
 import recordPathHelpers from "./paths"
@@ -56,6 +56,7 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
 
     const store = createComponentStore(event)
     store.addEventListener('click',createModifyListener)
+    finishers['store'](store)
     
 }
 
@@ -100,6 +101,7 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
 
     const store = createComponentStore(event)
     store.addEventListener('click',createExtendListener)
+    finishers['store'](store)
 
 }
 
@@ -108,9 +110,7 @@ const activateActionChoice = function(event,params,publish=gameEvents.publish){
     const gs = params[1]
     const getCont = params[2]
     const getB = params[3]
-    publish('playerAction', 'action', [[gs,getCont,getB] , shipLoc, event.target.id])
-    //Note the above was written before the all-encompassing function that parses actions was designed. So review once that is done esp. re: parameter order. 
-
+    publish('playerAction', 'action', [[gs,getCont,getB] , shipLoc, event.target.id]) 
     
 }
 
@@ -147,8 +147,7 @@ const extendShipPublisher = function(event,params,publish=gameEvents.publish){
     removeOldChoiceMarking()
     event.target.classList.add('Mod')
     return
-    //Note: in order for this to work, it is vimp that gb refers to an updated gameboard each time, even if it is not rendered yet.
-    //Otherwise it will keep referring to the same gameboard 
+
 }
 
 
@@ -257,7 +256,9 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
             }
 
             markPropertiesToModify()
+            toggleToConsole('opts','ship')
             const shipConsole = document.querySelector('#ship')
+            
             const activateModify = function(event){
                 if(event.target.classList.contains('Mod')){
                     activateModifyProperties(event, params)
@@ -270,7 +271,8 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
         'Extend Ship' : function(...params){
             const intitialiseComponentStore = function(){
                 const paths = componentPathFilters['Extend Ship']()
-                componentStore(componentActionFilter(),paths)
+                const store = componentStore(componentActionFilter(),paths)
+                finishers.store(store)
             }
 
             const appendDoneButton = function(){
@@ -299,22 +301,31 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
 
         },
         'Extend Component' : function(...params){
-            let propTitles = []
-            const allContainerParents = Array.from(document.querySelectorAll('.container')).map(cont => cont.parentElement)
-            const propParents = allContainerParents.filter(par => par.classList.contains('property'))
-            const propChildren = propParents.map(parent => Array.from(parent.children))
-            for(let arr of propChildren){
-                arr = arr.filter(child => child.classList.contains('propertyTitle'))
-                propTitles = [...propTitles,...arr]
+
+            const markPropertiesToExtend = function(){
+                const elements = Array.from(document.querySelectorAll('.element'))
+                const properties = elements.map(node => node.closest('.property'))
+                const titles = properties.map(property => [...property.children].filter('.propertyTitle')[0])
+                titles.map(title => title.classList.add('Ext'))
+                return 
             }
-            for(let title of propTitles){
-                title.classList.add('Ext')
-                title.onclick = function(e){
-                    activateExtendComponent(e,params)
-                    //document.querySelector('.toggleHide').classList.remove('toggleHide') review.
-                }
+
+            const unmarkPropertiesToExtend = function(){
+                const titles = Array.from(document.querySelectorAll('.Ext'))
+                titles.map(node => node.classList.remove('Ext'))
             }
-                    //cancelAction should remove toggleHide
+
+            markPropertiesToExtend()
+            toggleToConsole('opts','ship')
+            const shipConsole = document.querySelector('#ship')
+            const activateExtend = function(event){
+                if(event.target.classList.contains('Ext')){
+                    activateExtendComponent(event, params)
+                    unmarkPropertiesToExtend()
+                }    
+            }
+            shipConsole.addEventListener('click',activateExtend)
+
          },
         'Effect Ship Action' : function(...params){
             let allPropTitles = Array.from(document.querySelectorAll('.propertyTitle')).map(title => title.id)
@@ -344,8 +355,7 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
             main.appendChild(choices)
         }
 
-
-        },//cancelAction should remove toggleHide.
+        }
 
     }
     const toFilterList = [
