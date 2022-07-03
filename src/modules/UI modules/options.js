@@ -328,32 +328,36 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
 
          },
         'Effect Ship Action' : function(...params){
-            let allPropTitles = Array.from(document.querySelectorAll('.propertyTitle')).map(title => title.id)
-            let actions = []
-            let main = document.querySelector('.mainConsole')
-            if(allPropTitles.includes('action')){
-                let allProps = Array.from(document.querySelectorAll('.propertyTitle'))
-                let actPar = allProps[allPropTitles.indexOf('action')].parentElement
-                let actChildren = Array.from(actPar.children)
-                for(let elem of Array.from(actChildren)){
-                    if(elem.classList.contains('container')){
-                        actions = [...Array.from(elem.children).map(elem => elem.textContent)]
-                    }
-                }
-            let choices = document.createElement('div')
-            choices.classList.add('choices')
-            for(let elem of actions){
-                let choice = document.createElement('span')
-                choice.textContent = elem
-                choice.id = elem
-                choice.classList.add('choice')
-                choice.onclick = function(e){
-                    activateActionChoice(e,params)
-                }
-                choices.appendChild(choice)
+            const action = Array.from(document.querySelectorAll('.action')).filter(node => node.classList.contains('propertyTitle'))[0]
+            if(!action){
+                return
             }
-            main.appendChild(choices)
-        }
+
+            const choiceConvertor = function(str){
+                const choice = document.createElement('span')
+                choice.textContent = str
+                choice.id = str
+                choice.classList.add('choice')
+                choices.appendChild(choice)
+                return
+            }
+
+            const retrieveActions = function(){
+                const container = Array.from(document.querySelectorAll('.container')).filter(node => node.closest(action))[0]
+                const actions = Array.from(container.children).map(node => choiceConvertor(node.textContent))
+                return actions
+            }
+
+            const revealActions = function(clickEvent){
+                const actions = retrieveActions()
+                if(actions.includes(clickEvent.target)){
+                    activateActionChoice(clickEvent,params)
+                }
+            }
+
+            const choices = document.createElement('div')
+            choices.addEventListener('click',revealActions)
+            document.querySelector('#opts').appendChild(choices)
 
         }
 
