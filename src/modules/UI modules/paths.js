@@ -47,12 +47,12 @@ const recordPathHelpers = function(){
             return  confirmedPaths 
     }
 
-    const chartPath = function(event, initParent='viewConsole', propTitle='propertyTitle', statTitle='staticTitle'){
+    const chartPath = function(event, initParent='#store', propTitle='propertyTitle', statTitle='staticTitle'){
         let parent = event.target.parentElement
         let prop = event.target.id
         let path = [prop]
-        while(parent !== document.querySelector(`.${initParent}`)){
-            if(parent === document.querySelector('main')){
+        while(parent !== document.querySelector(`${initParent}`)){
+            if(parent === document.querySelector('.viewConsole')){
                 return
             }
             parent = parent.parentElement
