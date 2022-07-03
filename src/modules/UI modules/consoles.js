@@ -61,14 +61,14 @@ const toggleNone = function(event){
     }
     const view = document.querySelector('.viewConsole')
     const viewChildren = [...view.children]
-    return viewChildren.map(child => !event.target.classList.contains(child.id) ? child.classList.toggle('toggleNone',true) : child.classList.toggle('toggleNone',false))
+    return viewChildren.map(child => !event.target.dataset.id === child.id ? child.classList.toggle('toggleNone',true) : child.classList.toggle('toggleNone',false))
 
 }
 
 
 const uiButton = function(uiContainer){
     const button = document.createElement(button)
-    button.classList.add(uiContainer.id) 
+    button.dataset.id = uiContainer.id 
     button.textContent = uiContainer.id
     return button
 
@@ -107,7 +107,7 @@ export const finishers = {
     }
 }
 
-export const toggleToConsole = function(currentConsole,targetConsole){
+export const toggleToConsole = function(currentConsole,targetConsole){ //need to add nav button.
     document.querySelector(`${currentConsole}`).classList.toggle('toggleNone',true)
     document.querySelector(`${targetConsole}`).classList.toggle('toggleNone',false)
     return
