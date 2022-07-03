@@ -107,9 +107,14 @@ export const finishers = {
     }
 }
 
-export const toggleToConsole = function(currentConsole,targetConsole){ //need to add nav button.
-    document.querySelector(`${currentConsole}`).classList.toggle('toggleNone',true)
-    document.querySelector(`${targetConsole}`).classList.toggle('toggleNone',false)
+export const toggleToConsole = function(currentConsole,targetConsole,optionalType){ 
+    document.querySelector(`#${currentConsole}`).classList.toggle('toggleNone',true)
+    if(document.querySelector(`#${targetConsole}`)){
+        document.querySelector(`#${targetConsole}`).classList.toggle('toggleNone',false)
+    }
+    else{
+        finishers[`${targetConsole}`](optionalType)
+    }
     return
 }
 
