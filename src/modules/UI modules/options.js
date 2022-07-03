@@ -116,7 +116,7 @@ const activateActionChoice = function(event,params,publish=gameEvents.publish){
 
 const extendShipPublisher = function(event,params,publish=gameEvents.publish){
 
-    if(!event.target.classList.contains('.compProperyTitle')){
+    if(!event.target.classList.contains('compProperyTitle' && !event.target.classList.contains('staticTitle'))){
         return
     }
 
