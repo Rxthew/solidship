@@ -107,7 +107,10 @@ export const finishers = {
     }
 }
 
-export const toggleToConsole = function(currentConsole,targetConsole,optionalType){ 
+export const toggleToConsole = function(currentConsole,targetConsole,optionalType){
+    if(!document.querySelector(`#${currentConsole}`)){
+        return
+    } 
     document.querySelector(`#${currentConsole}`).classList.toggle('toggleNone',true)
     if(document.querySelector(`#${targetConsole}`)){
         document.querySelector(`#${targetConsole}`).classList.toggle('toggleNone',false)
