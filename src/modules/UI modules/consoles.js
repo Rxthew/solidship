@@ -65,6 +65,7 @@ const toggleNone = function(event){
 
 }
 
+
 const uiButton = function(uiContainer){
     const button = document.createElement(button)
     button.classList.add(uiContainer.id) 
@@ -106,7 +107,11 @@ export const finishers = {
     }
 }
 
-
+export const toggleToConsole = function(currentConsole,targetConsole){
+    document.querySelector(`${currentConsole}`).classList.toggle('toggleNone',true)
+    document.querySelector(`${targetConsole}`).classList.toggle('toggleNone',false)
+    return
+}
 
 
 
