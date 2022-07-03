@@ -77,7 +77,6 @@ export const componentStore = function(componentsObj=componentActionFilter(compo
     let store = document.createElement('div')
     store.classList.add('componentStore')
     
-    let view = document.querySelector('.viewConsole') 
     for(let iteration of path){
         let finalTarget = componentsObj
         let parent = store
@@ -94,7 +93,7 @@ export const componentStore = function(componentsObj=componentActionFilter(compo
         }
     
     }
-    view.appendChild(store)
+    return store
 
      
 }
