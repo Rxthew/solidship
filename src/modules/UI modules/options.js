@@ -1,5 +1,4 @@
 import { componentActionFilter, componentPathFilters, componentStore } from "./uicomponents"
-import { components } from '../ships'
 import { defaultConfig } from '../gameboard'
 import { finishers, toggleToConsole } from './consoles'
 import { gameEvents } from '../gamestate'
@@ -153,7 +152,7 @@ const extendShipPublisher = function(event,params,publish=gameEvents.publish){
 
 
 
-const _generateOptionsObject = function(componentsObj=components, getLgl=defaultConfig.getBoardLegalMoves,publish=gameEvents.publish){
+const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,publish=gameEvents.publish){
 
     const doneButton = function(){
         const done = document.createElement('button')
@@ -407,3 +406,25 @@ const _generateOptionsObject = function(componentsObj=components, getLgl=default
     return filterOptions()
 
 }
+
+export const populateOptionsConsole = function(...params){
+    const optParent = document.querySelector('#opts')
+    const optionsObject = generateOptionsObject()
+    const options = Object.entries(optionsObject)
+    
+    for (let [key,option] of options){
+        let opt = document.createElement('div')
+        opt.classList.add('option')
+        let title = document.createElement('span')
+        title.classList.add('optTitle')
+        title.textContent = option
+        title.onclick = function(){
+            optionsObject[key][option](...params) 
+            
+        }
+        opt.appendChild(title)
+        optParent.appendChild(opt)
+    }
+
+}
+
