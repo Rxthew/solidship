@@ -428,3 +428,11 @@ export const populateOptionsConsole = function(...params){
 
 }
 
+export const createSkip = function(publish=gameEvents.publish){
+    const view = document.querySelector('.view')
+    const skip = document.createElement('button')
+    skip.textContent = 'Skip'
+    skip.classList.add('skip')
+    integrateChild(view,skip)
+    view.addEventListener('click', publish('triggerAI') )
+}
