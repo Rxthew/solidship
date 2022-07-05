@@ -183,12 +183,15 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
                 ]
             }
 
-            const preparePlaceShip = function(shipChoice){
-                const gameZone = document.querySelector('.gamezone')
+            const addBuildHighlights = function(){
                 const zones = Array.from(document.querySelectorAll('.zone'))
                 zones.map(zone => !zone.classList.contains('ship') ? zone.classList.add('moveHighlight') : false)
+            }
+
+            const preparePlaceShip = function(shipChoice){
+                const gameZone = document.querySelector('.gamezone')
                 const markHighlights = function(zoneEvent){
-                    if(zoneEvent.target.classList.contains('.moveHighlight')){
+                    if(zoneEvent.target.classList.contains('moveHighlight')){
                         publish('playerAction', 'build',[...prepareBuildArguments(shipChoice, zoneEvent.target)])
                     }
                     else{
@@ -200,6 +203,7 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
             }
 
             const store = initialiseShipStore()
+            addBuildHighlights()
             store.addEventListener('click', function(event){
                 if(event.target.classList.contains('shipOption')){
                     preparePlaceShip(event.target.textContent)
@@ -251,7 +255,7 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
             const markPropertiesToModify = function(){
                 const elements = Array.from(document.querySelectorAll('.element'))
                 const properties = elements.map(node => node.closest('.property'))
-                const titles = properties.map(property => [...property.children].filter('.propertyTitle')[0])
+                const titles = properties.map(property => [...property.children]).filter(child => child.classList.contains('propertyTitle'))[0]
                 titles.map(title => title.classList.add('Mod'))
                 return 
             }
@@ -294,7 +298,7 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
                 store.addEventListener('click',extendShipActivate)  
             }
 
-            const addExtendShipListener = function(){
+            const addExtendShipListener = function(){ 
                 document.querySelector('.componentStore').addEventListener('click', function(e){
                     extendShipPublisher(e, params)
                 })
@@ -311,7 +315,7 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
             const markPropertiesToExtend = function(){
                 const elements = Array.from(document.querySelectorAll('.element'))
                 const properties = elements.map(node => node.closest('.property'))
-                const titles = properties.map(property => [...property.children].filter('.propertyTitle')[0])
+                const titles = properties.map(property => [...property.children]).filter(child => child.classList.contains('propertyTitle'))[0]
                 titles.map(title => title.classList.add('Ext'))
                 return 
             }

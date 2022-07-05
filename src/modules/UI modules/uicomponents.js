@@ -49,17 +49,18 @@ export const componentPathFilters = {
             allPaths = allPaths.filter(arr => arr !== undefined)
             return allPaths
     },
-    'Extend Ship' : function(componentsObj=componentActionFilter(components)){
+    'Extend Ship' : function(componentsObj=componentActionFilter(components)){ 
         const allPaths = recordComponentPaths(componentsObj)
         let toCheckAgainst = Array.from(document.querySelectorAll('.propertyTitle')).map(title => title.id)
         toCheckAgainst = [...toCheckAgainst, ...Array.from(document.querySelectorAll('.staticTitle')).map(title => title.id)]
 
         let newPaths = []
         for(let path of allPaths){
-            let newPath = [...path].filter(elem => !toCheckAgainst.includes(elem))
+            let checkIndex = path.findIndex(elem => toCheckAgainst.includes(elem)) 
+            let newPath = checkIndex > -1 ? path.slice(0,checkIndex) : [...path]
             newPaths = newPath.length > 0 ? [...newPaths, newPath] : newPaths
         }
-        const setPaths = [...new Set(newPaths)]
+        const setPaths = [...new Set(newPaths)] 
         if(setPaths.length > 0){
             return setPaths
         }
