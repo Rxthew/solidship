@@ -1,5 +1,5 @@
 import * as ships from '../ships'
-import recordPathHelpers from 'paths.js'
+import recordPathHelpers from './paths'
 import { defaultConfig } from '../gameboard'
 import { revealProps } from '../utils'
 import {finishers} from './consoles'
@@ -36,7 +36,8 @@ export const displayShip = function(event, someGameState, someGetCont=defaultCon
     let someGb= gb(someGameState)
     let key = event.target.closest('td').id
     let paths = recordPaths(someGb, key,someGetCont)
-    const shipConsole = finishers.ship() 
+    finishers.ship() 
+    const shipConsole = document.querySelector('#ship')
     let shipObj = someGetCont(someGb,key)
     
     for(let path of paths){

@@ -213,11 +213,16 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
     const ship = {
         'Move Ship' : function(...params){
 
-            const prepareMoveArguments = function(targetLocation){
-                const [gs,getB] = [params[1], params[3]]
-                const [gb, shipZone] = [getB(gs),params[0].target.closest('td').id]
-                const legals = [...getLgl(gb,shipZone)]
+            const [gs,getB] = [params[1], params[3]]
+            const [gb, shipZone] = [getB(gs),params[0].target.closest('td').id]
+
+            const addMoveHighlights = function(){
+                const legals = [...getLgl(gb,shipZone)].map(id => document.getElementById(id))
                 legals.map(zone => !zone.classList.contains('ship') ? zone.classList.add('moveHighlight') : false )
+
+            }
+
+            const prepareMoveArguments = function(targetLocation){
                 return [
                     gb,
                     shipZone,
@@ -226,10 +231,11 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
                 ]
             }
 
+
             const gameZone = document.querySelector('.gamezone')
-            const markMoves = function(event){
+            const makeMove = function(event){
                 if(event.target.classList.contains('moveHighlight')){
-                    publish('playerAction','move',[...prepareMoveArguments(event.target)])
+                    publish('playerAction','move',[...prepareMoveArguments(event.target.id)])
                 }
                 else{
                     const highlights = Array.from(document.querySelectorAll('.moveHighlight'))
@@ -237,7 +243,8 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
                 }
 
             }
-            gameZone.addEventListener('click', markMoves)
+            gameZone.addEventListener('click', makeMove)
+            addMoveHighlights()
 
         },
         'Modify Ship' : function(...params){
@@ -410,29 +417,31 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
 export const populateOptionsConsole = function(...params){
     const optParent = document.querySelector('#opts')
     const optionsObject = generateOptionsObject()
-    const options = Object.entries(optionsObject)
-    
-    for (let [key,option] of options){
-        let opt = document.createElement('div')
-        opt.classList.add('option')
-        let title = document.createElement('span')
-        title.classList.add('optTitle')
-        title.textContent = option
-        title.onclick = function(){
-            optionsObject[key][option](...params) 
-            
+
+    const keys = Object.keys(optionsObject)
+    for(let key of keys){
+        let options = Object.keys(optionsObject[key])
+        for (let option of options){
+            let opt = document.createElement('div')
+            opt.classList.add('option')
+            let title = document.createElement('span')
+            title.classList.add('optTitle')
+            title.textContent = option
+            title.onclick = function(){
+                optionsObject[key][option](...params) 
+            }
+            opt.appendChild(title)
+            optParent.appendChild(opt)
         }
-        opt.appendChild(title)
-        optParent.appendChild(opt)
     }
 
 }
 
 export const createSkip = function(publish=gameEvents.publish){
-    const view = document.querySelector('.view')
+    const main = document.querySelector('.mainConsole')
     const skip = document.createElement('button')
     skip.textContent = 'Skip'
     skip.classList.add('skip')
-    integrateChild(view,skip)
-    view.addEventListener('click', publish('triggerAI') )
+    integrateChild(main,skip)
+    main.addEventListener('click', (event) => event.target.classList.contains('skip') ? publish('triggerAI') : false )
 }

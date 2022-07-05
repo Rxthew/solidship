@@ -11,6 +11,9 @@ const creations = {
         return mainConsole
     },
     nav : function(){
+        if(document.querySelector('#navBar')){
+            document.querySelector('#navBar').remove()
+        }
         const nav = document.createElement('nav')
         nav.id = 'navBar'
         nav.onclick = toggleNone
@@ -61,13 +64,17 @@ const toggleNone = function(event){
     }
     const view = document.querySelector('.viewConsole')
     const viewChildren = [...view.children]
-    return viewChildren.map(child => !event.target.dataset.id === child.id ? child.classList.toggle('toggleNone',true) : child.classList.toggle('toggleNone',false))
+    return viewChildren.map(child => event.target.dataset.id !== child.id ? child.classList.toggle('toggleNone',true) : child.classList.toggle('toggleNone',false))
+    
 
 }
 
 
 const uiButton = function(uiContainer){
-    const button = document.createElement(button)
+    if(document.querySelector(`[data-id=${uiContainer.id}]`)){
+        document.querySelector(`[data-id=${uiContainer.id}]`).remove()
+    }
+    const button = document.createElement('button')
     button.dataset.id = uiContainer.id 
     button.textContent = uiContainer.id
     return button
@@ -81,7 +88,7 @@ const pushUIElement = function(uiContainer){
 }
 
 const toggleSetup = function(uiContainer){
-    const nav = document.querySelector('nav')
+    const nav = document.querySelector('#navBar')
     return integrateChild(nav,uiButton(uiContainer))
 }
 

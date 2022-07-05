@@ -50,7 +50,7 @@ const renderShipImage = async function(node,assetName){
 
 export const UIBoard = function(someGameState, someGetCont, gb, publish){
     const someGb = gb(someGameState);
-    const newBoard = integrateChild(document.querySelector('main'),buildBoard())
+    const newBoard = integrateChild(document.querySelector('main'),buildBoard()).child
     for(let elem of Object.keys(someGb)){ 
         if(document.querySelector(`#${elem}`) && someGetCont(someGb,elem)){
             document.querySelector(`#${elem}`).classList.add('ship')
@@ -58,7 +58,7 @@ export const UIBoard = function(someGameState, someGetCont, gb, publish){
         }
     }
     const viewShip = function(event) {
-        if(event.target.classList.contains('ship')){
+        if(event.target.closest('td').classList.contains('ship')){
             publish('viewShip',event,someGameState,someGetCont,gb);
         }} 
     newBoard.addEventListener('click',viewShip) 
