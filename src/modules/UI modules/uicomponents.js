@@ -16,9 +16,9 @@ const recordComponentPaths = function(obj){
 }
 
 export const componentActionFilter = function(componentsObj=components){
-    const primaryAction = Array.from(document.querySelectorAll('.primaryMarker')).filter(element => element.closest('.action'))
+    const primaryAction = Array.from(document.querySelectorAll('.primary')).filter(element => element.closest('.action'))
     if(primaryAction.length > 0){
-        const firstAct = primaryAction.textContent
+        const firstAct = primaryAction[0].textContent
         return componentsObj(firstAct) 
     }
     else{
@@ -55,10 +55,13 @@ export const componentPathFilters = {
         toCheckAgainst = [...toCheckAgainst, ...Array.from(document.querySelectorAll('.staticTitle')).map(title => title.id)]
 
         let newPaths = []
-        for(let path of allPaths){
-            let checkIndex = path.findIndex(elem => toCheckAgainst.includes(elem)) 
-            let newPath = checkIndex > -1 ? path.slice(0,checkIndex) : [...path]
-            newPaths = newPath.length > 0 ? [...newPaths, newPath] : newPaths
+        for (let path of allPaths){
+            let newPath = []
+             const litmusTestProperty = path[path.length - 2]
+             if(!toCheckAgainst.includes(litmusTestProperty)){
+                newPath = [...path]
+             }
+             newPaths = newPath.length > 0 ? [...newPaths, newPath] : newPaths  
         }
         const setPaths = [...new Set(newPaths)] 
         if(setPaths.length > 0){
@@ -77,8 +80,9 @@ export const componentStore = function(componentsObj=componentActionFilter(compo
     }
     let store = document.createElement('div')
     store.classList.add('componentStore')
+
     
-    for(let iteration of path){
+    for(let iteration of path){ 
         let finalTarget = componentsObj
         let parent = store
         for (let elem of iteration){

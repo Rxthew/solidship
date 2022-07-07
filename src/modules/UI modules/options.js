@@ -114,11 +114,13 @@ const activateActionChoice = function(event,params,publish=gameEvents.publish){
 }
 
 const extendShipPublisher = function(event,params,publish=gameEvents.publish){
-
-    if(!event.target.classList.contains('compProperyTitle' && !event.target.classList.contains('staticTitle'))){
+    if(!event.target.classList.contains('compPropertyTitle') && !event.target.classList.contains('compStaticTitle')){
         return
     }
-
+    else if(Array.from(event.target.parentElement.children).some(child => child.classList.contains('compProperty'))){
+        return
+    }
+    
     const prepareArguments = function(){
         const shipLoc = params[0].target.closest('td').id
         const getBoard = params[3]
@@ -298,7 +300,7 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
                 store.addEventListener('click',extendShipActivate)  
             }
 
-            const addExtendShipListener = function(){ 
+            const addExtendShipListener = function(){
                 document.querySelector('.componentStore').addEventListener('click', function(e){
                     extendShipPublisher(e, params)
                 })

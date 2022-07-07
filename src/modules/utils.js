@@ -89,12 +89,18 @@ export const revealProps = {
 
     },
     keyToUIelement : function(parent,key,propName='property',propTitleName='propertyTitle'){
-        const edgeCases = ['mode', 'count', 'breakpoint','damage','reinforcedBreakpoint']
+
+        const edgeCases = ['breakpoint', 'count', 'damage', 'mode' , 'plants', 'plantCount', 'reinforcedBreakpoint', 'wreckage', 'wreckageCount']
+        const edgeClass = function(key){
+            const compStaticKeys = ['plantCount','wreckageCount']
+            return compStaticKeys.includes(key) ? 'compStaticTitle' : 'staticTitle'
+        }
+                    
         let prop = document.createElement('div')
         let title = document.createElement('span')
-        edgeCases.includes(prop) ? prop.classList.add('static') : prop.classList.add(`${propName}`)
+        edgeCases.includes(key) ? prop.classList.add('static') : prop.classList.add(`${propName}`)
         prop.classList.add(`${key}`)
-        edgeCases.includes(prop) ? title.classList.add('staticTitle') : title.classList.add(`${propTitleName}`)
+        edgeCases.includes(key) ? title.classList.add(edgeClass(key)) : title.classList.add(`${propTitleName}`)
         title.id = key        
         title.textContent = camelPhraseParser(key) 
         prop.appendChild(title)
@@ -108,7 +114,7 @@ export const revealProps = {
             for(let elem of val){
                 let uiElement = document.createElement('span')
                 uiElement.classList.add(`${valName}`)
-                uiElement.id = elem
+                isNaN(elem) ? uiElement.id = elem : false
                 uiElement.textContent = elem
                 container.appendChild(uiElement)
             }
@@ -118,13 +124,13 @@ export const revealProps = {
         else {
             let uiElement = document.createElement('span')
             uiElement.classList.add(`${valName}`)
-            uiElement.id = val
+            isNaN(val) ? uiElement.id = val : false
             uiElement.textContent = camelPhraseParser(val)
             par.appendChild(uiElement)
             return uiElement
         }
         
-    },        
+    }        
 }
 
 

@@ -47,7 +47,8 @@ const recordPathHelpers = function(){
             return  confirmedPaths 
     }
 
-    const chartPath = function(event, initParent='#store', propTitle='propertyTitle', statTitle='staticTitle'){
+    const chartPath = function(event, initParent='#store', propTitle='propertyTitle'){
+        const relevantTitles = ['compStaticTitle','staticTitle',propTitle]
         let parent = event.target.parentElement
         let prop = event.target.id
         let path = [prop]
@@ -56,8 +57,15 @@ const recordPathHelpers = function(){
                 return
             }
             parent = parent.parentElement
-            let children = Array.from(parent.children)
-            children = children.filter(child => child.classList.contains(`${propTitle}` || child.classList.contains(`${statTitle}`)))
+            let children = []         
+            for(let title of relevantTitles){
+              let filtered = Array.from(parent.children).filter(child => child.classList.contains(`${title}`))
+              if(filtered.length > 0){
+                children = filtered
+                break
+              }
+            }
+            
             if(children.length === 0){
                 return path
             } 
