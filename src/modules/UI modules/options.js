@@ -18,7 +18,7 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
 
     const createModifyListener = function(event){
         const properties = Array.from(document.querySelectorAll('.compElement')).map(element => element.closest('.compProperty'))
-        const targets = properties.map(property => Array.from(property.children).filter(child => child.classList.contains('.compPropertyTitle'))[0])
+        const targets = properties.map(property => Array.from(property.children).filter(child => child.classList.contains('compPropertyTitle'))[0])
         if(targets.includes(event.target)){
             publish(...prepareModifyArguments(event))
         }
@@ -31,7 +31,7 @@ const activateModifyProperties = function(event, params, publish=gameEvents.publ
         return [
             'modify',
             path(),
-            clickEvent.id
+            clickEvent.target.id
         ]
         
     }
@@ -68,7 +68,7 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
         return [
             'extend component',
             path(),
-            clickEvent.id
+            clickEvent.target.id
         ]
         
     }
@@ -92,7 +92,7 @@ const activateExtendComponent = function(event, params, publish=gameEvents.publi
 
     const createExtendListener = function(event){
         const properties = Array.from(document.querySelectorAll('.compElement')).map(element => element.closest('.compProperty'))
-        const targets = properties.map(property => Array.from(property.children).filter(child => child.classList.contains('.compPropertyTitle'))[0])
+        const targets = properties.map(property => Array.from(property.children).filter(child => child.classList.contains('compPropertyTitle'))[0])
         if(targets.includes(event.target)){
             publish(...prepareExtendArguments(event))
         }
@@ -256,8 +256,8 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
         'Modify Ship' : function(...params){
             const markPropertiesToModify = function(){
                 const elements = Array.from(document.querySelectorAll('.element'))
-                const properties = elements.map(node => node.closest('.property'))
-                const titles = properties.map(property => [...property.children]).filter(child => child.classList.contains('propertyTitle'))[0]
+                const properties = elements.map(node => node.closest('.property')).filter(node => node !== null)
+                const titles = properties.map(property => [...property.children].filter(child => child.classList.contains('propertyTitle'))[0])
                 titles.map(title => title.classList.add('Mod'))
                 return 
             }
@@ -316,8 +316,8 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
 
             const markPropertiesToExtend = function(){
                 const elements = Array.from(document.querySelectorAll('.element'))
-                const properties = elements.map(node => node.closest('.property'))
-                const titles = properties.map(property => [...property.children]).filter(child => child.classList.contains('propertyTitle'))[0]
+                const properties = elements.map(node => node.closest('.property')).filter(node => node !== null)
+                const titles = properties.map(property => [...property.children].filter(child => child.classList.contains('propertyTitle'))[0])
                 titles.map(title => title.classList.add('Ext'))
                 return 
             }
@@ -340,34 +340,33 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
 
          },
         'Effect Ship Action' : function(...params){
-            const action = Array.from(document.querySelectorAll('.action')).filter(node => node.classList.contains('propertyTitle'))[0]
+            const action = Array.from(document.querySelectorAll('.action')).filter(node => node.classList.contains('property'))[0]
+            
             if(!action){
                 return
             }
-
+            const choices = document.createElement('div')
             const choiceConvertor = function(str){
                 const choice = document.createElement('span')
                 choice.textContent = str
                 choice.id = str
                 choice.classList.add('choice')
                 choices.appendChild(choice)
-                return
+                return choice
             }
 
             const retrieveActions = function(){
-                const container = Array.from(document.querySelectorAll('.container')).filter(node => node.closest(action))[0]
+                const container = Array.from(document.querySelectorAll('.container')).filter(node => node.closest('.action') && node.closest('.property'))[0]
                 const actions = Array.from(container.children).map(node => choiceConvertor(node.textContent))
                 return actions
             }
 
+            const actions = retrieveActions()
             const revealActions = function(clickEvent){
-                const actions = retrieveActions()
                 if(actions.includes(clickEvent.target)){
                     activateActionChoice(clickEvent,params)
                 }
             }
-
-            const choices = document.createElement('div')
             choices.addEventListener('click',revealActions)
             document.querySelector('#opts').appendChild(choices)
 
