@@ -345,7 +345,15 @@ const generateOptionsObject = function(getLgl=defaultConfig.getBoardLegalMoves,p
             if(!action){
                 return
             }
-            const choices = document.createElement('div')
+            const initialiseChoices = function(){
+                if(document.querySelector('.choices')){
+                    document.querySelector('.choices').remove()
+                }
+                const choices = document.createElement('div')
+                choices.classList.add('choices')
+                return choices
+            }
+            const choices = initialiseChoices()
             const choiceConvertor = function(str){
                 const choice = document.createElement('span')
                 choice.textContent = str
