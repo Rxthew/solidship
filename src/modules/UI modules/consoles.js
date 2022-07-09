@@ -1,4 +1,4 @@
-import {integrateChild} from '../utils.js'
+import {camelPhraseParser, integrateChild} from '../utils.js'
 
 
 const creations = {
@@ -76,7 +76,7 @@ const uiButton = function(uiContainer){
     }
     const button = document.createElement('button')
     button.dataset.id = uiContainer.id 
-    button.textContent = uiContainer.id
+    button.textContent = camelPhraseParser(uiContainer.id)
     return button
 
 }
