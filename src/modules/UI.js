@@ -3,6 +3,7 @@ import { defaultConfig } from './gameboard'
 import { displayShip } from './UI modules/uiship'
 import { finishers } from './UI modules/consoles'
 import { gameEvents, gameLoop } from './gamestate.js'
+import { toggleToConsole } from './UI modules/consoles'
 import { UIBoard } from './UI modules/uiboard'
 
 //*** To be reviewed
@@ -81,6 +82,7 @@ const initialiseViewConsole = function(){
 const initialiseOptionsConsole = function(...params){
     finishers.opts()
     populateOptionsConsole(...params)
+    toggleToConsole('ship','opts')
     return document.querySelector('#opts')
     
 }

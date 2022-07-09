@@ -92,6 +92,20 @@ const toggleSetup = function(uiContainer){
     return integrateChild(nav,uiButton(uiContainer))
 }
 
+export const toggleToConsole = function(currentConsole,targetConsole,optionalType){
+    if(!document.querySelector(`#${currentConsole}`)){
+        return
+    } 
+    document.querySelector(`#${currentConsole}`).classList.toggle('toggleNone',true)
+    if(document.querySelector(`#${targetConsole}`)){
+        document.querySelector(`#${targetConsole}`).classList.toggle('toggleNone',false)
+    }
+    else{
+        finishers[`${targetConsole}`](optionalType)
+    }
+    return
+}
+
 export const finishers = {
     main : () => integrateChild(document.querySelector('main'),creations.main()),
     nav : () => integrateChild(document.querySelector('.mainConsole'),creations.nav()),
@@ -111,22 +125,12 @@ export const finishers = {
         integrateChild(store,storeType)
         pushUIElement(store)
         toggleSetup(store)
+        toggleToConsole('opts','store')
+        toggleToConsole('ship','store')
     }
 }
 
-export const toggleToConsole = function(currentConsole,targetConsole,optionalType){
-    if(!document.querySelector(`#${currentConsole}`)){
-        return
-    } 
-    document.querySelector(`#${currentConsole}`).classList.toggle('toggleNone',true)
-    if(document.querySelector(`#${targetConsole}`)){
-        document.querySelector(`#${targetConsole}`).classList.toggle('toggleNone',false)
-    }
-    else{
-        finishers[`${targetConsole}`](optionalType)
-    }
-    return
-}
+
 
 
 
