@@ -133,7 +133,18 @@ const _eventsToRespondTo = {
         'just went under\n\nAudrey: Or a planting ship...\n\nDispatch: Just for your information, Tim and Audrey are saying this because '+
         'if a clearing ship is sunk then all the debris it collected is added back to the wreckage count. Therefore clearing ships with '+
         'high wreckage amounts could be a single point of failure, so it is better to distribute clearing where possible.\n\nThe same goes '+
-        'for planting ships: all plants falling under a sunk ship\'s responsibility are removed with it.'
+        'for planting ships: all plants falling under a sunk ship\'s responsibility are removed with it.',
+
+    'missile blocked ship' : () => 
+        'Dispatch : We have successfully neutralised a missile within a defenending ship\'s orbit. This has happened because you effected a '+
+        '"launch decoys" action from a vessel in our fleet. This protects each zone surrounding the ship which launched the decoys. That means'+
+        'that if a missile targets one of those zones then the decoy effectively blocks it. This is good, but it is not without its costs, for one'+
+        'the enemy knows that there is a ship somewhere in that area so it will probe there again. Also, the missile and the decoy add to the wreckage'+
+        'count by N amount.', //replace N with actual value
+    
+    'build new ship' : () => 
+        'Dispatch : This is the suite of ships we have available for you to build.'//To be continued.
+
     
           
     
