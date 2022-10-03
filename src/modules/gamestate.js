@@ -143,8 +143,9 @@ const _eventsToRespondTo = {
         'count by N amount.', //replace N with actual value
     
     'build new ship' : () => 
-        'Dispatch : This is the suite of ships we have available for you to build.'//To be continued.
-
+        'Dispatch : This is the suite of ships we have available for you to build. You are already aware of "Legacy" ships, these are the ones you'+
+        'started with. As discussed, these are legacy warships whose only advantage is the relatively high breakpoint compared to other ships. Unless'+
+        'modified or extended all they can do is move.'//to be continued
     
           
     
